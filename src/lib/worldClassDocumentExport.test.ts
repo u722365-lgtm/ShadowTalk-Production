@@ -64,7 +64,7 @@ export function runInference(prompt: string): Promise<string> {
   it("extracts comprehensive metadata from markdown", () => {
     const meta = extractDocumentMetadata(sampleMarkdown, {
       author: "Chief AI Architect",
-      classification: "CONFIDENTIAL",
+      classification: "Confidential",
     });
 
     expect(meta.title).toBe("Strategic AI Transformation Report");
@@ -122,13 +122,13 @@ export function runInference(prompt: string): Promise<string> {
   it("generates publication-ready Markdown with YAML Frontmatter", () => {
     const md = exportWorldClassMarkdown(sampleMarkdown, {
       author: "Dr. Elena Rostova",
-      classification: "INTERNAL EXECUTIVE",
+      classification: "Executive Brief",
     });
 
     expect(md.startsWith("---")).toBe(true);
     expect(md).toContain("title: \"Strategic AI Transformation Report\"");
     expect(md).toContain("author: \"Dr. Elena Rostova\"");
-    expect(md).toContain("classification: \"INTERNAL EXECUTIVE\"");
+    expect(md).toContain("classification: \"Executive Brief\"");
     expect(md).toContain("generator: \"ShadowTalk AI World-Class Document Studio\"");
     expect(md).toContain("# Strategic AI Transformation Report");
   });
@@ -136,7 +136,7 @@ export function runInference(prompt: string): Promise<string> {
   it("generates publication-grade Plain Text with Unicode box drawings and TOC", () => {
     const txt = exportWorldClassPlainText(sampleMarkdown, {
       author: "ShadowTalk Research Team",
-      classification: "PUBLIC SPECIFICATION",
+      classification: "Public Report",
     });
 
     // Unicode box title
@@ -180,7 +180,7 @@ export function runInference(prompt: string): Promise<string> {
   it("generates self-contained standalone HTML with embedded styles and floating TOC", () => {
     const standaloneHtml = exportWorldClassHtml(sampleMarkdown, {
       theme: "obsidian",
-      meta: { classification: "RESTRICTED" },
+      classification: "Confidential",
     });
 
     expect(standaloneHtml).toContain("<!DOCTYPE html>");
