@@ -42,10 +42,10 @@ export const useMarketplace = () => {
       .eq("is_active", true)
       .order("downloads", { ascending: false });
 
-    if (error) {
-      toast({ title: "Error", description: "Failed to load marketplace agents", variant: "destructive" });
-    } else {
+    if (!error && data) {
       setAgents((data as MarketplaceAgent[]) || []);
+    } else {
+      setAgents([]);
     }
     setLoading(false);
   };
