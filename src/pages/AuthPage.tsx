@@ -515,11 +515,12 @@ const AuthPage = () => {
           </div>
 
           {/* Divider */}
-          <div className="relative flex items-center justify-center my-5">
-            <div className="w-full border-t border-white/10" />
-            <span className="relative bg-slate-900/95 px-3 text-[10px] text-slate-400 uppercase tracking-widest font-mono">
+          <div className="flex items-center gap-3 my-5 text-center">
+            <div className="flex-1 border-t border-white/10" />
+            <span className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-widest font-mono shrink-0">
               or continue with email
             </span>
+            <div className="flex-1 border-t border-white/10" />
           </div>
 
           {/* Rate Limit Alert */}
@@ -561,20 +562,9 @@ const AuthPage = () => {
 
             {/* Password Field */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-slate-300">
-                  Password
-                </label>
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={() => toast({ title: "Password Reset", description: "Enter your email to receive a secure recovery link." })}
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
-                  >
-                    Forgot password?
-                  </button>
-                )}
-              </div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
                 <Input
@@ -596,6 +586,19 @@ const AuthPage = () => {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+
+              {/* Forgot Password Link - Positioned underneath password field */}
+              {isLogin && (
+                <div className="flex justify-end mt-2">
+                  <button
+                    type="button"
+                    onClick={() => toast({ title: "Password Reset", description: "Enter your email to receive a secure recovery link." })}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline transition-colors cursor-pointer font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
 
               {/* Password Strength (Sign Up Only) */}
               {!isLogin && password.length > 0 && (
