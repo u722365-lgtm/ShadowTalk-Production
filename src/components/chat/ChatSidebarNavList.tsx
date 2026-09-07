@@ -34,9 +34,9 @@ function NavRow({
   const inner = (
     <motion.span
       className={cn(
-        "group relative flex items-center rounded-xl text-[13px] font-normal transition-all duration-200",
+        "group relative flex items-center rounded-xl text-[13px] font-normal transition-colors duration-150 h-10 overflow-hidden",
         !active && "hover:bg-white/[0.05]",
-        collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3.5 py-2 w-full",
+        collapsed ? "justify-center w-10 mx-auto px-0" : "gap-3 px-3.5 w-full",
         active ? "text-cyan-200 font-medium" : "text-slate-400 hover:text-slate-100",
       )}
       whileHover={{ x: collapsed ? 0 : 3 }}
@@ -56,15 +56,28 @@ function NavRow({
           active ? "text-cyan-400" : "text-slate-400 group-hover:text-cyan-300"
         )}
       />
-      {!collapsed && (
-        <>
-          <span className="relative z-10 flex-1 truncate">{label}</span>
-          {item.badge && (
-            <span className="relative z-10 text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-              {item.badge}
-            </span>
-          )}
-        </>
+      <motion.span
+        animate={{
+          opacity: collapsed ? 0 : 1,
+          width: collapsed ? 0 : "auto",
+        }}
+        transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
+        className="relative z-10 flex-1 truncate overflow-hidden whitespace-nowrap text-left"
+      >
+        {label}
+      </motion.span>
+      {item.badge && (
+        <motion.span
+          animate={{
+            opacity: collapsed ? 0 : 1,
+            scale: collapsed ? 0.6 : 1,
+            width: collapsed ? 0 : "auto",
+          }}
+          transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
+          className="relative z-10 text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 overflow-hidden whitespace-nowrap"
+        >
+          {item.badge}
+        </motion.span>
       )}
     </motion.span>
   );

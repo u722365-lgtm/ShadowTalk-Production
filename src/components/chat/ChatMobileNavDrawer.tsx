@@ -52,7 +52,7 @@ export function ChatMobileNavDrawer({
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={SETTINGS_SPRING}
+            transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
             className="fixed left-0 top-0 bottom-0 z-[70] md:hidden shadow-elevated"
           >
             <div className="relative h-full">
