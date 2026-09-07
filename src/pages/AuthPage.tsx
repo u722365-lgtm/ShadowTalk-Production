@@ -95,7 +95,7 @@ const AuthPage = () => {
   const strength = getPasswordStrength(password);
 
   useEffect(() => {
-    setStoredAuthDesignChoice("split-luxury");
+    setStoredAuthDesignChoice("sovereign-split");
   }, []);
 
   useEffect(() => {

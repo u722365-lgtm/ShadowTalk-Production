@@ -212,8 +212,6 @@ export function parseWorldClassMarkdownBlocks(markdown: string): MarkdownBlock[]
           kind: "stat-grid",
           type: "stat-grid",
           stats,
-          value: stats[0].value,
-          label: stats[0].label,
         });
       }
       continue;
