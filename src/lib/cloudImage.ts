@@ -8,12 +8,15 @@
 
 import { flushSync } from "react-dom";
 import { cloudAuthHeaders, cloudFunctionUrl } from "@/lib/cloudConfig";
+import { applyImageWatermark } from "@/lib/imageWatermark";
 
 export interface GenerateImageOptions {
   model?: string;
   /** Optional reference image (data URL) for image-to-image edits. */
   referenceImage?: string;
   signal?: AbortSignal;
+  /** Stamp the final image with the ShadowTalk watermark (default: true). */
+  watermark?: boolean;
   /** Called for every frame with a renderable data URL. */
   onFrame?: (dataUrl: string, isFinal: boolean) => void;
 }
@@ -67,6 +70,13 @@ export async function generateCloudImage(
     } catch { /* keep status message */ }
     throw new Error(message);
   }
+
+  const finalize = async (dataUrl: string): Promise<string> => {
+    if (opts.watermark === false) return dataUrl;
+    const stamped = await applyImageWatermark(dataUrl);
+    if (stamped !== dataUrl && opts.onFrame) opts.onFrame(stamped, true);
+    return stamped;
+  };
 
   const emit = (b64: string, isFinal: boolean) => {
     const dataUrl = `data:image/png;base64,${b64}`;
@@ -144,9 +154,9 @@ export async function generateCloudImage(
     const json = (await replay.json()) as { data?: { b64_json?: string }[] };
     const b64 = json.data?.[0]?.b64_json;
     if (!b64) throw new Error("Image generation returned no image");
-    return emit(b64, true);
+    return finalize(emit(b64, true));
   }
 
   if (!sawCompleted && !last) throw new Error("Image stream ended without an image");
-  return last;
+  return finalize(last);
 }
