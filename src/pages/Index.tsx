@@ -31,9 +31,6 @@ const CommunityBuildingBlock = lazy(() => import("@/components/growth/CommunityB
 const FounderSpotlightSection = lazy(() => import("@/components/founder/FounderSpotlightSection"));
 const GrowthAmplifier = lazy(() => import("@/components/landing/GrowthAmplifier"));
 const Footer = lazy(() => import("@/components/Footer"));
-const StickyTryCTA = lazy(() => import("@/components/landing/StickyTryCTA"));
-const ExitIntentPrompt = lazy(() => import("@/components/landing/ExitIntentPrompt"));
-const FreeTierViralPrompt = lazy(() => import("@/components/growth/FreeTierViralPrompt"));
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<SectionHubTab>("services");
@@ -203,11 +200,8 @@ const Index = () => {
               </Suspense>
             )}
 
-            {/* Conversion Prompts & Footer */}
+            {/* Footer */}
             <Suspense fallback={null}>
-              <StickyTryCTA />
-              <ExitIntentPrompt />
-              <FreeTierViralPrompt />
               <Footer />
             </Suspense>
           </div>

@@ -207,11 +207,7 @@ const NeuralCanvasMode = lazy(() =>
 );
 
 import { SignInPrompt } from "@/components/chat/SignInPrompt";
-import { AdBanner } from "@/components/chat/AdBanner";
 import { BRAND } from "@/lib/brand";
-import { ReferralNudgeBanner } from "@/components/growth/ReferralNudgeBanner";
-import { ShareResultDialog } from "@/components/growth/ShareResultDialog";
-import { ShareWinBanner } from "@/components/growth/ShareWinBanner";
 import { recordSuccessfulChatSession, getSuccessfulSessionCount } from "@/lib/growth/sessionMilestones";
 import { markHasChatted, completeQuickPrompt, hasChattedBefore } from "@/lib/growth/firstVisit";
 import { recordFunnelEvent, recordChatbotView } from "@/lib/growth/funnelEvents";
@@ -2221,7 +2217,6 @@ Structure and Content Guidelines:
               onDismiss={() => setNudgeDismissed(true)}
             />
           )}
-          {!enterprise.hideReferralNudges && <ReferralNudgeBanner />}
           {!enterprise.hideMonetization && (
             <UpgradePrompt
               open={upgradeOpen}

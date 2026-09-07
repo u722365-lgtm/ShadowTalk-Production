@@ -1,7 +1,6 @@
 import { useState, useEffect, lazy, Suspense, createContext } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import FeedbackAutoPrompt from "@/components/FeedbackAutoPrompt";
 import MobileViewportFix from "@/components/MobileViewportFix";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "@tanstack/react-query";
@@ -29,7 +28,6 @@ import { BackToHomeButton } from "@/components/BackToHomeButton";
 import { useReferralCapture } from "./hooks/useReferralTracking";
 import PersistedAuthRedirect from "@/components/PersistedAuthRedirect";
 import WorkspacePathRemember from "@/components/WorkspacePathRemember";
-import { GrowthBanners } from "@/components/GrowthBanners";
 import { OAuthReturnHandler } from "@/components/OAuthReturnHandler";
 import { OAuthRedirectHandler } from "@/components/OAuthRedirectHandler";
 
@@ -39,10 +37,7 @@ const RootRoute = lazy(() => import("@/components/RootRoute"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-import { NotificationPermissionRequester } from "@/components/notifications/NotificationPermissionRequester";
-import { UpdateNotificationProvider } from "@/components/notifications/UpdateNotificationProvider";
 import { NetworkTransitionOverlay } from "@/components/chat/NetworkTransitionOverlay";
-import { PushIntelligencePanel } from "@/components/chat/PushIntelligencePanel";
  
 // Lazy loaded core pages
 const ChatbotPage = lazy(() => import("./pages/ChatbotPage"));
@@ -93,7 +88,6 @@ const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
-const PWABanner = lazy(() => import("./components/PWABanner"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
 const CustomerSupportWidget = lazy(() => import("./components/CustomerSupportWidget"));
 const ShadowMemoryTracker = lazy(() => import("./components/ShadowMemoryTracker"));
@@ -102,8 +96,6 @@ const VoiceCommandSystem = lazy(() => import("./components/VoiceCommandSystem"))
 const ShadowScaleEngine = lazy(() =>
   import("./components/shadowScale/ShadowScaleEngine").then((m) => ({ default: m.ShadowScaleEngine })),
 );
-
-const OnboardingFlow = lazy(() => import("./components/OnboardingFlow"));
 
  // Configure React Query with production-ready settings
  const queryClient = new QueryClient({
@@ -276,12 +268,9 @@ const App = () => {
               )}
               <Toaster />
               <Sonner />
-              <FeedbackAutoPrompt />
                <BrowserRouter>
                  <MobileViewportFix />
-                 <UpdateNotificationProvider />
                  <NetworkTransitionOverlay />
-                 <PushIntelligencePanel />
                  <SiteMotionProvider>
                    <SitePageShell>
                      <GlobalScrollReveal />
@@ -289,8 +278,6 @@ const App = () => {
                      <OAuthRedirectHandler />
                      <OAuthReturnHandler />
                      <WorkspacePathRemember />
-                      <NotificationPermissionRequester />
-                     <GrowthBanners />
                      <AnimatedRoutes />
                      <BackToHomeButton />
                    </SitePageShell>
@@ -298,14 +285,11 @@ const App = () => {
                  <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
                   {deferredChrome && (
                     <Suspense fallback={null}>
-
-                      <OnboardingFlow />
                       <ShadowMemoryTracker />
                       <JourneyTracker />
                       <AutoImproveEngine />
                       <ShadowScaleEngine />
                       <VoiceCommandSystem />
-                      <PWABanner />
                       <CookieConsent />
                       <CustomerSupportWidget />
                     </Suspense>
