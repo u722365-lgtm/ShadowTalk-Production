@@ -292,78 +292,89 @@ export async function applyCanvasFilter(imageDataUrl: string, filter: DirectFilt
     img.src = imageDataUrl;
   });
 }
+/**
+ * Ask the AI to actually look at the image and return a JSON payload.
+ * Uses the Lovable Cloud chat function with multimodal (vision) input.
+ */
+async function visionJson(
+  systemPrompt: string,
+  instruction: string,
+  imageDataUrl: string,
+  signal?: AbortSignal,
+): Promise<Record<string, unknown> | null> {
+  try {
+    const { streamCloudChat } = await import("@/lib/cloudChat");
+    const { content } = await streamCloudChat(
+      [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: instruction },
+            { type: "image_url", image_url: { url: imageDataUrl } },
+          ],
+        },
+      ],
+      { temperature: 0.4, signal },
+    );
+    const match = content.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    return JSON.parse(match[0]) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
 
 /**
- * Synthesizes visual analysis and an optimal generative diffusion prompt
- * based on user instructions and detected image characteristics.
+ * Look at the uploaded image and turn the user's request into a precise
+ * image-editing instruction that preserves the original subject.
  */
 export async function synthesizeImageEditPlan(
   userInstruction: string,
   metrics: ImageMetrics,
   signal?: AbortSignal,
+  originalImage?: string,
 ): Promise<{ explanation: string; diffusionPrompt: string }> {
   const cleanInstruction = userInstruction.trim() || "Enhance and stylize this image";
   const defaultPlan = {
-    explanation: `I've analyzed your image and applied your requested edits: **${cleanInstruction}**. The subject, perspective, and core structure have been enhanced with professional lighting, crisp detail, and artistic balance.`,
-    diffusionPrompt: `${cleanInstruction}, professional photography, masterpiece, ultra-detailed 8k resolution, cinematic lighting, sharp focus, perfectly composed, high dynamic range`,
+    explanation: `I analyzed your image and applied your requested edit: **${cleanInstruction}** — keeping the original subject, framing and identity intact.`,
+    diffusionPrompt: `Edit this exact image: ${cleanInstruction}. Preserve the original subject, identity, pose, framing and background unless the request says otherwise. Photorealistic, seamless, ultra-detailed, natural lighting, no artifacts.`,
   };
 
-  const systemPrompt = `You are ShadowTalk AI's Lead Vision & Generative Image Architect.
-The user has provided an image and requested a specific creative edit or transformation.
+  if (!originalImage) return defaultPlan;
 
-Your job:
-1. Provide a concise, friendly, and helpful response to the user explaining what changes are being made to fulfill their request while respecting the subject, mood, and composition.
-2. Formulate a vivid, high-fidelity diffusion prompt for the AI image engine (Flux / SDXL) that incorporates the original scene's framing and the user's requested edit with exceptional detail.
+  const systemPrompt = `You are ShadowTalk AI's Vision & Image Editing Architect.
+You are shown a real image and a user's edit request. Describe what is actually in the image, then write a precise editing instruction for an image-editing model that applies ONLY the requested change and preserves everything else (subject identity, pose, framing, lighting, background).
 
-Format your response strictly as JSON with this schema:
+Respond with strictly valid JSON:
 {
-  "explanation": "Conversational explanation to the user detailing the edits made and suggestions for next steps",
-  "diffusionPrompt": "Detailed, high-quality prompt for generating the edited image, including lighting, textures, style, and 8k detail keywords"
+  "explanation": "Short, friendly note to the user describing what you changed in their image",
+  "diffusionPrompt": "Precise edit instruction referencing the actual contents of the image"
 }`;
 
-  const userContent = `User Edit Request: "${userInstruction}"
-Image Context:
-- Aspect Ratio: ${metrics.aspectRatio} (${metrics.width}x${metrics.height})
-- Dominant Lighting: ${metrics.isDark ? "Low-key / dramatic shadows" : "Well-lit / ambient lighting"}
-- Color Tone: ${metrics.dominantTone}
+  const parsed = await visionJson(
+    systemPrompt,
+    `User edit request: "${cleanInstruction}"
+Image profile: ${metrics.width}x${metrics.height} (${metrics.aspectRatio}), ${metrics.dominantTone} tone, ${metrics.isDark ? "low-key" : "well-lit"}.
+Return the JSON edit plan.`,
+    originalImage,
+    signal,
+  );
 
-Generate the JSON edit plan.`;
-
-  try {
-    const timeoutPromise = new Promise<{ content: string }>((_, reject) =>
-      setTimeout(() => reject(new Error("Synthesis timeout")), 3000)
-    );
-
-    const result = await Promise.race([
-      turboComplete(systemPrompt, userContent, {
-        model: "groq/compound",
-        temperature: 0.6,
-        maxTokens: 800,
-        signal,
-      }),
-      timeoutPromise,
-    ]);
-
-    const raw = result.content.trim();
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (parsed.explanation && parsed.diffusionPrompt) {
-        return {
-          explanation: parsed.explanation,
-          diffusionPrompt: parsed.diffusionPrompt,
-        };
-      }
-    }
-  } catch {
-    // If network or parsing times out or fails, fall back to defaultPlan
+  const explanation = typeof parsed?.explanation === "string" ? parsed.explanation : "";
+  const diffusionPrompt = typeof parsed?.diffusionPrompt === "string" ? parsed.diffusionPrompt : "";
+  if (explanation && diffusionPrompt) {
+    return {
+      explanation,
+      diffusionPrompt: `${diffusionPrompt} Keep the untouched parts of the original image identical.`,
+    };
   }
-
   return defaultPlan;
 }
 
 /**
- * Main entrance: Seamlessly analyze and edit an uploaded image according to user request.
+ * Main entrance: analyze the uploaded image and apply the user's edit to that
+ * actual image (image-to-image), returning the edited, watermarked result.
  */
 export async function editImageSeamlessly(
   originalImage: string,
@@ -371,51 +382,41 @@ export async function editImageSeamlessly(
   signal?: AbortSignal,
 ): Promise<ImageEditResult> {
   const metrics = await extractImageMetrics(originalImage);
+  const { applyImageWatermark } = await import("@/lib/imageWatermark");
 
-  // 1. Check if user is requesting a direct pixel filter (e.g. black & white, sepia, invert)
+  // 1. Pure photographic filters (black & white, sepia, invert…) are applied
+  //    directly to the original pixels — fastest and pixel-perfect.
   const filterCheck = detectDirectFilter(userInstruction);
   if (filterCheck.isDirect && filterCheck.filter) {
     const filteredDataUrl = await applyCanvasFilter(originalImage, filterCheck.filter);
+    const stamped = await applyImageWatermark(filteredDataUrl);
     const filterName = filterCheck.filter === "grayscale" ? "black and white" : filterCheck.filter.replace("_", " ");
     return {
-      editedImageUrl: filteredDataUrl,
-      analysis: `I've analyzed your image and applied a **${filterName}** photographic adjustment directly to the pixels, preserving original resolution, focus, and texture with enhanced contrast curves.`,
+      editedImageUrl: stamped,
+      analysis: `I applied a **${filterName}** photographic adjustment directly to your image's pixels, preserving the original resolution, focus and texture.`,
       diffusionPrompt: `${filterName} photographic transformation`,
       method: "direct_filter",
       metrics,
     };
   }
 
-  // 2. Perform AI visual synthesis for generative edits / object additions / style changes
+  // 2. Real generative edit: the model receives the original image plus a
+  //    vision-derived instruction, and returns the edited image.
   const { explanation, diffusionPrompt } = await synthesizeImageEditPlan(
     userInstruction,
     metrics,
     signal,
+    originalImage,
   );
 
-  // Determine output dimensions matching the original image aspect ratio
-  let width = 1024;
-  let height = 1024;
-  if (metrics.aspectRatio === "16:9") {
-    width = 1280;
-    height = 720;
-  } else if (metrics.aspectRatio === "9:16") {
-    width = 720;
-    height = 1280;
-  } else if (metrics.aspectRatio === "4:3") {
-    width = 1024;
-    height = 768;
-  } else if (metrics.aspectRatio === "3:4") {
-    width = 768;
-    height = 1024;
-  }
-
-  const seed = Math.floor(Math.random() * 9999999);
-  const encodedPrompt = encodeURIComponent(diffusionPrompt);
-  const generativeUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+  const { generateCloudImage } = await import("@/lib/cloudImage");
+  const editedImageUrl = await generateCloudImage(diffusionPrompt, {
+    referenceImage: originalImage,
+    signal,
+  });
 
   return {
-    editedImageUrl: generativeUrl,
+    editedImageUrl,
     analysis: explanation,
     diffusionPrompt,
     method: "generative_edit",
@@ -424,7 +425,7 @@ export async function editImageSeamlessly(
 }
 
 /**
- * Comprehensive visual reasoning and analysis for image decoder mode.
+ * Comprehensive visual reasoning of the actual uploaded image.
  */
 export async function analyzeImageInDetail(
   originalImage: string,
@@ -444,53 +445,34 @@ export async function analyzeImageInDetail(
   };
 
   const systemPrompt = `You are ShadowTalk AI's Visual Reasoning Expert.
-Analyze the provided image characteristics and output a structured analysis report.
+You are shown a real image. Describe exactly what you see.
 
-Output strictly valid JSON with this schema:
+Respond with strictly valid JSON:
 {
-  "summary": "High-level summary of what the image represents",
-  "subject": "Detailed description of the central subject(s), pose, and expression",
-  "composition": "Framing, perspective, depth of field, and spatial layout",
-  "palette": "Lighting atmosphere, color scheme, and mood",
-  "suggestedEdits": [
-    "Suggested edit prompt 1 (e.g. Turn into a cyberpunk portrait with neon rain)",
-    "Suggested edit prompt 2 (e.g. Change background to a sunset beach in Bali)",
-    "Suggested edit prompt 3 (e.g. Convert to a 1920s vintage oil painting)"
-  ]
+  "summary": "High-level summary of what the image shows",
+  "subject": "The central subject(s), pose and expression",
+  "composition": "Framing, perspective, depth of field, spatial layout",
+  "palette": "Lighting, colour scheme and mood",
+  "suggestedEdits": ["edit idea 1", "edit idea 2", "edit idea 3"]
 }`;
 
-  const userContent = `Image Technical Profile:
-- Dimensions: ${metrics.width}x${metrics.height} (${metrics.aspectRatio})
-- Luminance: ${metrics.brightness}/255 (${metrics.isDark ? "Dark/Moody" : "Bright/Clear"})
-- Tone: ${metrics.dominantTone}
+  const parsed = await visionJson(
+    systemPrompt,
+    "Analyze this image and return the JSON report.",
+    originalImage,
+    signal,
+  );
 
-Generate the detailed visual reasoning JSON report.`;
-
-  try {
-    const timeoutPromise = new Promise<{ content: string }>((_, reject) =>
-      setTimeout(() => reject(new Error("Analysis timeout")), 3000)
-    );
-
-    const result = await Promise.race([
-      turboComplete(systemPrompt, userContent, {
-        model: "groq/compound",
-        temperature: 0.5,
-        maxTokens: 800,
-        signal,
-      }),
-      timeoutPromise,
-    ]);
-
-    const raw = result.content.trim();
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (parsed.summary && parsed.subject) {
-        return parsed as ImageAnalysisResult;
-      }
-    }
-  } catch {
-    // fallback to defaultReport
+  if (parsed && typeof parsed.summary === "string" && typeof parsed.subject === "string") {
+    return {
+      summary: parsed.summary,
+      subject: parsed.subject,
+      composition: typeof parsed.composition === "string" ? parsed.composition : defaultReport.composition,
+      palette: typeof parsed.palette === "string" ? parsed.palette : defaultReport.palette,
+      suggestedEdits: Array.isArray(parsed.suggestedEdits)
+        ? (parsed.suggestedEdits as unknown[]).filter((e): e is string => typeof e === "string")
+        : defaultReport.suggestedEdits,
+    };
   }
 
   return defaultReport;
