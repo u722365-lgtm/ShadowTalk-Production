@@ -65,6 +65,7 @@ const ModelPlaygroundPage = lazy(() => import("./pages/ModelPlaygroundPage"));
 const ShadowTwinSettingsPage = lazy(() => import("./pages/ShadowTwinSettingsPage"));
 const PublicShadowTwinChat = lazy(() => import("./pages/PublicShadowTwinChat"));
 const WorkspacePage = lazy(() => import("./pages/WorkspacePage"));
+const IdePage = lazy(() => import("./pages/IdePage"));
 const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
 const ShadowMemoryPage = lazy(() => import("./pages/ShadowMemoryPage"));
 const CyberCommandPage = lazy(() => import("./pages/CyberCommandPage"));
@@ -170,6 +171,7 @@ const AnimatedRoutes = () => {
           <Route path="/sadaf-tayyaba" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/changelog" element={<PageTransition><ChangelogPage /></PageTransition>} />
           <Route path="/workspace" element={<PageTransition><WorkspacePage /></PageTransition>} />
+          <Route path="/ide" element={<PageTransition><IdePage /></PageTransition>} />
           <Route path="/business-memory" element={<Navigate to="/workspace" replace />} />
           <Route path="/analytics" element={<PageTransition><AnalyticsPage /></PageTransition>} />
           <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />

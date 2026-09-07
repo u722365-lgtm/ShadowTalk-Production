@@ -101,7 +101,7 @@ Product context: ShadowTalk AI offers Free, Pro ($19/mo), Premium ($49/mo), and 
     }
   };
 
-  if (location.pathname === "/chatbot") return null;
+  if (location.pathname === "/chatbot" || location.pathname === "/ide") return null;
 
   if (!isOpen) {
     return (
