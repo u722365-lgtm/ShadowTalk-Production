@@ -92,7 +92,6 @@ const CookieConsent = lazy(() => import("./components/CookieConsent"));
 const CustomerSupportWidget = lazy(() => import("./components/CustomerSupportWidget"));
 const ShadowMemoryTracker = lazy(() => import("./components/ShadowMemoryTracker"));
 const JourneyTracker = lazy(() => import("./components/JourneyTracker").then(m => ({ default: m.JourneyTracker })));
-const VoiceCommandSystem = lazy(() => import("./components/VoiceCommandSystem"));
 const ShadowScaleEngine = lazy(() =>
   import("./components/shadowScale/ShadowScaleEngine").then((m) => ({ default: m.ShadowScaleEngine })),
 );
@@ -289,7 +288,6 @@ const App = () => {
                       <JourneyTracker />
                       <AutoImproveEngine />
                       <ShadowScaleEngine />
-                      <VoiceCommandSystem />
                       <CookieConsent />
                       <CustomerSupportWidget />
                     </Suspense>

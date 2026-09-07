@@ -101,6 +101,8 @@ Product context: ShadowTalk AI offers Free, Pro ($19/mo), Premium ($49/mo), and 
     }
   };
 
+  if (location.pathname === "/chatbot") return null;
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-6 right-6 z-40 hidden sm:flex flex-col items-end gap-3">
@@ -117,8 +119,6 @@ Product context: ShadowTalk AI offers Free, Pro ($19/mo), Premium ($49/mo), and 
       </div>
     );
   }
-
-  if (location.pathname === "/chatbot") return null;
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 md:w-96 max-h-[70vh] sm:max-h-[500px]">
