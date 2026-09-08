@@ -42,7 +42,8 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
         workbox: {
-          maximumFileSizeToCacheInBytes: 10485760
+          maximumFileSizeToCacheInBytes: 10485760,
+          navigateFallbackDenylist: [/^\/__/]
         },
         manifest: {
           name: 'ShadowTalk AI',
