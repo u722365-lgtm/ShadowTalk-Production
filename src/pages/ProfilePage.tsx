@@ -239,6 +239,16 @@ const ProfilePage = () => {
 
   const saveProfile = async () => {
     if (!user) return;
+    
+    if (avatarUrl && avatarUrl.length > 2048) {
+      toast({ 
+        title: "Avatar URL too long", 
+        description: "Please upload an image using the camera button instead of pasting a large data string.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setIsSaving(true);
     const ok = await persistProfile();
     if (ok) {

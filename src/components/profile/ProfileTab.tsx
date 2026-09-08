@@ -106,6 +106,7 @@ export const ProfileTab = ({
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
                 placeholder="https://… or upload via camera button"
+                maxLength={2048}
                 className="bg-muted/30 border-border/50"
               />
             </div>
