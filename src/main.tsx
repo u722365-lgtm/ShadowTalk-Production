@@ -46,10 +46,12 @@ deferNonCritical(() => {
 
 // Defer non-critical initialization
 deferNonCritical(() => {
-  // Register service worker for PWA
-  if ("serviceWorker" in navigator && import.meta.env.PROD) {
-    navigator.serviceWorker.register('/sw.js').catch((err) => {
-      console.warn('[SW] Registration failed:', err);
+  // Unregister existing service workers to fully remove offline support
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
     });
   }
 });
