@@ -21,6 +21,7 @@ export const firebaseConfig = {
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || `${PROJECT_ID}.firebasestorage.app`,
   messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || '819076379544',
   appId: env.VITE_FIREBASE_APP_ID || '1:819076379544:web:d164455df140a1255971ed',
+  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID || 'G-LGJV8D66QM',
 };
 
 /** Base URL for Cloud Functions (used by `backend.functions.invoke`). */
