@@ -171,7 +171,7 @@ const ProfilePage = () => {
     } else {
       const defaultName = user.email?.split("@")[0] || "User";
       setDisplayName(defaultName);
-      await backend.from("profiles").insert({ id: user.id, display_name: defaultName });
+      await backend.from("profiles").insert({ id: user.id, user_id: user.id, display_name: defaultName });
     }
 
     const ext = parseExtendedNotif(settingsRes.data?.setting_value);
@@ -188,6 +188,7 @@ const ProfilePage = () => {
       if (!user) return false;
       const { error } = await backend.from("profiles").upsert({
         id: user.id,
+        user_id: user.id,
         display_name: displayName,
         bio,
         avatar_url: avatarUrl,
