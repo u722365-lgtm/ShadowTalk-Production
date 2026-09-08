@@ -23,6 +23,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLandingMotionContext } from "@/components/landing/LandingMotionProvider";
 import LandingStagger from "@/components/landing/LandingStagger";
 import LandingAnimate from "@/components/landing/LandingAnimate";
+import { ReferralModal } from "@/components/growth/ReferralModal";
+import { Gift } from "lucide-react";
 
 type NavigationProps = {
   /** Enable entrance + hover motion on the marketing home page */
@@ -34,6 +36,7 @@ const Navigation = ({ landingAnimated = false }: NavigationProps) => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const [isReferralOpen, setIsReferralOpen] = useState(false);
   const navigate = useNavigate();
   const { open: openCommandPalette } = useContext(CommandPaletteContext);
   const { t } = useTranslation();
@@ -186,9 +189,20 @@ const Navigation = ({ landingAnimated = false }: NavigationProps) => {
               <TrustBadge />
             </LandingAnimate>
             <LandingAnimate preset="pop" index={1} inView={false} as="div">
-              <StealthKillSwitch />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setIsReferralOpen(true)}
+                className="border-primary/40 text-primary hover:bg-primary/10 transition-all duration-200 gap-1.5 h-8 mr-1"
+              >
+                <Gift className="h-3.5 w-3.5" />
+                Refer & Earn
+              </Button>
             </LandingAnimate>
             <LandingAnimate preset="pop" index={2} inView={false} as="div">
+              <StealthKillSwitch />
+            </LandingAnimate>
+            <LandingAnimate preset="pop" index={3} inView={false} as="div">
               <HardwarePassthrough />
             </LandingAnimate>
             {!isInstalled && (
@@ -313,6 +327,18 @@ const Navigation = ({ landingAnimated = false }: NavigationProps) => {
                 </LandingAnimate>
               ))}
               <div className="flex flex-col space-y-2 pt-3 mt-3 border-t border-border/50">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => {
+                    setIsReferralOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="mx-3 border-primary/40 text-primary hover:bg-primary/10 transition-all duration-200 gap-1.5 h-8"
+                >
+                  <Gift className="h-3.5 w-3.5" />
+                  Refer & Earn
+                </Button>
                 <div className="flex items-center justify-between px-3 py-2 glass-subtle rounded-lg">
                   <span className="text-xs font-medium text-muted-foreground">Stealth mode</span>
                   <StealthKillSwitch />
@@ -450,6 +476,8 @@ const Navigation = ({ landingAnimated = false }: NavigationProps) => {
       </motion.div>
     )}
     </AnimatePresence>
+
+    <ReferralModal isOpen={isReferralOpen} onClose={() => setIsReferralOpen(false)} />
     </>
   );
 };

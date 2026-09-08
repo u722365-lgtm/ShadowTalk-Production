@@ -7,7 +7,7 @@ import {
   FileText, File, ChevronRight, ChevronDown,
   Columns, Monitor, Smartphone, Tablet,
   Palette, Zap, GitBranch, Package, RefreshCw,
-  ExternalLink, Split, ArrowRight, Wand2, Bot
+  ExternalLink, Split, ArrowRight, Wand2, Bot, Share2
 } from "lucide-react";
 import { JulesPanel } from "@/components/ide/JulesPanel";
 import type { ParsedFileChange } from "@/lib/jules/types";
@@ -639,6 +639,13 @@ export const PersonalIDE = ({
           </Button>
           <Button variant="ghost" size="sm" onClick={downloadProject} className="h-7 px-2">
             <Download className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => {
+            const text = encodeURIComponent("I'm building an app autonomously with ShadowTalk AI! Try it out:");
+            const url = encodeURIComponent("https://www.shadowtalk-ai.com/");
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&via=shadowtalk_ai`, '_blank');
+          }} className="h-7 px-2 text-blue-400 hover:text-blue-500 hover:bg-blue-500/10">
+            <Share2 className="h-3.5 w-3.5" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setShowSettings(!showSettings)} className="h-7 px-2">
             <Settings className="h-3.5 w-3.5" />
