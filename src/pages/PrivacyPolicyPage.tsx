@@ -116,7 +116,7 @@ We require all sub-processors to implement enterprise security standards and abi
     content: `
 You maintain full control over the lifespan of your data:
 
-- **Local Storage Control**: You can purge all cached conversation transcripts, BYOK keys, and offline mission states at any moment via your browser settings or our [GDPR Management Page](/gdpr).
+- **Local Storage Control**: You can purge all cached conversation transcripts, BYOK keys, and mission states at any moment via your browser settings or our [GDPR Management Page](/gdpr).
 - **Server-Side Accounts**: Active account profiles and cloud sync records are retained as long as your account remains open. If you delete your account, all associated database records are permanently purged within 30 days.
 - **Inference Ephemerality**: Model provider APIs process queries transiently in volatile memory and do not retain customer chat payloads beyond immediate generation and short-term abuse inspection windows (typically 30 days max).
     `,

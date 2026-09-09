@@ -54,7 +54,7 @@ const STORAGE_DETAILS: StorageItem[] = [
   {
     key: "shadowtalk-memory (IndexedDB)",
     type: "IndexedDB",
-    purpose: "Client-side cryptographic ledger for offline session activity.",
+    purpose: "Client-side cryptographic ledger for secure session activity.",
     duration: "Persistent on-device",
   },
   {
@@ -179,7 +179,7 @@ export const CookiePolicyPage = () => {
               <div className="flex items-center justify-between gap-4 pt-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm text-foreground">Functional & Offline Memory</span>
+                    <span className="font-semibold text-sm text-foreground">Functional & Local Memory</span>
                     <Badge variant="secondary" className="text-[10px]">Optional</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">

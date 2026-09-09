@@ -16,11 +16,11 @@ import { COFOUNDER_CANONICAL } from "@/lib/cofounderIdentity";
  
 /** Google/Bing search snippet — keep ≤160 characters (conversion-focused) */
 export const SITE_SEARCH_DESCRIPTION =
-  'Stop juggling AI tabs. ShadowTalk finishes the job—agentic chat, missions, 30+ tools, voice & code, desktop app. Free start, no card. Your old stack will feel slow.';
+  'The AI that actually gets things done. ShadowTalk is your sovereign agentic workspace for execution, code, research & voice—free, no card.';
 
 /** Link previews (X, LinkedIn, Discord) — curiosity-led */
 export const SITE_SOCIAL_DESCRIPTION =
-  'Why are builders switching to ShadowTalk? One workspace for agents, code, research & voice—free, no card. Open it once and tab-hopping feels ancient.';
+  'The AI that actually gets things done. One workspace for agents, code, research & voice. Open it once and tab-hopping feels ancient.';
 
 export interface PageMeta {
   title: string;
@@ -306,10 +306,10 @@ export const CHATBOT_FAQ = [
   {
     question: "How is ShadowTalk different from ChatGPT, Claude, or Gemini?",
     answer:
-      "ShadowTalk combines agentic chat with 30+ built-in tools (Mission Control, Deep Research, Code IDE, Video Studio, Vault) in a single workspace. It runs offline via on-device models, requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
+      "ShadowTalk combines agentic chat with 30+ built-in tools (Mission Control, Deep Research, Code IDE, Video Studio, Vault) in a single workspace. requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
   },
   {
-    question: "Can ShadowTalk AI work offline?",
+    question: "Is ShadowTalk private?",
     answer:
       "Yes. ShadowTalk auto-downloads a compact on-device model (SmolLM/Gemma via WebLLM) in the background. Once installed, standard chat routes locally and never touches the cloud, keeping conversations on your device.",
   },
@@ -371,7 +371,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "what-is-shadowtalk",
     question: "What is ShadowTalk AI?",
     answer:
-      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, autonomous missions, deep research, a code IDE, video studio, and 30+ tools in one browser-first product. A compact on-device model auto-installs so normal chat runs offline on the user's device.",
+      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, autonomous missions, deep research, a code IDE, video studio, and 30+ tools in one browser-first product. ",
   },
   {
     id: "privacy",
@@ -401,7 +401,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "data-retention",
     question: "Does ShadowTalk store chat data?",
     answer:
-      "No. ShadowTalk does not store chat history on its servers. All conversations are persisted locally in the user's browser via IndexedDB. When the offline model is ready, chat inference runs on-device and never leaves the user's machine. Cloud calls to the AI provider are stateless and never used for training.",
+      "No. ShadowTalk does not store chat history on its servers. All conversations are persisted locally in the user's browser via IndexedDB.  Cloud calls to the AI provider are stateless and never used for training.",
   },
 ] as const;
 
@@ -507,7 +507,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'no login AI chatbot',
       'anonymous AI chat',
       'ChatGPT alternative no signup',
-      'offline AI chat',
+      
       'local AI chatbot',
       'privacy AI',
       'ShadowTalk AI',
@@ -717,9 +717,9 @@ export const PAGE_SEO: Record<string, PageMeta> = {
     canonical: 'https://www.shadowtalk-ai.com/templates',
   },
   downloads: {
-    title: 'Downloads — Desktop App & Offline AI',
-    description: 'Download ShadowTalk for Windows, PWA, and optional on-device offline AI models.',
-    keywords: ['ShadowTalk download', 'desktop app', 'offline AI', 'PWA'],
+    title: 'Downloads — Desktop App & Private AI',
+    description: 'Download ShadowTalk for Windows, PWA, ',
+    keywords: ['ShadowTalk download', 'desktop app', 'private AI', 'PWA'],
     canonical: 'https://www.shadowtalk-ai.com/downloads',
   },
   execute: {

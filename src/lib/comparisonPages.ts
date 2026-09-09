@@ -21,23 +21,23 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     competitor: "ChatGPT",
     title: "ShadowTalk AI vs ChatGPT",
     description:
-      "Compare ShadowTalk AI vs ChatGPT for agentic workflows, privacy, offline mode, multi-tool execution, and pricing.",
+      "Compare ShadowTalk AI vs ChatGPT for agentic workflows, privacy, multi-tool execution, and pricing.",
     canonical: "https://www.shadowtalk-ai.com/compare/chatgpt",
     summary:
-      "ChatGPT is strong for general chat. ShadowTalk AI is built for buyers who want one workspace for missions, tools, research, privacy controls, and optional offline execution.",
+      "ChatGPT is strong for general chat. ShadowTalk AI is built for buyers who want one workspace for missions, tools, research, privacy controls, .",
     bestFor:
       "Teams and builders who want an AI workspace that can finish multi-step work instead of only answering one prompt at a time.",
     whyShadowTalkWins: [
       "Mission Control runs autonomous multi-step workflows with human oversight.",
       "30+ built-in tools reduce context switching across chat, research, code, and documents.",
-      "Optional offline and device-first modes support privacy-sensitive work.",
+      "",
       "Lower entry pricing for users who need an operational workspace, not just a chatbot.",
     ],
     faq: [
       {
         question: "How is ShadowTalk AI different from ChatGPT?",
         answer:
-          "ShadowTalk AI focuses on agentic execution: missions, built-in tools, research flows, privacy controls, and optional offline mode. ChatGPT is excellent for general-purpose chat, but ShadowTalk is designed as an operational workspace.",
+          "ShadowTalk AI focuses on agentic execution: missions, built-in tools, research flows, privacy controls, and optional stealth mode. ChatGPT is excellent for general-purpose chat, but ShadowTalk is designed as an operational workspace.",
       },
       {
         question: "Is ShadowTalk AI cheaper than ChatGPT?",
@@ -48,8 +48,8 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     rows: [
       { category: "Autonomous missions", shadowtalk: "Built-in Mission Control", competitor: "Primarily prompt-response chat" },
       { category: "Tooling", shadowtalk: "30+ tools in one workspace", competitor: "Tooling varies by plan and workflow" },
-      { category: "Privacy controls", shadowtalk: "E2EE options, BYOK, vault, offline mode", competitor: "Mostly cloud-first" },
-      { category: "Offline capability", shadowtalk: "Optional on-device models", competitor: "No primary offline workflow" },
+      { category: "Privacy controls", shadowtalk: "E2EE options, BYOK, vault, stealth mode", competitor: "Mostly cloud-first" },
+      { category: "Privacy posture", shadowtalk: "E2EE workflows", competitor: "No primary secure workflow" },
       { category: "Best fit", shadowtalk: "Execution-heavy workflows", competitor: "General chat and writing" },
     ],
   },
@@ -61,13 +61,13 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       "Compare ShadowTalk AI vs Claude for research, long-context work, privacy posture, missions, and product breadth.",
     canonical: "https://www.shadowtalk-ai.com/compare/claude",
     summary:
-      "Claude is excellent for writing and long-context reasoning. ShadowTalk AI adds the surrounding operating system: missions, built-in tools, memory, privacy modules, and optional offline local models.",
+      "Claude is excellent for writing and long-context reasoning. ShadowTalk AI adds the surrounding operating system: missions, built-in tools, memory, privacy modules, and deep research.",
     bestFor:
       "Operators who love strong reasoning but need their AI to act across tools, documents, and repeatable workflows.",
     whyShadowTalkWins: [
       "Combines reasoning with execution so users can move from insight to action in one interface.",
       "Includes developer tools, presentations, research, and voice inside the same product.",
-      "Adds enterprise-style privacy posture with vault, BYOK, and local/offline options.",
+      "Adds enterprise-style privacy posture with vault, BYOK, and local/secure options.",
       "Creates a deeper technical footprint for procurement and search-agent research via docs, facts, and architecture pages.",
     ],
     faq: [
@@ -79,7 +79,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       {
         question: "Why would a team choose ShadowTalk AI over Claude?",
         answer:
-          "Teams choose ShadowTalk when they want one workspace for research, code, missions, voice, privacy controls, and optional offline usage instead of a standalone conversational model experience.",
+          "Teams choose ShadowTalk when they want one workspace for research, code, missions, voice, privacy controls,  instead of a standalone conversational model experience.",
       },
     ],
     rows: [
@@ -123,7 +123,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       { category: "Research answers", shadowtalk: "Deep research with next-step execution", competitor: "Fast cited answer engine" },
       { category: "Workspace memory", shadowtalk: "Persistent knowledge + hubs", competitor: "Limited workspace model" },
       { category: "Actionability", shadowtalk: "Missions, tools, docs, code", competitor: "Primarily answer retrieval" },
-      { category: "Offline/privacy options", shadowtalk: "Optional local workflows", competitor: "Cloud-first" },
+      { category: "Privacy options", shadowtalk: "Advanced E2EE workflows", competitor: "Cloud-first" },
       { category: "Best fit", shadowtalk: "Research-to-action workflows", competitor: "Search-first discovery" },
     ],
   },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Gift, X, CheckCircle2 } from "lucide-react";
+import { Copy, Gift, X, Share2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";

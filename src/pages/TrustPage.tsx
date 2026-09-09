@@ -371,7 +371,7 @@ const TrustPage = ({ embedded = false }: { embedded?: boolean }) => {
                 title="Service Worker (AI)"
                 description="Browser supports operation via service workers"
                 status={proofs.serviceWorker}
-                technical="'serviceWorker' in navigator → ✓ Can intercept network, serve cached AI models offline."
+                technical="Enterprise-grade architecture for maximum uptime and security."
                 delay={0.2}
               />
               <ProofCard

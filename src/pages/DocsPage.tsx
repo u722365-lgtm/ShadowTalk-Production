@@ -482,7 +482,7 @@ const DocsPage = () => {
 
             {q && !hasSearchResults && (
               <p className="text-center text-muted-foreground py-8 glass-subtle rounded-xl">
-                No results for &ldquo;{searchQuery}&rdquo;. Try &ldquo;chatbot&rdquo;, &ldquo;BYOK&rdquo;, or &ldquo;offline&rdquo;.
+                No results for &ldquo;{searchQuery}&rdquo;. Try &ldquo;chatbot&rdquo;, &ldquo;BYOK&rdquo;, or &ldquo;privacy&rdquo;.
               </p>
             )}
 
@@ -519,7 +519,7 @@ const DocsPage = () => {
                     <p><strong className="text-foreground">Frontend:</strong> React 18, Vite, TypeScript, Tailwind CSS, Framer Motion, shadcn/ui, Recharts</p>
                     <p><strong className="text-foreground">AI Intelligence:</strong> Multi-Model Turbo Engine (Groq Llama-3.3 70B, DeepSeek R1, OpenAI GPT-4o)</p>
                     <p><strong className="text-foreground">Edge & Offline:</strong> In-browser WebGPU runtime + Transformers.js zero-network execution</p>
-                    <p><strong className="text-foreground">Data Resilience:</strong> Dual-layer offline-first (IndexedDB + localized storage cache + cloud sync)</p>
+                    
                     <p><strong className="text-foreground">Telemetry & Audit:</strong> On-device tamper-evident cryptographic ledger + downloadable JSON reports</p>
                     <p><strong className="text-foreground">Platform:</strong> Desktop PWA, mobile-responsive layout, and developer REST APIs</p>
                   </CardContent>
@@ -731,7 +731,7 @@ const DocsPage = () => {
             {/* Features */}
             <TabsContent value="features" className="space-y-8">
               <DocSection title="Core Features">
-                <p className="text-muted-foreground mb-6">Agentic workspace capabilities — chat, code, missions, security, and offline.</p>
+                <p className="text-muted-foreground mb-6">Agentic workspace capabilities — chat, code, missions, security, and security.</p>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {features.map((feature, i) => (
                     <motion.div key={i} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}

@@ -69,7 +69,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     free: { price: 0, highlights: "All features with daily limits; ~50 messages/day; no card required" },
     pro: { price: 5, period: "month", highlights: "Unlimited messages, pro models, priority queue" },
     premium: { price: 15, period: "month", highlights: "Full agent stack, collaboration, higher limits" },
-    elite: { price: 20, period: "month", highlights: "Unlimited research/images, Stealth Vault, offline AI, agents" },
+    elite: { price: 20, period: "month", highlights: "Unlimited research/images, Stealth Vault, private AI, agents" },
     enterprise: { price: "custom", highlights: "SSO, SLA, API, dedicated support" },
     pakistan_checkout: `${AI_KNOWLEDGE_BASE_URL}/founder-access`,
   },
@@ -85,7 +85,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     "Presentation / slide generation",
     "Marketplace of specialist AI agents",
     "Knowledge graph and workspace memory",
-    "Optional offline / on-device AI (WebGPU, Gemma)",
+    
     "BYOK — bring your own API keys",
     "Desktop app (Windows) + PWA",
     "Referral program",

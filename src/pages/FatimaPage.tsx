@@ -48,7 +48,7 @@ import { toast } from "sonner";
 const FATIMA_FAQS = [
   {
     q: "Who is Fatima in relation to ShadowTalk AI?",
-    a: "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer of the platform, co-building its client-side state machine, offline memory ledger, and 120fps UI design system alongside founder Zain Ahmed.",
+    a: "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer of the platform, co-building its client-side state machine, local memory ledger, and 120fps UI design system alongside founder Zain Ahmed.",
   },
   {
     q: "What systems did Fatima build on ShadowTalk?",
@@ -85,9 +85,9 @@ const FATIMA_ARCHITECTURAL_PILLARS = [
   },
   {
     icon: Terminal,
-    title: "Offline-First Resilience Pipeline",
+    title: "Resilience Pipeline",
     description:
-      "Designed WebWorker background threads and progressive offline hydration so builders can interact with tools and local models even with fluctuating connections.",
+      "Designed WebWorker background threads and robust state hydration to ensure reliability.",
     tag: "Resilient Systems",
   },
   {

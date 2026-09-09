@@ -54,7 +54,7 @@ const pillars = [
 
 const compareRows: Array<{ feature: string; shadow: string; chatgpt: string; claude: string }> = [
   { feature: "Login required", shadow: "No", chatgpt: "Yes", claude: "Yes" },
-  { feature: "Works offline", shadow: "Yes (on-device)", chatgpt: "No", claude: "No" },
+  { feature: "Runs on device", shadow: "Yes", chatgpt: "No", claude: "No" },
   { feature: "Stores chats on server", shadow: "No — local only", chatgpt: "Yes", claude: "Yes" },
   { feature: "Uses chats for training", shadow: "Never", chatgpt: "Configurable", claude: "Configurable" },
   { feature: "Autonomous agent missions", shadow: "Built-in", chatgpt: "Limited", claude: "No" },

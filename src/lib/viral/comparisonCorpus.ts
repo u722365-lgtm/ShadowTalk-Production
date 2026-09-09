@@ -52,7 +52,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "End-to-end encrypted chat + Stealth Vault",
       "In-browser IDE, presentations, and desktop app",
       "Pro from $5/mo vs ChatGPT Plus pricing for more integrated tooling",
-      "BYOK + optional on-device offline models",
+      "BYOK + optional on-device stealth models",
     ],
     competitorWins: [
       "Larger default model brand recognition",
@@ -110,7 +110,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Gemini",
     title: "ShadowTalk vs Gemini — Sovereign Agentic AI Workspace",
     metaDescription:
-      "ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, offline models, and Mission Control — not locked to one ecosystem.",
+      "ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, stealth models, and Mission Control — not locked to one ecosystem.",
     h1: "ShadowTalk vs Gemini",
     verdict:
       "Gemini integrates deeply with Google. ShadowTalk is ecosystem-neutral with E2EE, local WebGPU models, and open BYOK — built to finish jobs across tools.",
@@ -157,7 +157,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Privacy-first comparison: ShadowTalk AI vs ChatGPT for encrypted chat, local models, data minimization, and sovereign workspace control.",
     h1: "ShadowTalk vs ChatGPT for Privacy",
     verdict:
-      "ChatGPT is convenient, but privacy is not its default. ShadowTalk is built around encryption, transparency, and optional offline models from the ground up.",
+      "ChatGPT is convenient, but privacy is not its default. ShadowTalk is built around encryption, transparency, and optional stealth models from the ground up.",
     shadowtalkWins: [
       "End-to-end encrypted chat with passphrase unlock",
       "Optional on-device local inference — data never leaves your machine",
@@ -209,7 +209,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Research + structured outputs for study notes",
       "Privacy-focused study environment",
       "Document generation and export tools",
-      "Local offline option for sensitive coursework",
+      "Local secure option for sensitive coursework",
     ],
     competitorWins: [
       "High familiarity among students and educators",
@@ -292,7 +292,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Microsoft Copilot",
     title: "ShadowTalk vs Copilot for Coding — IDE + Agentic Execution Built In",
     metaDescription:
-      "Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, offline mode, and BYOK outside Microsoft lock-in.",
+      "Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, and BYOK outside Microsoft lock-in.",
     h1: "ShadowTalk vs Copilot for Coding",
     verdict:
       "Copilot assists inside Microsoft toolchains. ShadowTalk gives an in-browser Monaco IDE, autonomous missions, local inference, and provider flexibility.",
@@ -346,7 +346,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Free tier with stated limits and no hidden gating",
       "End-to-end encrypted chat option",
       "30+ tools beyond basic chat",
-      "Local offline models for sensitive use",
+      "Local stealth models for sensitive use",
       "Clear upgrade path: Pro, Premium, Elite",
     ],
     competitorWins: [

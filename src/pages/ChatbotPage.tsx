@@ -278,7 +278,7 @@ function parseSseContentLines(
 const ChatbotPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, userPlan, signOut, checkSubscription, isOffline, isAnonymous } = useAuth();
+  const { user, userPlan, signOut, checkSubscription, isAnonymous } = useAuth();
   const guestUsage = useGuestUsage();
   const dailyLimits = useDailyLimits();
   const { toast } = useToast();
@@ -287,7 +287,7 @@ const ChatbotPage = () => {
   const { checkAccess, isElite, isProOrHigher } = useFeatureGating();
   const { requestPermission } = usePushNotifications();
   const { trackChatMessage, trackConversationCreated } = useUsageTracking();
-  const getOfflineSession = () => null;
+
   const toolOrchestrator = useToolOrchestrator();
   const { dispatchDetectionAsync, continueFromCritic, goToExecute } = useAgenticToolDispatch();
   const {
@@ -1927,22 +1927,7 @@ Structure and Content Guidelines:
         }
         setShowDocumentGenerator(true);
         return;
-      case "uncensored-arena":
-        setShowUncensoredArena(true);
-        return;
-      case "shadow-cowork":
-        setShowShadowCowork(true);
-        return;
-      case "offline-tools":
-      case "offline":
-        navigate("/settings");
-        return;
-      case "multi-model":
-        setShowMultiModel(true);
-        return;
-      case "creative":
-        setShowCreativeSynthesis(true);
-        return;
+
       case "vision":
       case "camera":
         setShowVisualReasoning(true);

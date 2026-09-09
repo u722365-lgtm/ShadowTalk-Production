@@ -164,7 +164,6 @@ Until recently, in-browser AI was limited to small text classifiers. With the st
 
 #### Implementation in ShadowTalk
 ShadowTalk integrates an on-device engine that can download compact quantized models:
-- **Tier-A Lightweight (~130MB)**: Near-instant load time for offline formatting and local text transformations.
 - **Gemma / Qwen Quantized**: Capable of zero-egress conversational reasoning on modern laptops with dedicated graphics or Apple Silicon.
 
 #### Key Engineering Takeaways

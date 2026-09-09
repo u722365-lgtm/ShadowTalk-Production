@@ -103,7 +103,7 @@ const STATIC_FAQS: FAQItem[] = [
     answer: "ShadowTalk AI was founded and architected by Zain Ahmed Fahad Patel (Zain Ahmed), a 17-year-old AI solutions engineer from Karachi, Pakistan, committed to shipping production-grade agentic tooling worldwide.",
   },
   {
-    id: "faq-offline-ai",
+    id: "faq-private-ai",
     category: "security",
     question: "Can ShadowTalk run on-device without internet?",
     answer: "Yes, on supported devices with WebGPU (Chrome 113+, Edge 113+), you can opt in to download compact quantized models (~130MB to larger Gemma models) to execute chat inference directly in your browser with zero network egress.",
