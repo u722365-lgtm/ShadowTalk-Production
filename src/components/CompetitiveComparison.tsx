@@ -44,21 +44,21 @@ const CompetitiveComparison = () => {
 
   const detailedComparisons = [
     {
-      competitor: "ChatGPT",
-      weaknesses: ["Agent features locked behind expensive tiers", "Limited tool orchestration in free tier", "Pro tier costs $200/mo"],
-      shadowAdvantages: ["Agentic Task Runner + Mission Control", "30+ tools from natural language", "Elite tier at a fraction of ChatGPT Pro"],
+      competitor: "Chat-Only AI",
+      weaknesses: ["Agent features locked behind expensive tiers", "Limited tool orchestration in free tier", "Expensive monthly subscriptions"],
+      shadowAdvantages: ["Agentic Task Runner + Mission Control", "30+ tools from natural language", "Affordable premium tiers"],
       priceDiff: "More agents, lower cost",
     },
     {
-      competitor: "Manus",
+      competitor: "Sandbox Agents",
       weaknesses: ["Sandbox-only execution model", "No multi-model flexibility", "Premium agent pricing"],
       shadowAdvantages: ["Human-in-the-loop safety controls", "Multi-model consensus + tool graph", "Frontier speed + deep agent stack"],
       priceDiff: "Agents + model freedom",
     },
     {
-      competitor: "Claude",
+      competitor: "Cloud LLMs",
       weaknesses: ["No visual mission dashboard", "Partial agent workflows only", "No native offline option"],
-      shadowAdvantages: ["Full agentic task runner", "Strategy Agent + Smart Scripts", "Optional on-device Gemma"],
+      shadowAdvantages: ["Full agentic task runner", "Strategy Agent + Smart Scripts", "Optional on-device execution"],
       priceDiff: "Deeper agent stack",
     },
   ];
@@ -97,10 +97,10 @@ const CompetitiveComparison = () => {
   ];
 
   const freeFeatures = [
-    { icon: Sparkles, label: "Agentic Task Runner", competitor: "ChatGPT: paid agents" },
-    { icon: MessageCircle, label: `${FREE_TIER_DAILY.messages.toLocaleString()} messages/day`, competitor: "ChatGPT: 20/day" },
-    { icon: Search, label: "5 deep research/day", competitor: "Perplexity: 3/day" },
-    { icon: Image, label: "4 images/day", competitor: "Claude: 0 free" },
+    { icon: Sparkles, label: "Agentic Task Runner", competitor: "Others: paid agents" },
+    { icon: MessageCircle, label: `${FREE_TIER_DAILY.messages.toLocaleString()} messages/day`, competitor: "Others: strict limits" },
+    { icon: Search, label: "5 deep research/day", competitor: "Others: severe quotas" },
+    { icon: Image, label: "4 images/day", competitor: "Others: no free images" },
   ];
 
   return (
