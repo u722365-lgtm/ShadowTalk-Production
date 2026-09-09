@@ -65,24 +65,31 @@ const FOUNDER_FAQS = [
 const BUILDERS_LOG = [
   {
     week: "Last Week",
-    title: "Rewriting the Agentic Engine",
+    title: "Mission System v2",
     description: "The Mission Control agents were too slow when chaining tasks. I ripped out the old polling system and replaced it with a much faster optimistic UI. It finally feels snappy.",
-    status: "Shipped",
+    status: "Fixed",
     icon: Zap
   },
   {
     week: "2 Weeks Ago",
-    title: "Local WebGPU Breakdowns",
-    description: "Trying to get an 8B parameter model to run in a mobile browser without melting the phone. Ran into memory leak issues. Still working on a fix for iOS Safari.",
-    status: "Debugging",
+    title: "Memory Architecture",
+    description: "The ledger wasn't keeping up with long sessions. Stripped out the unnecessary abstractions and completely rewrote the core state engine to be 10x faster.",
+    status: "Rebuilt",
     icon: Wrench
   },
   {
-    week: "Last Month",
-    title: "Hitting the First 100",
-    description: "We finally got 100 real, active users who keep coming back. Watching people actually use something you built in your bedroom is the craziest feeling.",
-    status: "Milestone",
+    week: "3 Weeks Ago",
+    title: "Agent Loop",
+    description: "Optimized the multi-agent dispatcher so different agents can hand off context seamlessly without crashing the browser's memory limits.",
+    status: "Optimized",
     icon: Activity
+  },
+  {
+    week: "Last Month",
+    title: "Desktop Runtime",
+    description: "Packaged the entire workspace into a standalone desktop application to escape the browser sandbox and give agents access to the filesystem.",
+    status: "Shipping",
+    icon: Rocket
   }
 ];
 
@@ -191,7 +198,7 @@ const FounderPage = () => {
                 id="founder-headline"
                 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6 text-foreground"
               >
-                Hi, I'm Zain.
+                I'm Zain. I'm 17. And I'm building the AI I wished existed.
               </h1>
 
               <div
@@ -199,10 +206,7 @@ const FounderPage = () => {
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8 space-y-4"
               >
                 <p>
-                  I'm 17, I live in Karachi, and I'm building an entire AI OS by myself.
-                </p>
-                <p>
-                  I got frustrated that every time I used an AI, it hoarded my thoughts on some massive cloud server. Big tech platforms treat your data as their product. I wanted an AI that ran locally, securely, and autonomously.
+                  I started ShadowTalk because I didn't want another AI that simply answered questions. I wanted an AI that could actually work alongside me — think, create, code, research, and get things done.
                 </p>
                 <p>
                   Since nobody else was building it exactly how I wanted it, I opened my laptop and started coding. This is <strong className="text-foreground">ShadowTalk AI</strong>.
