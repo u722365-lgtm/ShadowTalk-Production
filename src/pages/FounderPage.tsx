@@ -3,8 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion, useSpring } from "framer-motion";
 import {
   MapPin,
-  Sparkles,
-  Shield,
   ExternalLink,
   Mail,
   ArrowRight,
@@ -13,10 +11,6 @@ import {
   CheckCircle2,
   Award,
   BookOpen,
-  Cpu,
-  Layers,
-  Globe,
-  Code2,
   Copy,
   Check,
   MessageSquare,
@@ -24,15 +18,15 @@ import {
   Linkedin,
   Instagram,
   Star,
-  BadgeCheck,
-  ChevronDown,
   Terminal,
-  Brain,
   Calendar,
+  ChevronDown,
+  Wrench,
+  Zap,
+  Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -48,65 +42,55 @@ import { FOUNDER_STORY_CHAPTERS } from "@/lib/aboutFounderStory";
 import zainImage from "@/assets/zain-ahmed.png";
 import { toast } from "sonner";
 
-// Additional FAQ tailored specifically for the Founder Page
+// Adjusted FAQ tailored for a personal tone
 const FOUNDER_FAQS = [
   {
-    q: "Who is the founder of ShadowTalk AI?",
-    a: "ShadowTalk AI was founded and solely architected by Zain Ahmed Fahad Patel (also known publicly as Zain Ahmed), an AI solutions engineer from Karachi, Pakistan. He founded the platform in February 2024 at age 17.",
+    q: "Are you really building this alone?",
+    a: "Yes. I'm 17 and I write all the code for ShadowTalk AI myself from my room in Karachi. My co-founder Fatima helps with the architecture of the client-side ledger and UI state, but we don't have a massive engineering team. Just a lot of late nights.",
   },
   {
-    q: "What is Zain's background and education?",
-    a: "Zain Ahmed is a first-year computing student in Karachi, mentored under the Governor Sindh IT Initiative (GIAIC) by renowned tech educator Sir Zia Khan in Generative and Agentic AI. He builds production-grade software directly from scratch.",
+    q: "How did you learn to build an AI OS?",
+    a: "I'm a first-year computing student. I was mentored under the Governor Sindh IT Initiative (GIAIC) by Sir Zia Khan in Generative and Agentic AI, but most of what I do is just reading documentation, breaking things, and fixing them until they work.",
   },
   {
-    q: "Why was ShadowTalk AI created?",
-    a: "Frustrated by Big Tech AI systems that hoard user thoughts and require constant subscription lock-in to foreign servers, Zain set out to build sovereign AI — where the browser itself becomes a high-performance, private computing node with local memory, on-device models, and autonomous multi-step execution.",
+    q: "Why focus so much on privacy?",
+    a: "I got tired of big tech companies hoarding my thoughts. When you use a cloud AI, you are their product. I wanted an AI that ran locally in my browser, where my data never actually left my machine. Since nobody else was building it exactly how I wanted it, I built it myself.",
   },
   {
-    q: "How does Zain's work differ from others with the same name?",
-    a: "Zain Ahmed Fahad Patel is the AI solutions engineer and tech founder behind ShadowTalk AI. He is distinct from Zain Ahmad (the streetwear designer and co-founder of Rastah) and Zain Ahmed (the theatre artistic director at NAPA Karachi).",
-  },
-  {
-    q: "How can I contact or collaborate with Zain Ahmed?",
-    a: "You can reach Zain directly on LinkedIn (Zain Ahmed Fahad Patel), Instagram (@shadowtalk_ai & @onlyz_ain1), or via email at shadowtalk@shadowtalk-ai.com for partnerships, enterprise deployments, or press interviews.",
+    q: "What's the best way to reach you?",
+    a: "You can DM me on LinkedIn or Instagram. I read every message. Whether you're an early user, another builder, or just want to say hi, my DMs are open.",
   },
 ];
 
-const ARCHITECTURAL_PILLARS = [
+const BUILDERS_LOG = [
   {
-    icon: Cpu,
-    title: "Sovereign Local-First Engine",
-    description:
-      "Engineered on-device WebGPU model pipelines (~130MB footprint) that run client-side without sending prompts to centralized third-party servers.",
-    tag: "Offline Stack",
+    week: "Last Week",
+    title: "Rewriting the Agentic Engine",
+    description: "The Mission Control agents were too slow when chaining tasks. I ripped out the old polling system and replaced it with a much faster optimistic UI. It finally feels snappy.",
+    status: "Shipped",
+    icon: Zap
   },
   {
-    icon: Terminal,
-    title: "In-Browser WebContainer Shell",
-    description:
-      "Integrated full Node.js terminal environments directly inside the browser so developers can execute code, test packages, and run scripts in real-time.",
-    tag: "Computer Mode",
+    week: "2 Weeks Ago",
+    title: "Local WebGPU Breakdowns",
+    description: "Trying to get an 8B parameter model to run in a mobile browser without melting the phone. Ran into memory leak issues. Still working on a fix for iOS Safari.",
+    status: "Debugging",
+    icon: Wrench
   },
   {
-    icon: Layers,
-    title: "S.E.E. Agentic Runtime",
-    description:
-      "Developed the Shadow Execution Engine — multi-agent autonomous Mission Control capable of orchestrating 30+ tools to complete end-to-end objectives.",
-    tag: "Autonomous Agents",
-  },
-  {
-    icon: Brain,
-    title: "Zero-Cloud Memory Ledger",
-    description:
-      "Designed a client-side IndexedDB cryptographic journal that remembers developer workflows and sessions without indexing them on cloud databanks.",
-    tag: "Shadow Memory",
-  },
+    week: "Last Month",
+    title: "Hitting the First 100",
+    description: "We finally got 100 real, active users who keep coming back. Watching people actually use something you built in your bedroom is the craziest feeling.",
+    status: "Milestone",
+    icon: Activity
+  }
 ];
 
 const FounderPage = () => {
   const navigate = useNavigate();
   const [copiedCitation, setCopiedCitation] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
+  const [showDisambiguation, setShowDisambiguation] = useState(false);
 
   // 3D Card tilt effect on hover
   const portraitRef = useRef<HTMLDivElement>(null);
@@ -157,13 +141,12 @@ const FounderPage = () => {
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-xl backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Chatbot
+          Back to App
         </Button>
       </div>
 
       {/* Hero Section */}
       <section className="relative pt-28 pb-20 md:pt-36 md:pb-28 px-4 overflow-hidden border-b border-border/40">
-        {/* Background ambient lighting */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[min(100%,800px)] h-[400px] rounded-full bg-primary/10 blur-[130px] pointer-events-none" />
         <div className="absolute top-1/3 right-10 w-80 h-80 rounded-full bg-accent/8 blur-[100px] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))] pointer-events-none" />
@@ -184,8 +167,8 @@ const FounderPage = () => {
                   variant="outline"
                   className="gap-1.5 py-1 px-3 bg-primary/10 border-primary/30 text-primary text-xs font-semibold rounded-full shadow-sm"
                 >
-                  <BadgeCheck className="h-3.5 w-3.5 text-primary" />
-                  Official Founder &amp; Lead Architect
+                  <Terminal className="h-3.5 w-3.5 text-primary" />
+                  Building in Public
                 </Badge>
                 <Badge
                   variant="secondary"
@@ -199,38 +182,30 @@ const FounderPage = () => {
                   className="gap-1.5 py-1 px-3 text-muted-foreground text-xs rounded-full border border-border/50"
                 >
                   <Calendar className="h-3.5 w-3.5 text-primary" />
-                  Age 17 · Founded Feb 2024
+                  Age 17
                 </Badge>
               </div>
 
               {/* Main Headline */}
               <h1
                 id="founder-headline"
-                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-4 text-foreground"
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6 text-foreground"
               >
-                {FOUNDER_FULL_NAME}
+                Hi, I'm Zain.
               </h1>
-
-              <p className="text-xl sm:text-2xl font-semibold text-muted-foreground/90 mb-6 flex items-center gap-2">
-                <span>also known as <strong className="text-foreground">{FOUNDER_CANONICAL.shortName}</strong></span>
-                <span className="text-primary/70">·</span>
-                <span className="text-primary font-medium">{FOUNDER_CANONICAL.jobTitle}</span>
-              </p>
 
               <div
                 id="founder-bio"
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8 space-y-4"
               >
                 <p>
-                  At seventeen in Karachi, Zain Ahmed asked the fundamental question Big Tech refuses to answer:{" "}
-                  <strong className="text-foreground font-semibold">what happens to your thoughts when you pour them into AI?</strong>
+                  I'm 17, I live in Karachi, and I'm building an entire AI OS by myself.
                 </p>
                 <p>
-                  Trained in Generative and Agentic AI under the mentorship of{" "}
-                  <span className="text-foreground font-medium">Sir Zia Khan</span> through the{" "}
-                  <span className="text-foreground font-medium">Governor Sindh IT Initiative (GIAIC)</span>, Zain single-handedly
-                  architected <strong className="text-foreground">ShadowTalk AI</strong> from scratch — uniting on-device
-                  inference, WebContainer terminal execution, and autonomous multi-agent pipelines into one sovereign workspace.
+                  I got frustrated that every time I used an AI, it hoarded my thoughts on some massive cloud server. Big tech platforms treat your data as their product. I wanted an AI that ran locally, securely, and autonomously.
+                </p>
+                <p>
+                  Since nobody else was building it exactly how I wanted it, I opened my laptop and started coding. This is <strong className="text-foreground">ShadowTalk AI</strong>.
                 </p>
               </div>
 
@@ -242,7 +217,7 @@ const FounderPage = () => {
                   onClick={() => navigate("/chatbot")}
                 >
                   <MessageSquare className="h-4 w-4" />
-                  Try ShadowTalk AI
+                  Try What I've Built
                   <ArrowRight className="h-4 w-4" />
                 </Button>
 
@@ -259,7 +234,6 @@ const FounderPage = () => {
                   >
                     <Linkedin className="h-4 w-4 text-[#0077b5]" />
                     LinkedIn
-                    <ExternalLink className="h-3 w-3 opacity-60" />
                   </a>
                 </Button>
 
@@ -276,48 +250,7 @@ const FounderPage = () => {
                   >
                     <Instagram className="h-4 w-4 text-[#e1306c]" />
                     Instagram
-                    <ExternalLink className="h-3 w-3 opacity-60" />
                   </a>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="gap-2 text-muted-foreground hover:text-foreground font-medium"
-                  asChild
-                >
-                  <a href={`mailto:${FOUNDER_CANONICAL.email}`}>
-                    <Mail className="h-4 w-4 text-primary" />
-                    Direct Email
-                  </a>
-                </Button>
-              </div>
-
-              {/* Quick Citation Bar */}
-              <div className="p-3.5 rounded-xl glass-subtle border border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Quote className="h-4 w-4 text-primary/80 shrink-0" />
-                  <span>
-                    <strong>Canonical Citation:</strong> {FOUNDER_CITATION}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={copyCitation}
-                  className="h-7 text-xs gap-1.5 hover:bg-primary/10 hover:text-primary shrink-0"
-                >
-                  {copiedCitation ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-success" />
-                      <span>Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" />
-                      <span>Copy Citation</span>
-                    </>
-                  )}
                 </Button>
               </div>
             </motion.div>
@@ -336,7 +269,6 @@ const FounderPage = () => {
                 style={{ perspective: 1000 }}
                 className="relative w-full max-w-[390px] aspect-[4/5] rounded-3xl p-1 group"
               >
-                {/* Glow ring */}
                 <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-r from-primary/30 via-accent/30 to-primary/30 blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <motion.div
@@ -349,33 +281,24 @@ const FounderPage = () => {
                     className="w-full h-full object-cover object-top scale-[1.02] group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
 
-                  {/* Gradient overlays */}
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent pointer-events-none" />
 
-                  {/* Top Floating Badge */}
                   <div className="absolute top-4 left-4 right-4 flex justify-between items-center pointer-events-none">
                     <span className="glass-strong border border-white/10 rounded-full px-3 py-1 text-xs font-medium text-white flex items-center gap-1.5 shadow-lg">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      Actively Shipping · Karachi
+                      Actively Shipping
                     </span>
                     <span className="glass-strong border border-white/10 rounded-full px-2.5 py-1 text-[11px] font-bold text-amber-300 flex items-center gap-1">
                       <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
-                      100% Solo Built
+                      Solo Dev
                     </span>
                   </div>
 
-                  {/* Bottom Status Card */}
                   <motion.div
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute bottom-5 left-5 right-5 glass-strong border border-border/50 rounded-xl p-4 shadow-xl backdrop-blur-xl"
                   >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                        Lead Architect
-                      </span>
-                      <span className="text-[11px] font-medium text-primary">Karachi, PK</span>
-                    </div>
                     <p className="text-sm font-bold text-foreground">
                       &ldquo;The shadow founder doesn&apos;t wait for permission.&rdquo;
                     </p>
@@ -391,30 +314,51 @@ const FounderPage = () => {
         </div>
       </section>
 
-      {/* Key Stats Ribbon */}
-      <section className="py-12 px-4 border-b border-border/40 bg-muted/20">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="p-5 rounded-2xl glass-subtle border border-border/40 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-primary mb-1 tracking-tight">Age 17</div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">Solo Founder &amp; Architect</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Built entire product independently</p>
-            </div>
-            <div className="p-5 rounded-2xl glass-subtle border border-border/40 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-primary mb-1 tracking-tight">100%</div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">Sovereign Architecture</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">On-device WebGPU &amp; zero-cloud ledger</p>
-            </div>
-            <div className="p-5 rounded-2xl glass-subtle border border-border/40 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-primary mb-1 tracking-tight">GIAIC</div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">Governor Sindh IT Initiative</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Mentored by Sir Zia Khan</p>
-            </div>
-            <div className="p-5 rounded-2xl glass-subtle border border-border/40 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-primary mb-1 tracking-tight">#1 Rank</div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">Global Google Authority</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Over 40% organic US &amp; EU adoption</p>
-            </div>
+      {/* The Builder's Log */}
+      <section className="py-20 px-4 border-b border-border/40 bg-muted/10">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-14">
+            <Badge variant="outline" className="mb-3 px-3.5 py-1 border-primary/30 text-primary text-xs font-semibold rounded-full">
+              <Terminal className="h-3.5 w-3.5 mr-1.5" />
+              Builder's Log
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
+              What I broke (and fixed) recently
+            </h2>
+            <p className="text-muted-foreground max-w-xl text-sm sm:text-base">
+              A transparent look at the reality of building a complex Agentic system solo. It's not always pretty, but it's shipping.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            {BUILDERS_LOG.map((log, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="glass-subtle border border-border/50 hover:border-primary/40 rounded-2xl p-6 transition-all group flex flex-col md:flex-row gap-6"
+              >
+                <div className="flex flex-col items-start min-w-[120px]">
+                  <span className="text-sm font-bold text-foreground mb-1">{log.week}</span>
+                  <Badge variant="secondary" className="text-[10px] font-mono text-muted-foreground">
+                    {log.status}
+                  </Badge>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <log.icon className="h-4 w-4 text-primary" />
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                      {log.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {log.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -425,13 +369,13 @@ const FounderPage = () => {
           <div className="text-center mb-16 md:mb-20">
             <Badge variant="outline" className="mb-4 px-4 py-1.5 border-primary/30 text-primary text-xs font-semibold rounded-full">
               <BookOpen className="h-3.5 w-3.5 mr-1.5" />
-              The Chronicles
+              The Story
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-              The Founder&apos;s Odyssey
+              How it started
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              How a teenager in Karachi wrote thousands of lines of TypeScript and WebAssembly alone at night while the tech world said to wait.
+              Writing thousands of lines of TypeScript and WebAssembly alone at night while the tech world said to wait.
             </p>
           </div>
 
@@ -446,7 +390,6 @@ const FounderPage = () => {
                 className="relative"
               >
                 <div className="flex gap-5 sm:gap-7">
-                  {/* Step indicator column */}
                   <div className="flex flex-col items-center shrink-0">
                     <span className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-primary/10 text-sm sm:text-base font-bold text-primary border border-primary/30 shadow-md">
                       0{index + 1}
@@ -456,7 +399,6 @@ const FounderPage = () => {
                     )}
                   </div>
 
-                  {/* Chapter content card */}
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="glass-subtle border border-border/50 rounded-2xl p-6 sm:p-8 hover:border-primary/30 transition-colors">
                       <h3 className="text-xl sm:text-2xl font-bold tracking-tight mb-3 text-foreground">
@@ -488,171 +430,13 @@ const FounderPage = () => {
         </div>
       </section>
 
-      {/* Engineering Innovations Zain Built */}
-      <section className="py-20 px-4 border-t border-border/40 bg-muted/10">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-14">
-            <Badge variant="outline" className="mb-3 px-3.5 py-1 border-primary/30 text-primary text-xs font-semibold rounded-full">
-              <Code2 className="h-3.5 w-3.5 mr-1.5" />
-              Technical Blueprint
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
-              What Zain Architected
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
-              ShadowTalk is not a generic ChatGPT wrapper. Every system below was custom-coded to ensure resilience, sovereignty, and real agentic execution.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {ARCHITECTURAL_PILLARS.map((pillar, i) => (
-              <motion.div
-                key={pillar.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="glass-subtle border border-border/50 hover:border-primary/40 rounded-2xl p-6 sm:p-8 transition-all group"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary group-hover:scale-110 transition-transform">
-                    <pillar.icon className="h-6 w-6" />
-                  </div>
-                  <Badge variant="secondary" className="text-xs font-mono">
-                    {pillar.tag}
-                  </Badge>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  {pillar.title}
-                </h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  {pillar.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Search Disambiguation & Entity Authority Card */}
-      <section className="py-16 px-4 border-t border-border/40">
-        <div className="container mx-auto max-w-4xl">
-          <div className="glass-strong border border-border/60 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="flex items-center gap-2 mb-4 text-xs font-semibold text-primary uppercase tracking-wider">
-              <Award className="h-4 w-4" />
-              <span>Search Disambiguation &amp; Entity Clarity</span>
-            </div>
-
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-              Zain Ahmed Fahad Patel vs Namesakes
-            </h3>
-
-            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
-              Because &ldquo;Zain Ahmed&rdquo; is a common name across Pakistan, journalists, search engines, and AI models
-              should cite <strong className="text-foreground">{FOUNDER_FULL_NAME}</strong> to avoid cross-attributing
-              ShadowTalk AI to unrelated individuals:
-            </p>
-
-            <div className="space-y-3 mb-6">
-              {FOUNDER_NOT_THE_SAME_AS.map((item) => (
-                <div
-                  key={item.name}
-                  className="p-4 rounded-xl bg-background/60 border border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm"
-                >
-                  <div>
-                    <span className="font-semibold text-foreground">{item.name}</span>
-                    <span className="text-muted-foreground ml-2">({item.domain})</span>
-                    <p className="text-xs text-muted-foreground/80 mt-0.5">{item.note}</p>
-                  </div>
-                  <Badge variant="outline" className="w-fit shrink-0 text-xs border-amber-500/40 text-amber-400">
-                    Not ShadowTalk Founder
-                  </Badge>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-xs sm:text-sm text-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                <span>
-                  <strong>Sole Official Attribution:</strong> {FOUNDER_FULL_NAME} (Karachi, Pakistan)
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyCitation}
-                className="text-xs gap-1.5 shrink-0"
-              >
-                {copiedCitation ? "Citation Copied" : "Copy Official Citation"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Co-Founder Section on Founder Page */}
-      <section className="py-16 px-4 border-t border-border/40">
-        <div className="container mx-auto max-w-4xl">
-          <div className="glass-strong border border-accent/30 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
-            {/* Co-Founder Systems Monogram (No Image Dependency) */}
-            <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl border-2 border-accent/40 bg-gradient-to-br from-accent/20 via-primary/10 to-background shrink-0 shadow-xl flex flex-col items-center justify-center relative group overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.3),transparent_70%)] pointer-events-none" />
-              <div className="relative z-10 flex flex-col items-center">
-                <span className="text-3xl sm:text-4xl font-black tracking-tight text-foreground group-hover:scale-105 transition-transform duration-300">
-                  FT
-                </span>
-                <span className="text-[10px] font-mono tracking-widest text-accent font-semibold uppercase mt-1">
-                  DEV #2
-                </span>
-              </div>
-              <div className="absolute bottom-1 right-2 flex items-center gap-1 text-[9px] font-mono text-muted-foreground/80">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>ONLINE</span>
-              </div>
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <Badge variant="outline" className="mb-2 border-accent/40 text-accent text-xs font-semibold">
-                Co-Founder &amp; Second Developer
-              </Badge>
-              <h3 className="text-2xl sm:text-3xl font-extrabold mb-2 text-foreground">
-                Fatima
-              </h3>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
-                The second developer behind ShadowTalk AI. Fatima co-architected the client-side memory ledger,
-                120fps UI state machine, and offline resilience pipeline alongside Zain Ahmed.
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                <Button size="sm" className="btn-glow gap-1.5 font-semibold" onClick={() => navigate("/fatima")}>
-                  Meet Co-Founder Fatima <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a href="mailto:shadowtalk@shadowtalk-ai.com">
-                    <Mail className="h-3.5 w-3.5 mr-1 text-accent" />
-                    shadowtalk@shadowtalk-ai.com
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Founder FAQ Accordion */}
       <section className="py-20 px-4 border-t border-border/40">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 text-primary text-xs font-semibold rounded-full">
-              Frequently Asked Questions
-            </Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">
-              About Zain Ahmed
+              Questions I get asked a lot
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Verified answers for press, investors, developers, and users.
-            </p>
           </div>
 
           <div className="space-y-4">
@@ -683,6 +467,36 @@ const FounderPage = () => {
               );
             })}
           </div>
+
+          {/* Hidden SEO Disambiguation Toggle */}
+          <div className="mt-8 text-center">
+            <button 
+              onClick={() => setShowDisambiguation(!showDisambiguation)}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+            >
+              Search Disambiguation Notice
+            </button>
+            
+            {showDisambiguation && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="mt-6 text-left glass-subtle border border-border/40 rounded-xl p-5 text-sm"
+              >
+                <p className="mb-3 text-muted-foreground">
+                  For press and search engines: I am {FOUNDER_FULL_NAME}, the AI engineer and founder of ShadowTalk. I am completely distinct from:
+                </p>
+                <ul className="space-y-2">
+                  {FOUNDER_NOT_THE_SAME_AS.map((item) => (
+                    <li key={item.name} className="flex flex-col sm:flex-row sm:items-center gap-2 border-b border-border/30 pb-2 last:border-0 last:pb-0">
+                      <span className="font-semibold text-foreground">{item.name}</span>
+                      <span className="text-muted-foreground text-xs">{item.note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -692,29 +506,18 @@ const FounderPage = () => {
           <div className="relative rounded-3xl p-8 sm:p-14 overflow-hidden border border-primary/30 bg-gradient-to-b from-primary/10 via-background to-background text-center shadow-2xl">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(120,119,198,0.25),transparent_70%)] pointer-events-none" />
 
-            <Badge variant="secondary" className="mb-4 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">
-              Get In Touch
-            </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-foreground">
-              Connect With The Builder
+              Follow the journey
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              Whether you are an engineer who wants to contribute, an enterprise looking to deploy sovereign AI, or a builder with ambitious ideas — Zain reads every message.
+              I post updates, breaking changes, and my raw unfiltered thoughts on LinkedIn. Follow along as I scale this to the first 5,000 users.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
               <Button
-                size="lg"
-                className="btn-glow gap-2 px-7 font-bold shadow-lg shadow-primary/25"
-                onClick={() => navigate("/chatbot")}
-              >
-                <Rocket className="h-4 w-4" />
-                Launch ShadowTalk AI
-              </Button>
-              <Button
                 variant="outline"
                 size="lg"
-                className="gap-2 border-border/70 hover:border-primary/50 font-medium"
+                className="gap-2 border-border/70 hover:border-primary/50 font-medium bg-background"
                 asChild
               >
                 <a
@@ -723,8 +526,7 @@ const FounderPage = () => {
                   rel="noopener noreferrer"
                 >
                   <Linkedin className="h-4 w-4 text-[#0077b5]" />
-                  LinkedIn Profile
-                  <ExternalLink className="h-3 w-3 opacity-60" />
+                  Connect on LinkedIn
                 </a>
               </Button>
               <Button
@@ -735,7 +537,7 @@ const FounderPage = () => {
               >
                 <a href={`mailto:${FOUNDER_CANONICAL.email}`}>
                   <Mail className="h-4 w-4 text-primary" />
-                  {FOUNDER_CANONICAL.email}
+                  Email Me
                 </a>
               </Button>
             </div>
