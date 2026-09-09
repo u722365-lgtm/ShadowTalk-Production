@@ -66,28 +66,36 @@ const BUILDERS_LOG = [
   {
     week: "Last Week",
     title: "Mission System v2",
-    description: "The Mission Control agents were too slow when chaining tasks. I ripped out the old polling system and replaced it with a much faster optimistic UI. It finally feels snappy.",
-    status: "Fixed",
+    whatBroke: "The Mission Control agents were too slow when chaining tasks. The UI would freeze.",
+    whatChanged: "I ripped out the old polling system and replaced it with an optimistic UI and WebSockets.",
+    result: "Instant visual feedback and much faster multi-agent chaining.",
+    status: "Shipped",
     icon: Zap
   },
   {
     week: "2 Weeks Ago",
     title: "Memory Architecture",
-    description: "The ledger wasn't keeping up with long sessions. Stripped out the unnecessary abstractions and completely rewrote the core state engine to be 10x faster.",
+    whatBroke: "Long conversations were causing context issues and dropping facts.",
+    whatChanged: "Reworked the memory and context pipeline. Built a localized ledger system.",
+    result: "Faster responses. Better continuity. Fewer failures.",
     status: "Rebuilt",
     icon: Wrench
   },
   {
     week: "3 Weeks Ago",
     title: "Agent Loop",
-    description: "Optimized the multi-agent dispatcher so different agents can hand off context seamlessly without crashing the browser's memory limits.",
+    whatBroke: "The browser's memory limits were crashing when different agents handed off context.",
+    whatChanged: "Optimized the multi-agent dispatcher to use a lightweight state machine.",
+    result: "Agents can hand off context seamlessly for hours.",
     status: "Optimized",
     icon: Activity
   },
   {
     week: "Last Month",
     title: "Desktop Runtime",
-    description: "Packaged the entire workspace into a standalone desktop application to escape the browser sandbox and give agents access to the filesystem.",
+    whatBroke: "The browser sandbox was limiting what ShadowTalk could execute locally.",
+    whatChanged: "Packaged the entire workspace into a standalone desktop application using Tauri.",
+    result: "Agents now have direct, secure access to the filesystem.",
     status: "Shipping",
     icon: Rocket
   }
@@ -307,7 +315,7 @@ const FounderPage = () => {
                       &ldquo;The shadow founder doesn&apos;t wait for permission.&rdquo;
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Building sovereign intelligence you own, not rent.
+                      Building AI that puts you in control.
                     </p>
                   </motion.div>
                 </motion.div>
@@ -344,22 +352,44 @@ const FounderPage = () => {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="glass-subtle border border-border/50 hover:border-primary/40 rounded-2xl p-6 transition-all group flex flex-col md:flex-row gap-6"
               >
-                <div className="flex flex-col items-start min-w-[120px]">
-                  <span className="text-sm font-bold text-foreground mb-1">{log.week}</span>
-                  <Badge variant="secondary" className="text-[10px] font-mono text-muted-foreground">
-                    {log.status}
+                <div className="flex flex-col items-start min-w-[140px]">
+                  <span className="text-[11px] font-bold text-primary mb-1 uppercase tracking-wider">
+                    BUILDER'S LOG #{String(7 - i).padStart(2, '0')}
+                  </span>
+                  <Badge variant="secondary" className="text-[10px] font-mono text-muted-foreground mt-2">
+                    {log.week}
                   </Badge>
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-4">
                     <log.icon className="h-4 w-4 text-primary" />
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                      {log.title}
+                    <h3 className="text-lg font-bold text-foreground transition-colors">
+                      I rebuilt ShadowTalk's {log.title}.
                     </h3>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {log.description}
-                  </p>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <strong className="text-xs text-foreground uppercase tracking-wider block mb-1">What broke:</strong>
+                      <p className="text-sm text-muted-foreground">{log.whatBroke}</p>
+                    </div>
+                    <div>
+                      <strong className="text-xs text-foreground uppercase tracking-wider block mb-1">What I changed:</strong>
+                      <p className="text-sm text-muted-foreground">{log.whatChanged}</p>
+                    </div>
+                    <div>
+                      <strong className="text-xs text-foreground uppercase tracking-wider block mb-1">Result:</strong>
+                      <p className="text-sm text-muted-foreground">{log.result}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-border/30 flex items-center">
+                    <strong className="text-xs text-foreground uppercase tracking-wider mr-2">Status:</strong>
+                    <span className="flex items-center text-xs font-mono font-medium text-emerald-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
+                      {log.status}
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             ))}
