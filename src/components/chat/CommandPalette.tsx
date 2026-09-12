@@ -389,17 +389,7 @@ export const CommandPalette = ({ open, onOpenChange, onAction }: CommandPaletteP
       action: () => signOut(),
       keywords: ["logout", "signout", "exit"],
     },
-    
-    // Fun
-    {
-      id: "wordle",
-      label: "Play Wordle",
-      description: "Quick word game break",
-      icon: <GamepadIcon className="h-4 w-4" />,
-      category: "Fun",
-      action: () => onAction("wordle"),
-      keywords: ["wordle", "game", "play", "fun"],
-    },
+
     
     // === MISSING FEATURES ADDED BELOW ===
     

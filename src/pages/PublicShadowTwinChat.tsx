@@ -5,7 +5,7 @@ import { Send, Bot, Sparkles, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { PageTransition } from '@/components/PageTransition';
-import { streamCloudChat } from '@/lib/cloudChat';
+import { AIProviderRouter } from '@/ai/AIProviderRouter';
 
 interface Message {
   id: string;
@@ -64,7 +64,8 @@ export default function PublicShadowTwinChat() {
 
       const abortController = new AbortController();
       
-      await streamCloudChat(augmented, {
+      const provider = await AIProviderRouter.getBestProvider();
+      await provider.streamChat(augmented, {
         onDelta: (accumulated) => {
           assistantContent = accumulated;
           setMessages((prev) =>
@@ -74,15 +75,21 @@ export default function PublicShadowTwinChat() {
         signal: abortController.signal,
       });
 
-    } catch (error) {
-      console.error("Error streaming shadow twin chat:", error);
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === aiMessageId
-            ? { ...m, content: "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later." }
-            : m
-        )
-      );
+    } catch (error: any) {
+      if (error?.message === "offline_not_provisioned") {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === aiMessageId ? { ...m, content: "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings." } : m)),
+        );
+      } else {
+        console.error("Error streaming shadow twin chat:", error);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiMessageId
+              ? { ...m, content: "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later." }
+              : m
+          )
+        );
+      }
     } finally {
       setIsLoading(false);
     }

@@ -22,6 +22,7 @@ import { StealthKillSwitchProvider } from "@/contexts/StealthKillSwitchContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BootScreen from "@/components/BootScreen";
 import { shouldSkipBootScreen } from "@/lib/skipBootScreen";
+import { OfflineIndicator } from "@/components/offline/OfflineIndicator";
 
 import CommandPalette from "@/components/CommandPalette";
 import { BackToHomeButton } from "@/components/BackToHomeButton";
@@ -55,10 +56,12 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const TemplatesPage = lazy(() => import("./pages/TemplatesPage"));
 const DeveloperPortalPage = lazy(() => import("./pages/DeveloperPortalPage"));
 const OrgAdminPage = lazy(() => import("./pages/OrgAdminPage"));
+const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 const IntegrationsHubPage = lazy(() => import("./pages/IntegrationsHubPage"));
 const BillingDashboardPage = lazy(() => import("./pages/BillingDashboardPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const FounderPage = lazy(() => import("./pages/FounderPage"));
+const ZainAhmedBioPage = lazy(() => import("./pages/ZainAhmedBioPage"));
 const FatimaPage = lazy(() => import("./pages/FatimaPage"));
 const AuditLogsPage = lazy(() => import("./pages/AuditLogsPage"));
 const ModelPlaygroundPage = lazy(() => import("./pages/ModelPlaygroundPage"));
@@ -78,7 +81,9 @@ const DeepResearchPage = lazy(() => import("./pages/DeepResearchPage"));
 
 // Production Company, Support & Legal Pages
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const DocsPage = lazy(() => import("./pages/DocsPage"));
 const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
@@ -160,12 +165,13 @@ const AnimatedRoutes = () => {
           <Route path="/auth/designs" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignGalleryPage /></PageTransition></Suspense>} />
           <Route path="/auth/preview/:designId" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignPreviewPage /></PageTransition></Suspense>} />
           <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
-          <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/docs" element={<PageTransition><DocsPage /></PageTransition>} />
+          <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
           <Route path="/founder" element={<PageTransition><FounderPage /></PageTransition>} />
-          <Route path="/zain-ahmed" element={<PageTransition><FounderPage /></PageTransition>} />
-          <Route path="/zain-ahmed-fahad-patel" element={<PageTransition><FounderPage /></PageTransition>} />
+          <Route path="/zain-ahmed" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
+          <Route path="/zain-ahmed-biography" element={<Navigate to="/zain-ahmed" replace />} />
+          <Route path="/zain-ahmed-fahad-patel" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
           <Route path="/fatima" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/co-founder" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/sadaf-tayyaba" element={<PageTransition><FatimaPage /></PageTransition>} />
@@ -182,6 +188,7 @@ const AnimatedRoutes = () => {
           {/* Enterprise SaaS Routes */}
           <Route path="/developers" element={<PageTransition><DeveloperPortalPage /></PageTransition>} />
           <Route path="/admin" element={<PageTransition><OrgAdminPage /></PageTransition>} />
+          <Route path="/admin/dashboard" element={<PageTransition><AdminDashboardPage /></PageTransition>} />
           <Route path="/integrations" element={<PageTransition><IntegrationsHubPage /></PageTransition>} />
           <Route path="/billing" element={<PageTransition><BillingDashboardPage /></PageTransition>} />
           <Route path="/audit-logs" element={<PageTransition><AuditLogsPage /></PageTransition>} />
@@ -270,6 +277,7 @@ const App = () => {
               <Toaster />
               <Sonner />
                <BrowserRouter>
+                 <OfflineIndicator />
                  <MobileViewportFix />
                  <NetworkTransitionOverlay />
                  <SiteMotionProvider>

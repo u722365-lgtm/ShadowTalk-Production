@@ -47,6 +47,22 @@ service cloud.firestore {
     match /newsletter_subscriptions/{doc} { allow create: if isValidIntake(); allow read, update, delete: if isAdmin(); }
     match /contact_messages/{doc}         { allow create: if isValidIntake(); allow read, update, delete: if isAdmin(); }
 
+    function isValidAnalyticsEvent() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['eventName', 'timestamp', 'sessionId']) &&
+             data.eventName is string && data.eventName.size() < 100 &&
+             data.sessionId is string && data.sessionId.size() < 100;
+    }
+
+    // Write-only telemetry collections (no public reads)
+    match /analytics_events/{doc} {
+      allow create: if isValidAnalyticsEvent();
+      allow read, update, delete: if isAdmin();
+    }
+    match /analytics_daily/{doc} {
+      allow read, write: if isAdmin();
+    }
+
     // Billing / entitlement state — readable by owner, writable only by admins or server.
     match /subscribers/{doc}       { allow read: if ownsExisting() || isAdmin(); allow write: if isAdmin(); }
     match /manual_payments/{doc}   { allow read: if ownsExisting() || isAdmin(); allow create: if ownsIncoming(); allow update, delete: if isAdmin(); }

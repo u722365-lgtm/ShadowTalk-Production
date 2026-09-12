@@ -95,7 +95,7 @@ const Navigation = ({ landingAnimated = false }: NavigationProps) => {
   }, [deferredPrompt]);
 
   const primaryNavItems = [
-    { name: "Shadow DreamState", href: "/chatbot", icon: Sparkles, isLink: true },
+    { name: "Shadow DreamState", href: "/chatbot?modal=dreamstate", icon: Sparkles, isLink: true },
     { name: "Shadow Twin", href: "/shadow-memory", icon: Brain, isLink: true },
   ];
 

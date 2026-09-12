@@ -17,9 +17,9 @@ export const BRAND = {
   manifesto:
     "AI should execute — not just chat. ShadowTalk turns goals into missions, chains tools, and keeps you in control at every step.",
   /** Landing hero — tagline as headline for maximum recall */
-  heroHeadline: ["Think AI.", "Think ShadowTalk."],
+  heroHeadline: ["Don't just get an answer.", "Get it done."],
   heroSubtitle:
-    "Stop juggling AI tabs. One workspace for agentic chat, missions, 30+ tools, voice & code, and a desktop app—free start, no card.",
+    "ShadowTalk turns ideas into actions through agentic workflows.",
   heroBadge: "Free start · No card · Your old stack will feel slow",
 } as const;
 
@@ -80,29 +80,19 @@ export const BRAND_TRACTION = {
 
 export const BRAND_PILLARS = [
   {
-    title: "Agents that finish",
-    description: "Multi-step missions with Mission Control — not one-shot replies.",
-    emoji: "🎯",
+    title: "Think, Plan, Execute",
+    description: "Give it a goal. The agent breaks it down into steps, writes the code, and runs it.",
+    emoji: "🧠",
   },
   {
-    title: "30+ tools, one sentence",
-    description: "Research, code, vault, voice, docs — triggered from natural language.",
-    emoji: "⚡",
+    title: "A Real Terminal",
+    description: "It doesn't just output bash snippets. It executes them securely in your workspace.",
+    emoji: "⌨️",
   },
   {
-    title: "You approve the edge",
-    description: "Human-in-the-loop when stakes are high. Auto-run when you trust the flow.",
-    emoji: "🛡️",
-  },
-  {
-    title: "Performance on your terms",
-    description: "Lightning-fast cloud inference, multi-model consensus, and autonomous tool execution.",
-    emoji: "⚡",
-  },
-  {
-    title: "Every surface",
-    description: "Web, PWA, and desktop software — same brain, deeper device access on install.",
-    emoji: "🖥️",
+    title: "Tool Chaining",
+    description: "It scrapes the web, reads files, writes code, and analyzes data — all in one continuous flow.",
+    emoji: "🔗",
   },
 ] as const;
 

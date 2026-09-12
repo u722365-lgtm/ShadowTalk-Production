@@ -7,7 +7,7 @@ import { useCallback, useRef, useState } from "react";
 import { backend } from "@/integrations/local/client";
 import { streamChatCompletion } from "@/lib/turbo/chatCompletion";
 import { globalMemory, buildRecallPacket } from "@/lib/memory/adaptiveMemory";
-import { streamCloudChat } from "@/lib/cloudChat";
+import { AIProviderRouter } from "@/ai/AIProviderRouter";
 
 export interface GlobalChatMessage {
   role: "user" | "assistant" | "system";
@@ -52,16 +52,23 @@ export function useGlobalChat() {
            chatMessages.unshift({ role: "system", content: contextPrefix });
         }
 
-        const { content, error } = await streamCloudChat(chatMessages, {
-          model: opts.model,
+        const provider = await AIProviderRouter.getBestProvider();
+        const { content, error } = await provider.streamChat(chatMessages, {
           signal: opts.signal,
+          temperature: 0.7,
           onDelta: opts.onDelta,
         });
-
         if (error) throw new Error(error);
 
         return { content, source: "cloud" };
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.message === "offline_not_provisioned") {
+          return {
+            content: "",
+            source: "error",
+            error: "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.",
+          };
+        }
         return {
           content: "",
           source: "error",

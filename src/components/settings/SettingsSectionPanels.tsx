@@ -9,6 +9,7 @@ import {
   User,
   ChevronRight,
   TrendingUp,
+  WifiOff,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ import { ChatAIPreferencesCard } from "@/components/profile/ChatAIPreferencesCar
 
 import { ShadowTalkModelPanel } from "@/components/profile/ShadowTalkModelPanel";
 import { AutoImproveInsights } from "@/components/autoImprove/AutoImproveInsights";
+import { OfflineSetup } from "@/components/offline/OfflineSetup";
+import { LocalModelStatus } from "@/components/offline/LocalModelStatus";
 
 
 import { DesktopAppSettings } from "@/components/desktop/DesktopAppSettings";
@@ -188,6 +191,25 @@ export function SettingsSectionPanels({
     );
   }
 
+  if (section === "offline") {
+    return (
+      <SettingsStagger className="space-y-6">
+        <SettingsSectionHeader
+          icon={WifiOff}
+          title="Local AI (Offline)"
+          description="Provision and manage local models to run ShadowTalk fully offline."
+        />
+        <SettingsStaggerItem>
+          <AnimatedCard>
+            <div className="space-y-6">
+              <LocalModelStatus />
+              <OfflineSetup />
+            </div>
+          </AnimatedCard>
+        </SettingsStaggerItem>
+      </SettingsStagger>
+    );
+  }
 
   return (
     <SettingsStagger className="space-y-6">

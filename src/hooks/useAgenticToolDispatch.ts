@@ -2,6 +2,9 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ToolDetectionResult } from "@/hooks/useToolOrchestrator";
 import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
+import { offlineDetector } from "@/offline/OfflineDetector";
+import { offlineQueue } from "@/offline/OfflineQueue";
+import { OfflineToolRouter } from "@/offline/OfflineToolRouter";
 
 import { executeShadowTool } from "@/lib/shadowTools/executeShadowTool";
 
@@ -58,6 +61,16 @@ export function useAgenticToolDispatch() {
 
       const params = detection.params ?? {};
       const tool = detection.tool;
+
+      if (offlineDetector.isOffline && OfflineToolRouter.isCloudOnly(tool)) {
+        offlineQueue.addTask(tool, params);
+        ui.appendAssistantMessage("This capability requires an internet connection. I've queued it for later.", {
+          tool,
+          status: "complete",
+          result: "Queued for later execution when online."
+        });
+        return { handled: true };
+      }
 
       switch (tool) {
         case "calculator": {

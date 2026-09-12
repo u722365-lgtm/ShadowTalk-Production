@@ -236,7 +236,13 @@ export const ShadowCowork = ({ isOpen, onClose, onInsertToChat }: ShadowCoworkPr
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showAgent, setShowAgent] = useState(true);
-  const [showDreamState, setShowDreamState] = useState(false);
+  const [showDreamState, setShowDreamState] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get("modal") === "dreamstate";
+    } catch {
+      return false;
+    }
+  });
   const [showTwinSetup, setShowTwinSetup] = useState(false);
   const [showOmniscience, setShowOmniscience] = useState(true);
   

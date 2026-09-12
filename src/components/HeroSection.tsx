@@ -84,10 +84,13 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 className="btn-glow text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 group rounded-xl w-full sm:w-auto"
-                onClick={() => navigate("/chatbot")}
+                onClick={() => {
+                  trackShadowTalkEvent("cta_clicked", { cta_name: "run_first_agent" });
+                  navigate("/chatbot?demo=true");
+                }}
               >
-                <MessageCircle className="mr-2 sm:mr-3 h-5 w-5" />
-                Try chat — free
+                <Zap className="mr-2 sm:mr-3 h-5 w-5 fill-current" />
+                Run Your First Agent
                 <ArrowRight className="ml-2 sm:ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button

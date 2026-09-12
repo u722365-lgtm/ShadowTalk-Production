@@ -13,6 +13,7 @@ import {
   User,
   LayoutGrid,
   TrendingUp,
+  WifiOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SettingsAmbientBackground } from "@/components/settings/SettingsAmbientBackground";
@@ -37,6 +38,7 @@ const SECTIONS: readonly SettingsNavSection[] = [
   { id: "personalization", label: "Personalization", icon: Sparkles, desc: "Instructions & tone" },
   { id: "chat", label: "Chat behavior", icon: MessageSquare, desc: "Sending, timestamps, routing" },
   { id: "models", label: "Models & AI", icon: Bot, desc: "Provider, sovereign" },
+  { id: "offline", label: "Local AI (Offline)", icon: WifiOff, desc: "Run models locally without internet" },
   { id: "data", label: "Data controls", icon: Database, desc: "Learning & privacy" },
   { id: "growth", label: "Growth Engine", icon: TrendingUp, desc: "Strategy & Scale AI" },
   { id: "connections", label: "Connections", icon: Link2, desc: "API keys & integrations" },

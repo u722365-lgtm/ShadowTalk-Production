@@ -43,32 +43,6 @@ function getTimeGreeting(): string {
 /** Flagship 4-Card Studio capabilities */
 const FLAGSHIP_STUDIOS = [
   {
-    id: "document",
-    title: "Executive Documents",
-    subtitle: "McKinsey-grade PDFs, Word, Markdown & Reports",
-    badge: "Ultra-HD",
-    icon: FileText,
-    accent: "from-blue-500/20 via-cyan-500/10 to-transparent",
-    borderHover: "hover:border-cyan-500/40",
-    iconBg: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-    badgeColor: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-    prompt: "Generate a comprehensive McKinsey-grade executive report on ",
-    actionKey: "documentStudio" as const,
-  },
-  {
-    id: "image",
-    title: "Image & Vision Studio",
-    subtitle: "Diffusion art, visual editing & photo analysis",
-    badge: "Diffusion",
-    icon: Sparkles,
-    accent: "from-purple-500/20 via-fuchsia-500/10 to-transparent",
-    borderHover: "hover:border-purple-500/40",
-    iconBg: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    badgeColor: "bg-purple-500/15 text-purple-300 border-purple-500/30",
-    prompt: "Create a photorealistic 8k architectural concept of ",
-    actionKey: "imageStudio" as const,
-  },
-  {
     id: "research",
     title: "Deep Research Engine",
     subtitle: "Multi-source live web synthesis & market intel",
@@ -115,6 +89,8 @@ interface ChatEmptyStateProps {
   onOpenDeepResearch?: () => void;
   onOpenAppIde?: () => void;
   onOpenLiveVoice?: () => void;
+  isDemo?: boolean;
+  onExecuteDemo?: (prompt: string) => void;
 }
 
 function ChatEmptyStateInner({
@@ -127,6 +103,8 @@ function ChatEmptyStateInner({
   onOpenImageStudio,
   onOpenDeepResearch,
   onOpenAppIde,
+  isDemo,
+  onExecuteDemo,
 }: ChatEmptyStateProps) {
   const { user } = useAuth();
   const { staggerList, staggerItem, spring, reduced } = useSettingsMotion();
@@ -194,80 +172,126 @@ function ChatEmptyStateInner({
         </div>
       </motion.div>
 
-      {/* Flagship 4-Card Studio Suite */}
-      <motion.div
-        variants={staggerItem}
-        className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 mb-6 text-left px-2 sm:px-0"
-      >
-        {FLAGSHIP_STUDIOS.map((studio) => {
-          const Icon = studio.icon;
-          return (
-            <motion.button
-              key={studio.id}
+      {/* Flagship 4-Card Studio Suite or Demo Mode */}
+      {isDemo ? (
+        <motion.div variants={staggerItem} className="w-full max-w-3xl mb-8 flex flex-col items-center gap-4 px-4">
+          <p className="text-sm font-medium text-muted-foreground/80 mb-2">Select a one-click mission to experience agentic AI:</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <button
               type="button"
-              whileHover={reduced ? undefined : { y: -3, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              transition={spring}
               onClick={() => {
                 settingsHapticTick();
-                if (studio.actionKey === "documentStudio" && onOpenDocumentStudio) {
-                  onOpenDocumentStudio();
-                } else if (studio.actionKey === "imageStudio" && onOpenImageStudio) {
-                  onOpenImageStudio();
-                } else if (studio.actionKey === "deepResearch" && onOpenDeepResearch) {
-                  onOpenDeepResearch();
-                } else if (studio.actionKey === "appIde" && onOpenAppIde) {
-                  onOpenAppIde();
-                } else {
-                  onSelectPrompt(studio.prompt);
-                }
+                if (onExecuteDemo) onExecuteDemo("Research the latest developments in AI agents and summarize the key trends.");
               }}
-              className={cn(
-                "group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl",
-                "border border-white/[0.08] bg-slate-900/50 dark:bg-slate-950/50 backdrop-blur-xl",
-                "hover:bg-slate-900/80 dark:hover:bg-slate-900/80 hover:border-white/20",
-                "transition-all duration-200 text-left overflow-hidden",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-                "shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
-              )}
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-emerald-500/50 transition-all overflow-hidden text-center"
             >
-              {/* Subtle hover gradient bloom */}
-              <div
+              <Search className="h-6 w-6 text-emerald-400 mb-1" />
+              <span className="text-base font-semibold text-foreground">Research</span>
+              <span className="text-xs text-muted-foreground line-clamp-2">Research AI agent trends and summarize</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                settingsHapticTick();
+                if (onExecuteDemo) onExecuteDemo("Create a Python tool that analyzes a CSV and generates insights.");
+              }}
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-amber-500/50 transition-all overflow-hidden text-center"
+            >
+              <Code2 className="h-6 w-6 text-amber-400 mb-1" />
+              <span className="text-base font-semibold text-foreground">Build</span>
+              <span className="text-xs text-muted-foreground line-clamp-2">Create a Python CSV analysis tool</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                settingsHapticTick();
+                if (onExecuteDemo) onExecuteDemo("Analyze this sample dataset and explain the most important patterns.");
+              }}
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-blue-500/50 transition-all overflow-hidden text-center"
+            >
+              <BarChart3 className="h-6 w-6 text-blue-400 mb-1" />
+              <span className="text-base font-semibold text-foreground">Analyze</span>
+              <span className="text-xs text-muted-foreground line-clamp-2">Explain patterns in a dataset</span>
+            </button>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          variants={staggerItem}
+          className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 mb-6 text-left px-2 sm:px-0"
+        >
+          {FLAGSHIP_STUDIOS.map((studio) => {
+            const Icon = studio.icon;
+            return (
+              <motion.button
+                key={studio.id}
+                type="button"
+                whileHover={reduced ? undefined : { y: -3, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                transition={spring}
+                onClick={() => {
+                  settingsHapticTick();
+                  if (studio.actionKey === "documentStudio" && onOpenDocumentStudio) {
+                    onOpenDocumentStudio();
+                  } else if (studio.actionKey === "imageStudio" && onOpenImageStudio) {
+                    onOpenImageStudio();
+                  } else if (studio.actionKey === "deepResearch" && onOpenDeepResearch) {
+                    onOpenDeepResearch();
+                  } else if (studio.actionKey === "appIde" && onOpenAppIde) {
+                    onOpenAppIde();
+                  } else {
+                    onSelectPrompt(studio.prompt);
+                  }
+                }}
                 className={cn(
-                  "pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-gradient-to-br blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500",
-                  studio.accent
-                )}
-              />
-              <div
-                className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105",
-                  studio.iconBg
+                  "group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl",
+                  "border border-white/[0.08] bg-slate-900/50 dark:bg-slate-950/50 backdrop-blur-xl",
+                  "hover:bg-slate-900/80 dark:hover:bg-slate-900/80 hover:border-white/20",
+                  "transition-all duration-200 text-left overflow-hidden",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+                  "shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
                 )}
               >
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1.5 mb-1">
-                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
-                    {studio.title}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0",
-                      studio.badgeColor
-                    )}
-                  >
-                    {studio.badge}
-                  </span>
+                {/* Subtle hover gradient bloom */}
+                <div
+                  className={cn(
+                    "pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-gradient-to-br blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500",
+                    studio.accent
+                  )}
+                />
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105",
+                    studio.iconBg
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
                 </div>
-                <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
-                  {studio.subtitle}
-                </p>
-              </div>
-            </motion.button>
-          );
-        })}
-      </motion.div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1.5 mb-1">
+                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                      {studio.title}
+                    </span>
+                    <span
+                      className={cn(
+                        "text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0",
+                        studio.badgeColor
+                      )}
+                    >
+                      {studio.badge}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
+                    {studio.subtitle}
+                  </p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </motion.div>
+      )}
 
       {/* Prompt Inspiration Pills */}
       <motion.div

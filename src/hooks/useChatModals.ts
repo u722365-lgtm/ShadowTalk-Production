@@ -269,7 +269,16 @@ export function useChatModals(params: UseChatModalsParams): UseChatModalsReturn 
   const [showGeminiAnalytics, setShowGeminiAnalytics] = useState(false);
   const [showDataOrganizer, setShowDataOrganizer] = useState(false);
   const [showUncensoredArena, setShowUncensoredArena] = useState(false);
-  const [showShadowCowork, setShowShadowCowork] = useState(false);
+  
+  // Modals & Context Menus
+  const [showShadowCowork, setShowShadowCowork] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get("modal") === "dreamstate";
+    } catch {
+      return false;
+    }
+  });
+  const [showAgentSelection, setShowAgentSelection] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showBrowseActivity, setShowBrowseActivity] = useState(false);
 

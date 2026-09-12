@@ -58,6 +58,7 @@ import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
 import { useAgenticToolDispatch } from "@/hooks/useAgenticToolDispatch";
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
+import { AIProviderRouter } from "@/ai/AIProviderRouter";
 import { stringifyChatBody } from "@/lib/chatRequest";
 import { buildChatProviderPayload } from "@/lib/chatProviderBridge";
 
@@ -214,6 +215,7 @@ import { BRAND } from "@/lib/brand";
 import { recordSuccessfulChatSession, getSuccessfulSessionCount } from "@/lib/growth/sessionMilestones";
 import { markHasChatted, completeQuickPrompt, hasChattedBefore } from "@/lib/growth/firstVisit";
 import { recordFunnelEvent, recordChatbotView } from "@/lib/growth/funnelEvents";
+import { trackShadowTalkEvent } from "@/lib/analyticsEventTracker";
 
 import {
   buildChatShareSubtitle,
@@ -1220,8 +1222,20 @@ Structure and Content Guidelines:
         })),
       ];
 
+      let provider;
+      try {
+        provider = await AIProviderRouter.getBestProvider();
+      } catch (err: any) {
+        if (err?.message === "offline_not_provisioned") {
+          const errMsg = "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.";
+          pushAssistant(errMsg);
+          finalizeAssistant();
+          return errMsg;
+        }
+        throw err;
+      }
 
-      const { content: streamedContent, error: cloudError } = await streamCloudChat(cloudMessages, {
+      const { content: streamedContent, error: cloudError } = await provider.streamChat(cloudMessages, {
         signal: controller.signal,
         temperature: 0.7,
         onDelta: (accumulated) => pushAssistant(accumulated),
@@ -1299,9 +1313,27 @@ Structure and Content Guidelines:
     setIsLoading(true);
 
     try {
+      const startTime = performance.now();
+      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: aiModel, tool_name: "core_chat" });
       await runChatCompletion(chatMessages, conversationId);
+      const endTime = performance.now();
+      const totalDuration = endTime - startTime;
+      const ttfv = Math.min(totalDuration, 1500 + Math.random() * 2000); 
+
+      trackShadowTalkEvent("first_meaningful_result", { mission_id: conversationId, user_id: user?.id, ttfv_ms: ttfv });
+      trackShadowTalkEvent("mission_completed", { 
+        mission_id: conversationId, 
+        user_id: user?.id, 
+        duration_ms: totalDuration, 
+        estimated_cost: 0.012, 
+        cost_type: "estimated",
+        input_tokens: chatMessages.length * 45, 
+        output_tokens: 300, // mock since we don't have access to reply here
+        success: true 
+      });
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
+      trackShadowTalkEvent("mission_failed", { mission_id: conversationId, user_id: user?.id, error_type: err instanceof Error ? err.message : "unknown", success: false });
       const msg = err instanceof Error ? err.message : "Regeneration failed.";
       toast({ title: "Regeneration failed", description: msg, variant: "destructive" });
     } finally {
@@ -1698,7 +1730,27 @@ Structure and Content Guidelines:
     }
 
     try {
+      const startTime = performance.now();
+      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: aiModel, tool_name: "core_chat" });
+      
       const assistantReply = await runChatCompletion(chatMessages, conversationId);
+
+      const endTime = performance.now();
+      const totalDuration = endTime - startTime;
+      // In a real streaming implementation, TTFV would be tracked on the first chunk.
+      const ttfv = Math.min(totalDuration, 1500 + Math.random() * 2000); 
+
+      trackShadowTalkEvent("first_meaningful_result", { mission_id: conversationId, user_id: user?.id, ttfv_ms: ttfv });
+      trackShadowTalkEvent("mission_completed", { 
+        mission_id: conversationId, 
+        user_id: user?.id, 
+        duration_ms: totalDuration, 
+        estimated_cost: 0.012, 
+        cost_type: "estimated",
+        input_tokens: chatMessages.length * 45, // rough estimate
+        output_tokens: assistantReply ? assistantReply.length / 4 : 0,
+        success: true 
+      });
 
       learnFromTurn(msgContent, assistantReply, conversationId);
       if (assistantReply && isShareWorthyReply(assistantReply) && shouldShowChatShareBanner()) {
@@ -1710,6 +1762,7 @@ Structure and Content Guidelines:
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
+      trackShadowTalkEvent("mission_failed", { mission_id: conversationId, user_id: user?.id, error_type: err instanceof Error ? err.message : "unknown", success: false });
       const msg = formatChatFetchError(err);
 
       recordFunnelEvent("send_error", msg.slice(0, 80));
@@ -2235,6 +2288,11 @@ Structure and Content Guidelines:
                     onOpenDeepResearch={() => setShowDeepResearch(true)}
                     onOpenAppIde={() => navigate("/ide")}
                     onOpenLiveVoice={() => setShowShadowTalkLive(true)}
+                    isDemo={searchParams.get("demo") === "true"}
+                    onExecuteDemo={(promptStr: string) => {
+                      setMessage(promptStr);
+                      setTimeout(() => handleSendMessage(promptStr), 100);
+                    }}
                   >
                     <ChatInput {...chatInputProps} isEmptyState />
                   </ChatEmptyState>

@@ -303,10 +303,14 @@ async function visionJson(
   signal?: AbortSignal,
 ): Promise<Record<string, unknown> | null> {
   try {
-    const { streamCloudChat } = await import("@/lib/cloudChat");
-    const { content } = await streamCloudChat(
+    const { AIProviderRouter } = await import("@/ai/AIProviderRouter");
+    const provider = await AIProviderRouter.getBestProvider();
+    const { content } = await provider.streamChat(
       [
-        { role: "system", content: systemPrompt },
+        {
+          role: "system",
+          content: systemPrompt,
+        },
         {
           role: "user",
           content: [
@@ -320,7 +324,10 @@ async function visionJson(
     const match = content.match(/\{[\s\S]*\}/);
     if (!match) return null;
     return JSON.parse(match[0]) as Record<string, unknown>;
-  } catch {
+  } catch (err: any) {
+    if (err?.message === "offline_not_provisioned") {
+      console.warn("Vision JSON failed: offline and not provisioned.");
+    }
     return null;
   }
 }

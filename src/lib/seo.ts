@@ -149,6 +149,14 @@ export function getWebSiteSchema() {
   };
 }
 
+export function getProfilePageSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: getPersonSchema()
+  };
+}
+
 export function getWebPageSchema(page: {
   title: string;
   description: string;

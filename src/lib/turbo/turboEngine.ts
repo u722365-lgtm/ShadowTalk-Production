@@ -19,7 +19,7 @@ import { isSovereignAgentsEnabled } from '@/lib/desktop/sovereignAgentMode';
 import { localComplete, isWebGPUSupported, WEBGPU_MODEL } from '@/lib/webgpu/localEngine';
 
 import { trackAiMetrics, estimateTokens } from '@/lib/telemetry/agenticMetrics';
-import { streamCloudChat } from '@/lib/cloudChat';
+import { AIProviderRouter } from "@/ai/AIProviderRouter";
 import { routeTask } from './modelRouter';
 
 // ---- Public Types ----
@@ -394,16 +394,29 @@ async function cloudFallback(
   startMs: number,
 ): Promise<TurboEngineResult> {
   try {
-    const { content, error } = await streamCloudChat(
-      [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent },
-      ],
-      { signal: opts.signal, onDelta: opts.onDelta, temperature: opts.temperature },
+    const cloudMessages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userContent },
+    ];
+    const provider = await AIProviderRouter.getBestProvider();
+    const { content, error } = await provider.streamChat(
+      cloudMessages,
+      {
+        temperature: opts.temperature,
+        signal: opts.signal,
+        onDelta: opts.onDelta,
+      },
     );
     if (error) console.warn('[TurboEngine] Cloud AI failed:', error);
     return { content, source: 'cloud', totalMs: performance.now() - startMs };
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message === "offline_not_provisioned") {
+      return { 
+        content: "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.", 
+        source: 'fallback', 
+        totalMs: performance.now() - startMs 
+      };
+    }
     console.warn('[TurboEngine] Cloud AI failed:', err);
     return { content: '', source: 'fallback', totalMs: performance.now() - startMs };
   }

@@ -106,6 +106,28 @@ export const DOC_OVERVIEW: DocOverviewSection[] = [
       "ShadowTalk enforces a strict client-side privacy perimeter. User API keys, prompt injection filters, and on-device memory ledgers remain in your browser sandbox. We never train public foundation models on your proprietary business conversations.",
     ],
   },
+  {
+    title: "AI Provider Routing & Hybrid Intelligence",
+    paragraphs: [
+      "The AIProviderRouter serves as the brain of ShadowTalk's hybrid execution model. It intercepts every prompt and intelligently routes it based on network availability and model constraints.",
+      "CloudAIProvider: Manages lightning-fast streaming for Groq, DeepSeek, and OpenAI endpoints via standardized fetch protocols.",
+      "LocalAIProvider: Manages fully offline inference using the WebLLM engine, dynamically falling back to local models when disconnected."
+    ]
+  },
+  {
+    title: "Web Worker Inference Engine",
+    paragraphs: [
+      "To guarantee 60fps UI responsiveness during offline execution, the LocalInferenceEngine isolates the WebLLM runtime entirely in a background Web Worker (llm.worker.ts).",
+      "Model weights are cached locally via Cache Storage/OPFS, preventing expensive re-downloads, while the main thread remains free from heavy tensor computations."
+    ]
+  },
+  {
+    title: "Activation & TTFV Telemetry",
+    paragraphs: [
+      "ShadowTalk measures Time To First Value (TTFV) through the ActivationAnalytics service.",
+      "Every session is tracked from initial load to the first successful generation (both online and offline), logging anonymized metadata to Firestore while keeping prompt content strictly on-device."
+    ]
+  }
 ];
 
 export const DOC_PRODUCT_PILLARS: DocFeatureItem[] = [
@@ -230,6 +252,23 @@ export const DOC_WORKSPACE_GUIDE: DocWorkspaceTopic[] = [
       "Multi-Format Export: Download your full activity history as JSON, CSV, or raw plaintext .log files.",
     ],
   },
+  {
+    title: "Offline Mode & Local Edge AI (PWA)",
+    items: [
+      "Zero-Cloud Execution: ShadowTalk can run entirely disconnected from the internet, leveraging WebGPU to run localized models.",
+      "Background Model Loading: The LocalInferenceEngine utilizes a Web Worker to ensure UI responsiveness while models are loaded and running.",
+      "Progressive Web App (PWA): Install ShadowTalk on your device to cache application assets and run AI models without an active network connection.",
+      "Intelligent Fallbacks: Tools requiring the cloud (e.g. real-time web search) are automatically queued in IndexedDB and execute upon reconnection."
+    ],
+  },
+  {
+    title: "Shadow DreamState Workspace",
+    items: [
+      "Autonomous IDE: A dedicated modal workspace (/chatbot?modal=dreamstate) featuring a split-pane code editor and terminal.",
+      "Local Project Context: DreamState maintains localized workspace files and project hierarchies, accessible directly by the autonomous agent.",
+      "Multi-Agent Execution: Deploy specialized marketplace agents to iteratively build, debug, and execute code within the isolated environment."
+    ]
+  }
 ];
 
 export const DOC_FEATURES: DocFeatureItem[] = [
