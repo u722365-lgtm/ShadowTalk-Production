@@ -78,23 +78,29 @@ const CookieConsent = () => {
   };
 
   const saveConsent = (prefs: CookiePreferences) => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, "true");
-    localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs));
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, "true");
+      localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs));
+    } catch (e) {
+      console.warn("Failed to save to localStorage", e);
+    }
+    
     setPreferences(prefs);
     setShowBanner(false);
     
     // Apply cookie preferences
-    if (prefs.analytics) {
-      // Enable analytics cookies
-      document.cookie = "analytics_enabled=true; max-age=31536000; SameSite=Lax; Secure";
-    }
-    if (prefs.marketing) {
-      // Enable marketing cookies
-      document.cookie = "marketing_enabled=true; max-age=31536000; SameSite=Lax; Secure";
-    }
-    if (prefs.preferences) {
-      // Enable preference cookies
-      document.cookie = "preferences_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+    try {
+      if (prefs.analytics) {
+        document.cookie = "analytics_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+      }
+      if (prefs.marketing) {
+        document.cookie = "marketing_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+      }
+      if (prefs.preferences) {
+        document.cookie = "preferences_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+      }
+    } catch (e) {
+      console.warn("Failed to set cookies", e);
     }
   };
 
@@ -120,13 +126,13 @@ const CookieConsent = () => {
                 </p>
                 
                 <div className="flex flex-wrap gap-3">
-                  <Button onClick={acceptAll} className="btn-glow">
+                  <Button type="button" onClick={acceptAll} className="btn-glow">
                     Accept All
                   </Button>
-                  <Button variant="outline" onClick={acceptNecessary}>
+                  <Button type="button" variant="outline" onClick={acceptNecessary}>
                     Necessary Only
                   </Button>
-                  <Button variant="ghost" onClick={() => setShowSettings(true)}>
+                  <Button type="button" variant="ghost" onClick={() => setShowSettings(true)}>
                     <Settings className="h-4 w-4 mr-2" />
                     Customize
                   </Button>
@@ -134,6 +140,7 @@ const CookieConsent = () => {
               </div>
               
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 onClick={acceptNecessary}
