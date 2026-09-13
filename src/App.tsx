@@ -28,7 +28,6 @@ import CommandPalette from "@/components/CommandPalette";
 import { BackToHomeButton } from "@/components/BackToHomeButton";
 import { useReferralCapture } from "./hooks/useReferralTracking";
 import PersistedAuthRedirect from "@/components/PersistedAuthRedirect";
-import WorkspacePathRemember from "@/components/WorkspacePathRemember";
 import { OAuthReturnHandler } from "@/components/OAuthReturnHandler";
 import { OAuthRedirectHandler } from "@/components/OAuthRedirectHandler";
 
@@ -53,37 +52,26 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
  const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
  const PrivateAiHubPage = lazy(() => import("./pages/PrivateAiHubPage"));
  // const StrategyAgentPage = lazy(() => import("./pages/StrategyAgentPage"));
-const TemplatesPage = lazy(() => import("./pages/TemplatesPage"));
 const DeveloperPortalPage = lazy(() => import("./pages/DeveloperPortalPage"));
 const OrgAdminPage = lazy(() => import("./pages/OrgAdminPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
-const IntegrationsHubPage = lazy(() => import("./pages/IntegrationsHubPage"));
 const BillingDashboardPage = lazy(() => import("./pages/BillingDashboardPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const FounderPage = lazy(() => import("./pages/FounderPage"));
 const ZainAhmedBioPage = lazy(() => import("./pages/ZainAhmedBioPage"));
 const FatimaPage = lazy(() => import("./pages/FatimaPage"));
 const AuditLogsPage = lazy(() => import("./pages/AuditLogsPage"));
-const ModelPlaygroundPage = lazy(() => import("./pages/ModelPlaygroundPage"));
 const ShadowTwinSettingsPage = lazy(() => import("./pages/ShadowTwinSettingsPage"));
 const PublicShadowTwinChat = lazy(() => import("./pages/PublicShadowTwinChat"));
-const WorkspacePage = lazy(() => import("./pages/WorkspacePage"));
-const IdePage = lazy(() => import("./pages/IdePage"));
-const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
 const ShadowMemoryPage = lazy(() => import("./pages/ShadowMemoryPage"));
-const CyberCommandPage = lazy(() => import("./pages/CyberCommandPage"));
 const PrivacyScorePage = lazy(() => import("./pages/PrivacyScorePage"));
 const TrustPage = lazy(() => import("./pages/TrustPage"));
 const KnowledgeGraphPage = lazy(() => import("./pages/KnowledgeGraphPage"));
 const SecurityAuditPage = lazy(() => import("./pages/SecurityAuditPage"));
-const DataInsightsPage = lazy(() => import("./pages/DataInsightsPage"));
-const DeepResearchPage = lazy(() => import("./pages/DeepResearchPage"));
 
 // Production Company, Support & Legal Pages
 const ContactPage = lazy(() => import("./pages/ContactPage"));
-const DocsPage = lazy(() => import("./pages/DocsPage"));
 const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
@@ -158,7 +146,6 @@ const AnimatedRoutes = () => {
           <Route path="/chatbot" element={<Suspense fallback={<PageLoader />}><ChatbotPage /></Suspense>} />
           <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
           <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
-          <Route path="/templates" element={<PageTransition><TemplatesPage /></PageTransition>} />
           <Route path="/shadow-twin" element={<PageTransition><ShadowTwinSettingsPage /></PageTransition>} />
           <Route path="/t/:username" element={<Suspense fallback={<PageLoader />}><PublicShadowTwinChat /></Suspense>} />
           
@@ -176,12 +163,7 @@ const AnimatedRoutes = () => {
           <Route path="/co-founder" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/sadaf-tayyaba" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/changelog" element={<PageTransition><ChangelogPage /></PageTransition>} />
-          <Route path="/workspace" element={<PageTransition><WorkspacePage /></PageTransition>} />
-          <Route path="/ide" element={<PageTransition><IdePage /></PageTransition>} />
-          <Route path="/business-memory" element={<Navigate to="/workspace" replace />} />
-          <Route path="/analytics" element={<PageTransition><AnalyticsPage /></PageTransition>} />
           <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />
-          <Route path="/insights" element={<Navigate to="/analytics" replace />} />
           <Route path="/sessions" element={<Suspense fallback={<PageLoader />}><PageTransition><SessionsPage /></PageTransition></Suspense>} />
           <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
           
@@ -189,17 +171,12 @@ const AnimatedRoutes = () => {
           <Route path="/developers" element={<PageTransition><DeveloperPortalPage /></PageTransition>} />
           <Route path="/admin" element={<PageTransition><OrgAdminPage /></PageTransition>} />
           <Route path="/admin/dashboard" element={<PageTransition><AdminDashboardPage /></PageTransition>} />
-          <Route path="/integrations" element={<PageTransition><IntegrationsHubPage /></PageTransition>} />
           <Route path="/billing" element={<PageTransition><BillingDashboardPage /></PageTransition>} />
           <Route path="/audit-logs" element={<PageTransition><AuditLogsPage /></PageTransition>} />
-          <Route path="/studio" element={<PageTransition><ModelPlaygroundPage /></PageTransition>} />
-          <Route path="/cyber" element={<PageTransition><CyberCommandPage /></PageTransition>} />
           <Route path="/privacy-score" element={<PageTransition><PrivacyScorePage /></PageTransition>} />
           <Route path="/trust" element={<PageTransition><TrustPage /></PageTransition>} />
           <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
           <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
-          <Route path="/data-insights" element={<PageTransition><DataInsightsPage /></PageTransition>} />
-          <Route path="/deep-research" element={<PageTransition><DeepResearchPage /></PageTransition>} />
 
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
@@ -286,7 +263,6 @@ const App = () => {
                      <PersistedAuthRedirect />
                      <OAuthRedirectHandler />
                      <OAuthReturnHandler />
-                     <WorkspacePathRemember />
                      <AnimatedRoutes />
                      <BackToHomeButton />
                    </SitePageShell>

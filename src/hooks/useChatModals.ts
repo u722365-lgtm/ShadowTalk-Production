@@ -271,13 +271,7 @@ export function useChatModals(params: UseChatModalsParams): UseChatModalsReturn 
   const [showUncensoredArena, setShowUncensoredArena] = useState(false);
   
   // Modals & Context Menus
-  const [showShadowCowork, setShowShadowCowork] = useState(() => {
-    try {
-      return new URLSearchParams(window.location.search).get("modal") === "dreamstate";
-    } catch {
-      return false;
-    }
-  });
+  const [showShadowCowork, setShowShadowCowork] = useState(false);
   const [showAgentSelection, setShowAgentSelection] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showBrowseActivity, setShowBrowseActivity] = useState(false);

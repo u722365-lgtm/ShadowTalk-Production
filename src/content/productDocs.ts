@@ -94,10 +94,8 @@ export const DOC_OVERVIEW: DocOverviewSection[] = [
     title: "Core Architectural Foundations",
     paragraphs: [
       "1. Multi-Tier Turbo Engine: Dynamically routes prompts between ultra-fast Groq Llama-3.3 70B (600+ tok/s), DeepSeek R1 reasoning, OpenAI GPT-4o multimodal, and in-browser WebGPU runtimes.",
-      "2. AI Workspace & Business Memory (/workspace): Seamlessly injects company identity, brand voice rules, customer parameters, and architectural guardrails into every conversation.",
-      "3. Real-Time Telemetry & Analytics (/analytics): Live Recharts dashboard reporting message volume, token synthesis rates, feature utilization, and model distribution with downloadable audit reports.",
-      "4. Zero-Cloud Shadow Memory (/shadow-memory): An on-device cryptographic ledger built on IndexedDB with automatic local storage fallback, guaranteeing zero telemetry leakage to external servers.",
-      "5. Enterprise SaaS & Governance: Organization administration (/admin), developer APIs (/developers), integrations directory (/integrations), and immutable compliance trails (/audit-logs).",
+      "2. Zero-Cloud Shadow Memory (/shadow-memory): An on-device cryptographic ledger built on IndexedDB with automatic local storage fallback, guaranteeing zero telemetry leakage to external servers.",
+      "3. Enterprise SaaS & Governance: Organization administration (/admin), developer APIs (/developers), and immutable compliance trails (/audit-logs).",
     ],
   },
   {
@@ -138,12 +136,6 @@ export const DOC_PRODUCT_PILLARS: DocFeatureItem[] = [
     badge: "Core Engine",
   },
   {
-    icon: "brain",
-    title: "Business Memory Workspace",
-    description: "Persistent organization knowledge base that personalizes AI responses across sessions (/workspace).",
-    badge: "Context",
-  },
-  {
     icon: "lock",
     title: "Shadow Memory Journal",
     description: "100% on-device IndexedDB activity ledger with parameter inspection and multi-format exports (/shadow-memory).",
@@ -166,28 +158,21 @@ export const DOC_QUICK_START: DocStep[] = [
   },
   {
     step: 2,
-    title: "Configure Business Memory",
-    description:
-      "Visit /workspace to define your Company Profile, Brand Voice, and Guardrails, or click 'Load Starter Templates' to populate instant business context.",
-  },
-  {
-    step: 3,
     title: "Engage with Multi-Model AI",
     description:
       "Send prompts in /chatbot using Turbo Engine speed routing. Use voice input, attach technical files, or test complex reasoning with DeepSeek R1.",
   },
   {
-    step: 4,
-    title: "Inspect Telemetry & Audit Logs",
+    step: 3,
+    title: "Inspect Audit Logs",
     description:
-      "Review your performance metrics in /analytics and inspect your on-device cryptographic activity trail in /shadow-memory.",
+      "Inspect your on-device cryptographic activity trail in /shadow-memory.",
   },
 ];
 
 export const DOC_ROUTES: DocRouteLink[] = [
   // Core AI & Chat
   { path: "/chatbot", label: "AI Chatbot Workspace", desc: "Main product — streaming chat, multi-model selection, prompt injection defense, and voice input", group: "Core AI" },
-  { path: "/workspace", label: "Business Memory Workspace", desc: "Define company profiles, brand voice, customer context, and active AI context injection rules", group: "Core AI" },
   { path: "/analytics", label: "Production Analytics", desc: "Interactive charts for message volume, token synthesis, model distribution, and downloadable reports", group: "Core AI" },
   { path: "/shadow-memory", label: "Shadow Memory Journal", desc: "100% on-device IndexedDB cryptographic ledger with parameter inspection and CSV/JSON/Log export", group: "Core AI" },
   { path: "/sessions", label: "Session History", desc: "Browse, restore, search, and manage archived chat sessions across devices", group: "Core AI" },
@@ -202,8 +187,7 @@ export const DOC_ROUTES: DocRouteLink[] = [
 
   // Enterprise & Developers
   { path: "/developers", label: "Developer Portal", desc: "REST API keys, webhook endpoints, rate limit quotas, and SDK documentation", group: "Enterprise" },
-  { path: "/admin", label: "Organization Admin", desc: "Manage team members, seat allocation, role-based access control, and workspace domains", group: "Enterprise" },
-  { path: "/integrations", label: "Integrations Hub", desc: "Pre-built connectors for Slack, GitHub, Notion, webhooks, and cloud storage", group: "Enterprise" },
+  { path: "/admin", label: "Organization Admin", desc: "Manage team members, seat allocation, role-based access control", group: "Enterprise" },
   { path: "/audit-logs", label: "Compliance Audit Trail", desc: "Tamper-evident logs of logins, role changes, key generations, and security events", group: "Enterprise" },
   { path: "/billing", label: "Billing & Subscriptions", desc: "Manage usage tiers, token allowances, invoices, and enterprise billing contracts", group: "Enterprise" },
 
@@ -224,15 +208,6 @@ export const DOC_WORKSPACE_GUIDE: DocWorkspaceTopic[] = [
       "Composer Controls: Dynamic input supporting text, file attachments (+ Attach), voice transcription (Mic), and model toggling.",
       "Prompt Injection Shield: Real-time client-side heuristics that detect and neutralize prompt hacking attempts before reaching the LLM.",
       "Multi-Model Switching: Seamlessly swap between Groq Llama-3.3 70B Turbo, DeepSeek R1, and OpenAI GPT-4o.",
-    ],
-  },
-  {
-    title: "Business Memory Workspace (/workspace)",
-    items: [
-      "Category Management: Organize knowledge into Business Profile, Brand Voice, Customer Context, and Custom Facts.",
-      "Context Preview: Inspect the exact formatted Markdown context block injected into the AI system prompt.",
-      "Starter Templates: Instantly seed 4 ready-to-use business rules with one click.",
-      "Dual-Layer Persistence: Edits write immediately to local device storage and automatically synchronize to your user profile when signed in.",
     ],
   },
   {
@@ -258,16 +233,9 @@ export const DOC_WORKSPACE_GUIDE: DocWorkspaceTopic[] = [
       "Zero-Cloud Execution: ShadowTalk can run entirely disconnected from the internet, leveraging WebGPU to run localized models.",
       "Background Model Loading: The LocalInferenceEngine utilizes a Web Worker to ensure UI responsiveness while models are loaded and running.",
       "Progressive Web App (PWA): Install ShadowTalk on your device to cache application assets and run AI models without an active network connection.",
-      "Intelligent Fallbacks: Tools requiring the cloud (e.g. real-time web search) are automatically queued in IndexedDB and execute upon reconnection."
+      "Intelligent Fallbacks: Tools requiring the cloud (e.g. real-time web search) are automatically queued in IndexedDB and execute upon reconnection.",
+      "Architecture: The LocalInferenceEngine relies on a persistent Web Worker (`llm.worker.ts`) to manage model weights. By caching the model in IndexedDB (OPFS), subsequent loads are near-instant, providing an unparalleled user experience even in airplane mode."
     ],
-  },
-  {
-    title: "Shadow DreamState Workspace",
-    items: [
-      "Autonomous IDE: A dedicated modal workspace (/chatbot?modal=dreamstate) featuring a split-pane code editor and terminal.",
-      "Local Project Context: DreamState maintains localized workspace files and project hierarchies, accessible directly by the autonomous agent.",
-      "Multi-Agent Execution: Deploy specialized marketplace agents to iteratively build, debug, and execute code within the isolated environment."
-    ]
   }
 ];
 
@@ -277,12 +245,6 @@ export const DOC_FEATURES: DocFeatureItem[] = [
     title: "Multi-Model Turbo Engine",
     description: "Blazing fast streaming through Groq Llama-3.3 70B (600+ tok/s), DeepSeek R1, and GPT-4o.",
     badge: "Engine",
-  },
-  {
-    icon: "brain",
-    title: "Business Memory Engine",
-    description: "Persistent organization knowledge base that personalizes every AI interaction (/workspace).",
-    badge: "Context",
   },
   {
     icon: "lock",

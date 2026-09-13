@@ -704,77 +704,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
     keywords: ['AI security', 'Stealth Vault', 'ShadowSpectre', 'cybersecurity AI'],
     canonical: 'https://www.shadowtalk-ai.com/security',
   },
-  insights: {
-    title: 'Insights Hub — Analytics & Intelligence',
-    description:
-      'ShadowTalk Insights: analytics dashboard, perception engine, and business intelligence — unified intelligence hub.',
-    keywords: ['AI analytics', 'business intelligence', 'ShadowTalk insights'],
-    canonical: 'https://www.shadowtalk-ai.com/insights',
-  },
-  forge: {
-    title: 'Creative Forge — Presentations & Media Studio',
-    description:
-      'ShadowTalk Forge: AI presentations, creative studio, and document generation — build decks and media from prompts.',
-    keywords: ['AI presentations', 'creative studio', 'document generation', 'ShadowTalk forge'],
-    canonical: 'https://www.shadowtalk-ai.com/forge',
-  },
-  templates: {
-    title: 'Templates — Ready-to-Use AI Workflows',
-    description: 'Browse ShadowTalk templates for chat, missions, code, and research — start faster with proven prompts.',
-    keywords: ['AI templates', 'prompt templates', 'ShadowTalk workflows'],
-    canonical: 'https://www.shadowtalk-ai.com/templates',
-  },
   downloads: {
-    title: 'Downloads — Desktop App & Private AI',
-    description: 'Download ShadowTalk for Windows, PWA, ',
-    keywords: ['ShadowTalk download', 'desktop app', 'private AI', 'PWA'],
-    canonical: 'https://www.shadowtalk-ai.com/downloads',
-  },
-  execute: {
-    title: 'Shadow Execution - Autonomous AI Workspace',
-    description:
-      'One autonomous engine for missions, strategy reports, and research briefs — live web tools, saved history, PDF export.',
-    keywords: ['autonomous AI', 'mission control', 'strategy agent', 'business intelligence', 'S.E.E.'],
-    canonical: 'https://www.shadowtalk-ai.com/execute',
-  },
-  strategy: {
-    title: 'Strategy Agent - AI Business Intelligence',
-    description: 'Get AI-powered business strategy analysis, market research, and competitive intelligence with ShadowTalk Strategy Agent.',
-    keywords: ['AI strategy', 'business intelligence', 'market research', 'competitive analysis'],
-    canonical: 'https://www.shadowtalk-ai.com/execute?mode=strategy_report',
-  },
-  workspace: {
-    title: 'AI Workspace - Collaborative Intelligence',
-    description: 'Your AI-powered workspace for team collaboration, document editing, and intelligent project management.',
-    keywords: ['AI workspace', 'collaboration', 'team productivity', 'project management'],
-    canonical: 'https://www.shadowtalk-ai.com/workspace',
-  },
-  ide: {
-    title: 'Code IDE - In-Browser Editor',
-    description:
-      'Monaco-powered IDE inside ShadowTalk: multi-file projects, live HTML preview, templates, console, and AI-assisted coding.',
-    keywords: ['browser IDE', 'online code editor', 'Monaco editor', 'AI coding'],
-    canonical: 'https://www.shadowtalk-ai.com/ide',
-  },
-  marketplace: {
-    title: 'Agent Marketplace',
-    description: 'Browse and install specialized AI agents for your workflow. Extend ShadowTalk AI with community-built tools.',
-    keywords: ['AI marketplace', 'AI agents', 'plugins', 'extensions'],
-    canonical: 'https://www.shadowtalk-ai.com/marketplace',
-  },
-  missioncontrol: {
-    title: 'Mission Control - Autonomous Agent Dashboard',
-    description: 'Launch and monitor autonomous AI missions. Let ShadowTalk AI handle complex multi-step tasks automatically.',
-    keywords: ['autonomous AI', 'mission control', 'AI automation', 'task management'],
-    canonical: 'https://www.shadowtalk-ai.com/missioncontrol',
-  },
-  presentations: {
-    title: 'AI Presentation Builder',
-    description: 'Create stunning presentations with AI. Auto-generate slides, content, and designs from your prompts.',
-    keywords: ['AI presentations', 'slide builder', 'deck generator', 'AI slides'],
-    canonical: 'https://www.shadowtalk-ai.com/forge',
-  },
-  videoStudio: {
     title: 'Shadow Video Studio — Viral Short Generator',
     description: 'Pro & Elite: generate 60s vertical promo videos in your browser. No API keys — bundled voiceover and on-device MP4 export.',
     keywords: ['video generator', 'viral short', 'TikTok video', 'ShadowTalk promo', 'no API key'],

@@ -16,7 +16,7 @@ import { settingsHapticTick } from "@/lib/settingsFeedback";
 import { CHAT_SIDEBAR_WIDTH_COLLAPSED, CHAT_SIDEBAR_WIDTH_EXPANDED } from "@/lib/chatSidebarNav";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { InstalledAgentsPanel } from "@/components/marketplace/InstalledAgentsPanel";
+
 import { ChatSidebarNavList } from "@/components/chat/ChatSidebarNavList";
 
 export interface Conversation {
@@ -225,7 +225,7 @@ function ChatShadowSidebarInner({
               className="overflow-hidden px-1.5 shrink-0"
               style={{ pointerEvents: isCollapsed ? "none" : "auto" }}
             >
-              <InstalledAgentsPanel compact />
+
             </motion.div>
 
             {/* Primary Real-Feature Navigation — ALWAYS single mounted instance */}

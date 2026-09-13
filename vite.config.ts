@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wasm}'],
-          maximumFileSizeToCacheInBytes: 5000000 // Increase limit for wasm/model artifacts
+          maximumFileSizeToCacheInBytes: 10000000 // Increase limit for wasm/model artifacts
         }
       })
     ],

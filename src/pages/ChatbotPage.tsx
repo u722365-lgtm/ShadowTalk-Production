@@ -32,9 +32,6 @@ const WordleGame = lazy(() =>
 const GoogleIntegrationPanel = lazy(() =>
   import("@/components/chat/GoogleIntegrationPanel").then((m) => ({ default: m.GoogleIntegrationPanel })),
 );
-const DeepResearchPanel = lazy(() =>
-  import("@/components/chat/DeepResearchPanel").then((m) => ({ default: m.DeepResearchPanel })),
-);
 const DocumentGenerator = lazy(() =>
   import("@/components/chat/DocumentGenerator").then((m) => ({ default: m.DocumentGenerator })),
 );
@@ -96,34 +93,9 @@ function buildVisionUserMessage(
 }
 
 
-const CognitiveLoopPanel = lazy(() =>
-  import("@/components/chat/CognitiveLoopPanel").then((m) => ({ default: m.CognitiveLoopPanel })),
-);
-
-import { useMarketplace } from "@/hooks/useMarketplace";
-import { resolveAgentRuntime } from "@/lib/marketplace/resolveAgentConfig";
-import { prependAgentSystemPrompt } from "@/lib/marketplace/applyAgentToChat";
-import { prependChatKnowledgeContext } from "@/lib/shadowTalkProductKnowledge";
-import {
-  clearActiveMarketplaceAgent,
-  getActiveMarketplaceSession,
-  setActiveMarketplaceAgent,
-} from "@/lib/marketplace/activeAgentSession";
-import { MarketplaceAgentBanner } from "@/components/chat/MarketplaceAgentBanner";
-import type { MarketplaceAgent, MarketplaceAgentRuntime } from "@/lib/marketplace/types";
-
 import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareIntelligence";
 
-import {
-  getShadowSpectreScope,
-  hasAcceptedShadowSpectreTerms,
-  routeShadowSpectreHead,
-  streamShadowSpectre,
-} from "@/lib/cyber/shadowspectre";
-import { ShadowSpectreScopeBar } from "@/components/cyber/ShadowSpectreScopeBar";
-const ShadowSpectrePanel = lazy(() =>
-  import("@/components/cyber/ShadowSpectrePanel").then((m) => ({ default: m.ShadowSpectrePanel })),
-);
+
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { loadCustomAiConfig, saveCustomAiConfig } from "@/lib/customApiKeys";
 import { turboComplete, resolveTurboKey } from "@/lib/turbo";
@@ -143,9 +115,6 @@ const BrowseActivityPanel = lazy(() =>
 );
 const MultiModelOrchestrator = lazy(() =>
   import("@/components/chat/MultiModelOrchestrator").then((m) => ({ default: m.MultiModelOrchestrator })),
-);
-const CreativeSynthesis = lazy(() =>
-  import("@/components/chat/CreativeSynthesis").then((m) => ({ default: m.CreativeSynthesis })),
 );
 const VisualReasoning = lazy(() =>
   import("@/components/chat/VisualReasoning").then((m) => ({ default: m.VisualReasoning })),
@@ -178,9 +147,6 @@ const PlanetaryActionModal = lazy(() =>
 );
 const ScreenAgent = lazy(() =>
   import("@/components/chat/ScreenAgent").then((m) => ({ default: m.ScreenAgent })),
-);
-const VisionAgentModal = lazy(() =>
-  import("@/components/chat/VisionAgentModal").then((m) => ({ default: m.VisionAgentModal })),
 );
 const AgenticTaskRunner = lazy(() =>
   import("@/components/chat/AgenticTaskRunner").then((m) => ({ default: m.AgenticTaskRunner })),
@@ -323,9 +289,6 @@ const ChatbotPage = () => {
   const approveChatMissionStep = async () => {};
   const rejectPendingStep = async () => {};
   const cancelExecution = async () => {};
-  const { getAgentById, agents: marketplaceAgents, loading: marketplaceCatalogLoading } = useMarketplace();
-  const [activeMarketplaceAgent, setActiveMarketplaceAgentState] = useState<MarketplaceAgent | null>(null);
-  const marketplaceRuntimeRef = useRef<MarketplaceAgentRuntime | null>(null);
   
   // State
   const [message, setMessage] = useState("");
@@ -375,11 +338,8 @@ const ChatbotPage = () => {
   const [documentTopic, setDocumentTopic] = useState("");
   const [showWordle, setShowWordle] = useState(false);
   const [showGoogleIntegration, setShowGoogleIntegration] = useState(false);
-  const [showShadowSpectrePanel, setShowShadowSpectrePanel] = useState(false);
-  const [showShadowSpectreTerms, setShowShadowSpectreTerms] = useState(false);
-  const [shadowSpectreHead, setShadowSpectreHead] = useState<string>("general");
+
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [showDeepResearch, setShowDeepResearch] = useState(false);
   const [showShadowTalkLive, setShowShadowTalkLive] = useState(false);
   const [showShadowBrowser, setShowShadowBrowser] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
@@ -387,16 +347,12 @@ const ChatbotPage = () => {
   const [chatShareOffer, setChatShareOffer] = useState<{ title: string; subtitle?: string; prompt?: string; answer?: string } | null>(null);
   const [chatShareDialogOpen, setChatShareDialogOpen] = useState(false);
   const [chatShareCustomLink, setChatShareCustomLink] = useState<string | null>(null);
-  const [showCognitiveLoop, setShowCognitiveLoop] = useState(false);
-  const [cognitiveQuery, setCognitiveQuery] = useState("");
   const [showMultiModel, setShowMultiModel] = useState(false);
-  const [showCreativeSynthesis, setShowCreativeSynthesis] = useState(false);
   const [showVisualReasoning, setShowVisualReasoning] = useState(false);
   const [showImageDecoder, setShowImageDecoder] = useState(false);
   const [showDailyPlanner, setShowDailyPlanner] = useState(false);
   const [showPlanetaryActions, setShowPlanetaryActions] = useState(false);
   const [showScreenAgent, setShowScreenAgent] = useState(false);
-  const [showVisionAgent, setShowVisionAgent] = useState(false);
   const [showIntelligenceHub, setShowIntelligenceHub] = useState(false);
 
   const [showAgenticRunner, setShowAgenticRunner] = useState(false);
@@ -467,9 +423,6 @@ const ChatbotPage = () => {
   }, [user, isAnonymous]);
 
   useEffect(() => {
-    if (chatMode === "shadowspectre" && !hasAcceptedShadowSpectreTerms()) {
-      setShowShadowSpectreTerms(true);
-    }
   }, [chatMode]);
 
   useEffect(() => {
@@ -517,64 +470,6 @@ const ChatbotPage = () => {
 
   useEffect(() => {
     const convId = searchParams.get("conversation");
-    if (convId) {
-      void loadConversation(convId);
-    }
-  }, [searchParams]);
-
-  const activateMarketplaceAgent = useCallback((agent: MarketplaceAgent) => {
-    const runtime = resolveAgentRuntime(agent);
-    if (!runtime) return;
-    setActiveMarketplaceAgent(agent);
-    setActiveMarketplaceAgentState(agent);
-    marketplaceRuntimeRef.current = runtime;
-    if (runtime.chatMode) setChatMode(runtime.chatMode);
-    if (runtime.personality) setPersonality(runtime.personality);
-    setCurrentConversationId(null);
-    setMessages([
-      {
-        id: "agent-welcome",
-        type: "ai",
-        content: runtime.welcomeMessage ?? `**${agent.name}** is now active. Ask anything in this specialty.`,
-        timestamp: new Date(),
-      },
-    ]);
-  }, []);
-
-  useEffect(() => {
-    const agentId = searchParams.get("agent") ?? getActiveMarketplaceSession()?.agentId;
-    if (!agentId) {
-      setActiveMarketplaceAgentState(null);
-      marketplaceRuntimeRef.current = null;
-      return;
-    }
-
-    const fromCatalog = getAgentById(agentId);
-    if (fromCatalog) {
-      activateMarketplaceAgent(fromCatalog);
-      return;
-    }
-
-    if (marketplaceCatalogLoading) return;
-
-    void backend
-      .from("marketplace_agents")
-      .select("*")
-      .eq("id", agentId)
-      .eq("is_active", true)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) activateMarketplaceAgent(data as MarketplaceAgent);
-      });
-  }, [searchParams, marketplaceAgents, marketplaceCatalogLoading, getAgentById, activateMarketplaceAgent]);
-
-  const clearMarketplaceAgentSession = useCallback(() => {
-    setActiveMarketplaceAgentState(null);
-    marketplaceRuntimeRef.current = null;
-    clearActiveMarketplaceAgent();
-  }, []);
-
-  useEffect(() => {
     if (user) {
       loadConversations();
       checkSubscription();
@@ -1078,54 +973,6 @@ Structure and Content Guidelines:
           role: "system",
           content: `You are acting as the Shadow Twin for ${shadowName}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI.`
         });
-      }
-
-      if (chatMode === "shadowspectre") {
-        if (!user || isAnonymous) {
-          throw new Error("Sign in required to use ShadowSpectre.");
-        }
-        if (!hasAcceptedShadowSpectreTerms()) {
-          setShowShadowSpectreTerms(true);
-          throw new Error("Accept ShadowSpectre authorized-use terms to continue.");
-        }
-
-        const head = routeShadowSpectreHead(lastUser);
-        setShadowSpectreHead(head);
-        const aiMessageId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); }));
-        let assistantContent = "";
-        const shadowMatch = lastUser.match(/@([a-zA-Z0-9_-]+)-shadow/i);
-        const isShadowTwin = !!shadowMatch;
-        const shadowTwinName = shadowMatch ? `${shadowMatch[1]}-shadow` : undefined;
-        
-        const streamToken = (token: string) => {
-          assistantContent += token;
-          setMessages((prev) => {
-            const exists = prev.find((m) => m.id === aiMessageId);
-            if (exists) {
-              return prev.map((m) =>
-                m.id === aiMessageId ? { ...m, content: assistantContent } : m,
-              );
-            }
-            return [
-              ...prev,
-              { id: aiMessageId, type: "ai", content: assistantContent, timestamp: new Date(), isShadowTwin, shadowTwinName },
-            ];
-          });
-        };
-
-        const spectre = await streamShadowSpectre({
-          messages: routerMessages,
-          head,
-          authorization: getShadowSpectreScope(),
-          onToken: streamToken,
-          signal: controller.signal,
-        });
-        setShadowSpectreHead(spectre.head);
-        // Removed sovereign memory indexing
-        if (user) {
-          void saveMessage(spectre.content, "assistant", conversationId);
-        }
-        return spectre.content;
       }
 
       const hasMultimodalImage = chatMessages.some((m) => Array.isArray(m.content));
@@ -1946,7 +1793,6 @@ Structure and Content Guidelines:
         return;
       case "shadowspectre":
         setChatMode("shadowspectre");
-        setShowShadowSpectrePanel(true);
         return;
       case "voice":
         setShowShadowTalkLive(true);
@@ -2192,11 +2038,6 @@ Structure and Content Guidelines:
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
             />
-            {chatMode === "shadowspectre" && (
-              <div className="px-3 pb-2">
-                <ShadowSpectreScopeBar activeHead={shadowSpectreHead} />
-              </div>
-            )}
           </div>
           {hasActiveChat && (
             <motion.p
@@ -2598,12 +2439,6 @@ Structure and Content Guidelines:
           />
         </Suspense>
       )}
-
-
-      <ShadowSpectrePanel
-        open={showShadowSpectrePanel}
-        onClose={() => setShowShadowSpectrePanel(false)}
-      />
 
       <AgenticTaskRunner
         isOpen={showAgenticRunner}

@@ -27,7 +27,6 @@ import Editor from "@monaco-editor/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProjectImportDialog } from "./cowork/ProjectImportDialog";
 import { AutonomousAgent } from "./cowork/AutonomousAgent";
-import { DreamStateUI } from "./cowork/DreamStateUI";
 import { OmnisciencePanel } from "./cowork/OmnisciencePanel";
 import { ShadowTwinSetup } from "./cowork/ShadowTwinSetup";
 import { useWorkspaces, Project, FileNode, GitCommit as GitCommitType } from "@/hooks/useWorkspaces";
@@ -236,13 +235,7 @@ export const ShadowCowork = ({ isOpen, onClose, onInsertToChat }: ShadowCoworkPr
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showAgent, setShowAgent] = useState(true);
-  const [showDreamState, setShowDreamState] = useState(() => {
-    try {
-      return new URLSearchParams(window.location.search).get("modal") === "dreamstate";
-    } catch {
-      return false;
-    }
-  });
+
   const [showTwinSetup, setShowTwinSetup] = useState(false);
   const [showOmniscience, setShowOmniscience] = useState(true);
   
@@ -1041,25 +1034,9 @@ export const ShadowCowork = ({ isOpen, onClose, onInsertToChat }: ShadowCoworkPr
               </Button>
 
               <Button
-                variant={showDreamState ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setShowDreamState(prev => {
-                  if (!prev) setShowTwinSetup(false);
-                  return !prev;
-                })}
-                className="h-7 gap-1.5 text-xs text-fuchsia-400 hover:text-fuchsia-300"
-              >
-                <CloudLightning className="h-3.5 w-3.5" />
-                <span className="hidden md:inline font-bold">DreamState</span>
-              </Button>
-
-              <Button
                 variant={showTwinSetup ? "secondary" : "ghost"}
                 size="sm"
-                onClick={() => setShowTwinSetup(prev => {
-                  if (!prev) setShowDreamState(false);
-                  return !prev;
-                })}
+                onClick={() => setShowTwinSetup(prev => !prev)}
                 className="h-7 gap-1.5 text-xs text-emerald-400 hover:text-emerald-300"
               >
                 <BrainCircuit className="h-3.5 w-3.5" />
@@ -1377,20 +1354,6 @@ export const ShadowCowork = ({ isOpen, onClose, onInsertToChat }: ShadowCoworkPr
                   {/* Editor */}
                   <ResizablePanel defaultSize={showTerminal ? 70 : 100}>
                     <div className="h-full flex flex-col relative">
-                      {showDreamState ? (
-                        <div className="absolute inset-0 z-50 bg-black/95 overflow-hidden">
-                          <DreamStateUI onCodeGenerated={(code) => {
-                            if (selectedFile) {
-                              setFileContent(code);
-                            } else {
-                              createNode("/src", `dreamstate_${Date.now()}.ts`, "file");
-                              setTimeout(() => setFileContent(code), 100);
-                            }
-                            setShowDreamState(false);
-                          }} />
-                        </div>
-                      ) : null}
-
                       {showTwinSetup ? (
                         <div className="absolute inset-0 z-50 overflow-hidden">
                           <ShadowTwinSetup 

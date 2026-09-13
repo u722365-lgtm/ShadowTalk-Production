@@ -78,30 +78,33 @@ const CookieConsent = () => {
   };
 
   const saveConsent = (prefs: CookiePreferences) => {
-    try {
-      localStorage.setItem(COOKIE_CONSENT_KEY, "true");
-      localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs));
-    } catch (e) {
-      console.warn("Failed to save to localStorage", e);
-    }
-    
-    setPreferences(prefs);
+    // Hide the banner immediately to prevent any UI freezing
     setShowBanner(false);
-    
-    // Apply cookie preferences
-    try {
-      if (prefs.analytics) {
-        document.cookie = "analytics_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+    setPreferences(prefs);
+
+    setTimeout(() => {
+      try {
+        localStorage.setItem(COOKIE_CONSENT_KEY, "true");
+        localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(prefs));
+      } catch (e) {
+        console.warn("Failed to save to localStorage", e);
       }
-      if (prefs.marketing) {
-        document.cookie = "marketing_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+      
+      // Apply cookie preferences
+      try {
+        if (prefs.analytics) {
+          document.cookie = "analytics_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+        }
+        if (prefs.marketing) {
+          document.cookie = "marketing_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+        }
+        if (prefs.preferences) {
+          document.cookie = "preferences_enabled=true; max-age=31536000; SameSite=Lax; Secure";
+        }
+      } catch (e) {
+        console.warn("Failed to set cookies", e);
       }
-      if (prefs.preferences) {
-        document.cookie = "preferences_enabled=true; max-age=31536000; SameSite=Lax; Secure";
-      }
-    } catch (e) {
-      console.warn("Failed to set cookies", e);
-    }
+    }, 10);
   };
 
   if (!showBanner) return null;
