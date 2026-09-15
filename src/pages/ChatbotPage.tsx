@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback, useMemo } from "react";
 import { Loader2 } from "lucide-react";
+import { BYOKModal } from "@/components/chat/BYOKModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
@@ -1953,6 +1954,7 @@ Structure and Content Guidelines:
 
   return (
     <div className="shadowtalk-chat-shell neural-bg settings-scroll-smooth flex h-full min-h-0 flex-col overflow-hidden">
+      <BYOKModal />
       <SEOHead meta={PAGE_SEO.chatbot} structuredData={[...getFounderHomeStructuredData(), getChatbotFAQSchema(), getSpeakableSchema(["h1", "[data-speakable]"]), getWebSiteWithSearchSchema()]} />
       <ChatAmbientBackground />
       <motion.div
