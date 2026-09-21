@@ -386,7 +386,7 @@ export async function turboComplete(
   return cloudFallback(systemPrompt, userContent, opts, startMs);
 }
 
-/** Lovable Cloud AI streaming fallback (used when no BYOK Turbo key works). */
+/** Lovable Cloud AI streaming fallback (used when no Turbo key works). */
 async function cloudFallback(
   systemPrompt: string,
   userContent: string,
@@ -395,10 +395,10 @@ async function cloudFallback(
 ): Promise<TurboEngineResult> {
   try {
     const cloudMessages = [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userContent },
+      { role: 'system' as const, content: systemPrompt },
+      { role: 'user' as const, content: userContent },
     ];
-    const provider = await AIProviderRouter.getBestProvider();
+    const provider = await AIProviderRouter.getBestProvider;
     const { content, error } = await provider.streamChat(
       cloudMessages,
       {

@@ -57,13 +57,13 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     filename: "how-to-private-ai-chat.html",
     title: "How to Use Private AI Chat with Encryption — ShadowTalk",
     metaDescription:
-      "Use private AI chat: anonymous session, optional E2EE, Stealth Vault, and BYOK. ShadowTalk privacy-first workspace guide.",
-    keywords: ["private AI chat", "encrypted AI chat", "anonymous AI", "BYOK AI"],
+      "Use private AI chat: anonymous session, optional E2EE, Stealth Vault, and . ShadowTalk privacy-first workspace guide.",
+    keywords: ["private AI chat", "encrypted AI chat", "anonymous AI", "AI"],
     steps: [
       "Open /chatbot — anonymous session works without signup",
       "Enable encrypted chat for sensitive threads",
       "Use Stealth Vault in /security for stored secrets",
-      "Optional: BYOK or on-device models in Settings",
+      "Optional: or on-device models in Settings",
     ],
     ctaLabel: "Start private AI chat",
     utmCampaign: "privacy_howto",

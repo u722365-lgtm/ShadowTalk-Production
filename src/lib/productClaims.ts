@@ -73,7 +73,7 @@ export const COMMUNITY_HIGHLIGHTS = [] as const;
 export const PRIVACY_COPY = {
   /** Cloud chat default */
   cloudDefault:
-    "Cloud chat uses secure servers. Sensitive work can use Stealth Vault, BYOK, or optional on-device Gemma.",
+    "Cloud chat uses secure servers. Sensitive work can use Stealth Vault, or optional on-device Gemma.",
   /** When offline / local mode is active */
   localMode:
     "In on-device mode, inference runs in your browser. Prompts for that session are not sent to our servers.",
@@ -82,7 +82,7 @@ export const PRIVACY_COPY = {
     "Stealth Vault encrypts data client-side. Only you hold the keys.",
   /** Short tagline for cards */
   privacyNative:
-    "Privacy-native: vault, BYOK, and optional on-device AI — you choose cloud vs local.",
+    "Privacy-native: vault, and optional on-device AI — you choose cloud vs local.",
 } as const;
 
 export function formatFreeLimitLine(

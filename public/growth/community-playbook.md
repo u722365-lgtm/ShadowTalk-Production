@@ -20,7 +20,7 @@ Template A — “five-tab grind”
 > We hit the same wall: research in one tab, code in another, slides in a third. Instead of another aggregator UI, we built the workflow layer underneath. The key difference is finishing, not just replying: plan → tools → approval → result. If you want, I can share the exact architecture choice that made the difference.
 
 Template B — privacy/security complaint
-> I’m not going to argue cloud trust; it depends on your threat model. What helped us was making the local path actually runnable instead of theoretical: session keys, redaction tools, minimal context habits, and BYOK. The privacy checker we published is small but it’s the kind of thing most AI tools skip.
+> I’m not going to argue cloud trust; it depends on your threat model. What helped us was making the local path actually runnable instead of theoretical: session keys, redaction tools, minimal context habits, and . The privacy checker we published is small but it’s the kind of thing most AI tools skip.
 
 Template C — developer complaining about wrappers
 > Wrappers are fine until you need multi-step execution, browser tooling, and a persistent workspace in one place. We kept the model provider interface narrow so it behaves like a real application instead of a chat reskin. If you’re evaluating, compare the tool surface, not the chat UI.

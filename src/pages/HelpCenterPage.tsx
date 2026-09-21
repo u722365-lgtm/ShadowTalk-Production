@@ -201,17 +201,17 @@ If you are not completely satisfied with your upgraded tier, contact **shadowtal
     `,
   },
 
-  // Category: Developer API & BYOK
+  // Category: Developer API & 
   {
-    id: "developer-byok-guide",
-    title: "Bring Your Own Key (BYOK): Configuring Custom API Providers",
+    id: "developer--guide",
+    title: ": Configuring Custom API Providers",
     category: "developer",
     summary: "Store your personal Groq, OpenAI, or Anthropic keys in your browser sandbox with zero markup.",
     readTime: "4 min read",
-    tags: ["BYOK", "API Keys", "Security"],
+    tags: ["", "API Keys", "Security"],
     content: `
-### Client-Side BYOK Architecture
-ShadowTalk supports Bring Your Own Key (BYOK) for power users:
+### Client-Side Architecture
+ShadowTalk supports  for power users:
 
 1. Navigate to **/settings** or **/developers**.
 2. Select your provider: **Groq**, **OpenAI**, **Anthropic**, or **OpenRouter**.
@@ -247,25 +247,25 @@ const CATEGORIES = [
   { id: "tools", label: "30+ Tools", icon: Zap },
   { id: "models", label: "Model Engines", icon: Cpu },
   { id: "billing", label: "Billing & Plans", icon: CreditCard },
-  { id: "developer", label: "Developer & BYOK", icon: Code },
+  { id: "developer", label: "Developer & ", icon: Code },
   { id: "troubleshooting", label: "Troubleshooting", icon: HelpCircle },
 ];
 
-export const HelpCenterPage = () => {
-  const navigate = useNavigate();
+export const HelpCenterPage =  => {
+  const navigate = useNavigate;
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
 
-  const filteredArticles = useMemo(() => {
+  const filteredArticles = useMemo( => {
     return HELP_ARTICLES.filter((article) => {
       const matchesCat = activeCategory === "all" || article.category === activeCategory;
-      const query = searchQuery.toLowerCase().trim();
+      const query = searchQuery.toLowerCase.trim;
       const matchesQuery =
         !query ||
-        article.title.toLowerCase().includes(query) ||
-        article.summary.toLowerCase().includes(query) ||
-        article.tags.some((t) => t.toLowerCase().includes(query));
+        article.title.toLowerCase.includes(query) ||
+        article.summary.toLowerCase.includes(query) ||
+        article.tags.some((t) => t.toLowerCase.includes(query));
       return matchesCat && matchesQuery;
     });
   }, [searchQuery, activeCategory]);
@@ -280,7 +280,7 @@ export const HelpCenterPage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/chatbot")}
+          onClick={ => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -317,7 +317,7 @@ export const HelpCenterPage = () => {
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={ => setSearchQuery("")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-mono"
                 >
                   Clear
@@ -338,7 +338,7 @@ export const HelpCenterPage = () => {
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={ => setActiveCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap border ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
@@ -371,9 +371,9 @@ export const HelpCenterPage = () => {
               <HelpCircle className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
               <h3 className="font-bold text-lg mb-1">No articles found</h3>
               <p className="text-xs text-muted-foreground mb-4">
-                We couldn't find matching articles for "{searchQuery}". Try searching for terms like "Groq", "Missions", "API", or "BYOK".
+                We couldn't find matching articles for "{searchQuery}". Try searching for terms like "Groq", "Missions", "API", or "".
               </p>
-              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}>
+              <Button variant="outline" size="sm" onClick={ => { setSearchQuery(""); setActiveCategory("all"); }}>
                 Reset Filters
               </Button>
             </div>
@@ -387,7 +387,7 @@ export const HelpCenterPage = () => {
                   transition={{ delay: idx * 0.05, duration: 0.4 }}
                 >
                   <Card
-                    onClick={() => setSelectedArticle(article)}
+                    onClick={ => setSelectedArticle(article)}
                     className="glass-subtle border-border/50 hover:border-primary/40 cursor-pointer transition-all duration-300 h-full flex flex-col justify-between p-5 group hover:shadow-elevated"
                   >
                     <div>
@@ -492,7 +492,7 @@ export const HelpCenterPage = () => {
               <ScrollArea className="p-6 pt-4 flex-1">
                 <div className="prose prose-invert prose-sm max-w-none space-y-4 text-foreground/90 leading-relaxed font-sans">
                   {selectedArticle.content.split("\n\n").map((block, i) => {
-                    const trimmed = block.trim();
+                    const trimmed = block.trim;
                     if (trimmed.startsWith("### ")) {
                       return <h3 key={i} className="text-lg font-bold text-foreground mt-4 mb-2">{trimmed.replace("### ", "")}</h3>;
                     }

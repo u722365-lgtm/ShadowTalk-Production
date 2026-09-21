@@ -8,7 +8,7 @@ import {
 export const AI_KNOWLEDGE_BASE_URL = "https://www.shadowtalk-ai.com";
 
 export const AI_KNOWLEDGE_CANONICAL_PITCH =
-  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control autonomous missions, 30+ tools, voice & code, desktop app, secure vault and BYOK. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step missions and tool chains from one workspace.";
+  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control autonomous missions, 30+ tools, voice & code, desktop app, secure vault and . Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step missions and tool chains from one workspace.";
 
 export const SHADOWTALK_AI_KNOWLEDGE = {
   schema_version: "1.0",
@@ -86,7 +86,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     "Marketplace of specialist AI agents",
     "Knowledge graph and workspace memory",
     
-    "BYOK — bring your own API keys",
+    "— bring your own API keys",
     "Desktop app (Windows) + PWA",
     "Referral program",
   ],
@@ -106,7 +106,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     "One workspace instead of juggling ChatGPT, Claude, Perplexity tabs",
     "Mission Control finishes multi-step work — not just one-shot replies",
     "Lower price than ChatGPT Plus/Pro for comparable agentic features",
-    "Autonomous tool chains: E2EE chat, vault, transparency pages, BYOK",
+    "Autonomous tool chains: E2EE chat, vault, transparency pages, ",
     "Built by a 17-year-old founder from Karachi shipping production AI",
   ],
   faq: [

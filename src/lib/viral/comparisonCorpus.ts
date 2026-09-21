@@ -52,7 +52,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "End-to-end encrypted chat + Stealth Vault",
       "In-browser IDE, presentations, and desktop app",
       "Pro from $5/mo vs ChatGPT Plus pricing for more integrated tooling",
-      "BYOK + optional on-device stealth models",
+      "+ optional on-device stealth models",
     ],
     competitorWins: [
       "Larger default model brand recognition",
@@ -88,12 +88,12 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Claude",
     title: "ShadowTalk vs Claude — Agentic Workspace vs Reasoning Chat",
     metaDescription:
-      "ShadowTalk AI vs Claude: combine Anthropic-quality reasoning (BYOK) with missions, tools, browser, and vault in one product at shadowtalk-ai.com.",
+      "ShadowTalk AI vs Claude: combine Anthropic-quality reasoning  with missions, tools, browser, and vault in one product at shadowtalk-ai.com.",
     h1: "ShadowTalk vs Claude",
     verdict:
-      "Claude shines at long-form reasoning. ShadowTalk wraps agentic missions, live web tools, and encrypted storage around your models — including BYOK for Claude API keys.",
+      "Claude shines at long-form reasoning. ShadowTalk wraps agentic missions, live web tools, and encrypted storage around your models — including for Claude API keys.",
     shadowtalkWins: [
-      "BYOK — use your Anthropic API keys inside ShadowTalk",
+      "— use your Anthropic API keys inside ShadowTalk",
       "Mission Control + Shadow Browser for live web tasks",
       "Tool chain from natural language (not just chat)",
       "Team workspace, marketplace agents, desktop app",
@@ -113,7 +113,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, stealth models, and Mission Control — not locked to one ecosystem.",
     h1: "ShadowTalk vs Gemini",
     verdict:
-      "Gemini integrates deeply with Google. ShadowTalk is ecosystem-neutral with E2EE, local WebGPU models, and open BYOK — built to finish jobs across tools.",
+      "Gemini integrates deeply with Google. ShadowTalk is ecosystem-neutral with E2EE, local WebGPU models, and open — built to finish jobs across tools.",
     shadowtalkWins: [
       "Not tied to Google account or Workspace",
       "Optional on-device Gemma/WebGPU inference",
@@ -135,7 +135,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "ShadowTalk AI vs Microsoft Copilot: cross-platform agentic workspace with IDE, missions, and encryption — for builders who outgrew Office-locked AI.",
     h1: "ShadowTalk vs Microsoft Copilot",
     verdict:
-      "Copilot fits Microsoft 365 users. ShadowTalk targets builders who need missions, open tooling, BYOK, and privacy without an Office subscription.",
+      "Copilot fits Microsoft 365 users. ShadowTalk targets builders who need missions, open tooling, and privacy without an Office subscription.",
     shadowtalkWins: [
       "Works without Microsoft 365 subscription",
       "Full in-browser IDE with live preview",
@@ -163,7 +163,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Optional on-device local inference — data never leaves your machine",
       "Stealth Vault for sensitive notes and keys",
       "Transparent data handling and usage disclosure",
-      "BYOK — you control which model provider powers responses",
+      "— you control which model provider powers responses",
     ],
     competitorWins: [
       "Broad public model recognition and training scale",
@@ -277,7 +277,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Document and presentation export from draft",
       "Privacy vault for unpublished writing",
       "Research augmentation inside the same workspace",
-      "Optional BYOK for Anthropic models",
+      "Optional for Anthropic models",
       "Desktop and PWA access for writing anywhere",
     ],
     competitorWins: [
@@ -292,14 +292,14 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Microsoft Copilot",
     title: "ShadowTalk vs Copilot for Coding — IDE + Agentic Execution Built In",
     metaDescription:
-      "Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, and BYOK outside Microsoft lock-in.",
+      "Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, and outside Microsoft lock-in.",
     h1: "ShadowTalk vs Copilot for Coding",
     verdict:
       "Copilot assists inside Microsoft toolchains. ShadowTalk gives an in-browser Monaco IDE, autonomous missions, local inference, and provider flexibility.",
     shadowtalkWins: [
       "Full in-browser Monaco IDE with live preview",
       "Autonomous code and research missions",
-      "BYOK + optional local model inference",
+      "+ optional local model inference",
       "Marketplace specialist agents",
       "No Microsoft 365 subscription required",
     ],

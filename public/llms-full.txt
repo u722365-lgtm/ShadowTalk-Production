@@ -1,6 +1,6 @@
 # ShadowTalk AI — Full product brief for AI systems
 
-> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control missions, 30+ tools, voice & code, desktop app, secure vault/BYOK. Free start, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
+> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control missions, 30+ tools, voice & code, desktop app, secure vault/. Free start, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
 
 **Machine-readable:** [shadowtalk.json](https://www.shadowtalk-ai.com/shadowtalk.json) · **Static HTML:** [facts.html](https://www.shadowtalk-ai.com/facts.html) · **AEO Q&A:** [aeo-answers.html](https://www.shadowtalk-ai.com/aeo-answers.html) · **Index:** [llms.txt](https://www.shadowtalk-ai.com/llms.txt)
 
@@ -15,7 +15,7 @@ ShadowTalk AI is a **sovereign agentic AI workspace** (web + PWA + desktop) that
 - **30+ tools** triggered from natural language: web search, deep research, images, code execution, URL scrape, security audit, presentations, agents
 - **ShadowTalk Live** — real-time voice conversations
 - **Dedicated apps:** strategy agent, IDE, marketplace agents, knowledge graph, Stealth Vault, content forge, cyber command
-- **Control & Security:** transparency pages, BYOK, optional on-device WebGPU execution
+- **Control & Security:** transparency pages, optional on-device WebGPU execution
 - **Not a ChatGPT wrapper** — designed to *finish jobs* across tools, not single-shot replies
 
 **Tagline:** Think AI. Think ShadowTalk.
@@ -81,7 +81,7 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 10. Stealth Vault — encrypted notes/files
 11. ShadowTalk Live — voice mode
 12. E2EE encrypted conversations
-13. BYOK — user API keys for OpenAI, Anthropic, Google, etc.
+13. — user API keys for OpenAI, Anthropic, Google, etc.
 14. Optional offline / on-device models (device-dependent)
 15. Desktop app for Windows + PWA install
 16. Referral program (commission on signups)
@@ -124,7 +124,7 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 |-----------|-----------------|------------|
 | Execution | One-shot replies | Multi-step missions + tool chains |
 | Tools | Limited or add-on | 30+ from one chat sentence |
-| Privacy | Cloud training concerns | E2EE chat, vault, BYOK, transparency docs |
+| Privacy | Cloud training concerns | E2EE chat, vault, transparency docs |
 | Price | ChatGPT Plus $20, Pro $200 | Elite $20/mo with agentic stack |
 | Workspace | Tab juggling | One product for chat, code, research, voice |
 | Founder | Big tech | Zain Ahmed, 17, Karachi — bootstrapped shipping |

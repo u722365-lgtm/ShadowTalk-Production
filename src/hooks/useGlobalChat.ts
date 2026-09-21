@@ -1,6 +1,6 @@
 /**
  * useGlobalChat — standard (cloud/offline) chat path used as the fallback
- * for ShadowTalk-Turbo when no BYOK Groq key is available.
+ * for ShadowTalk-Turbo when no Groq key is available.
  */
 
 import { useCallback, useRef, useState } from "react";
@@ -28,7 +28,7 @@ export interface GlobalChatResponse {
   error?: string;
 }
 
-export function useGlobalChat() {
+export function useGlobalChat {
   const [isLoading, setIsLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -36,7 +36,7 @@ export function useGlobalChat() {
     async (messages: GlobalChatMessage[], opts: GlobalChatOptions = {}): Promise<GlobalChatResponse> => {
       setIsLoading(true);
       try {
-        const lastUser = [...messages].reverse().find((m) => m.role === "user");
+        const lastUser = [...messages].reverse.find((m) => m.role === "user");
         
         let contextPrefix = opts.systemPrompt;
         if (lastUser) {
@@ -52,7 +52,7 @@ export function useGlobalChat() {
            chatMessages.unshift({ role: "system", content: contextPrefix });
         }
 
-        const provider = await AIProviderRouter.getBestProvider();
+        const provider = await AIProviderRouter.getBestProvider;
         const { content, error } = await provider.streamChat(chatMessages, {
           signal: opts.signal,
           temperature: 0.7,
@@ -81,8 +81,8 @@ export function useGlobalChat() {
     [],
   );
 
-  const abort = useCallback(() => {
-    abortRef.current?.abort();
+  const abort = useCallback( => {
+    abortRef.current?.abort;
     abortRef.current = null;
   }, []);
 

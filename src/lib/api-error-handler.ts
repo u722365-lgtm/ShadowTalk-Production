@@ -11,12 +11,12 @@ export interface APIError {
 
 /**
  * Thrown when the chat edge function reports the platform AI gateway is out
- * of credits AND the user has no stored BYOK key the server could auto-swap
- * to. The UI catches this and opens the BYOK key dialog so the user can add
+ * of credits AND the user has no stored key the server could auto-swap
+ * to. The UI catches this and opens the key dialog so the user can add
  * their own key and continue without losing their conversation.
  */
 export class CreditsExhaustedError extends AppError {
-  readonly needsByok = true as const;
+  readonly needs= true as const;
   constructor(message = "Platform AI credits are exhausted. Add your own API key to continue.") {
     super(message, { code: "PLATFORM_CREDITS_EXHAUSTED", statusCode: 402, isOperational: true });
     this.name = "CreditsExhaustedError";
@@ -29,9 +29,9 @@ export async function detectCreditsExhausted(
 ): Promise<CreditsExhaustedError | null> {
   if (response.status !== 402) return null;
   try {
-    const clone = response.clone();
-    const data = await clone.json();
-    if (data?.needsByok === true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
+    const clone = response.clone;
+    const data = await clone.json;
+    if (data?.needs=== true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
       return new CreditsExhaustedError(
         typeof data.error === "string" ? data.error : data.message,
       );
@@ -39,7 +39,7 @@ export async function detectCreditsExhausted(
   } catch {
     /* fall through */
   }
-  return new CreditsExhaustedError();
+  return new CreditsExhaustedError;
 }
 
 export const API_ERROR_MESSAGES: Record<number, string> = {
@@ -60,7 +60,7 @@ export const parseAPIError = async (response: Response): Promise<AppError> => {
   let code: string | undefined;
 
   try {
-    const data = await response.json();
+    const data = await response.json;
     if (data.error) {
       message = typeof data.error === 'string' ? data.error : data.error.message || message;
       code = data.error.code;
@@ -96,7 +96,7 @@ export const handleAPIError = async (
       });
       // Optionally redirect to login
       if (typeof window !== 'undefined') {
-        setTimeout(() => {
+        setTimeout( => {
           window.location.href = '/auth';
         }, 2000);
       }
@@ -174,27 +174,27 @@ export const fetchWithRetry = async (
 };
 
 // Helper to check if user is online
-export const isOnline = (): boolean => {
+export const isOnline = : boolean => {
   return typeof navigator !== 'undefined' ? navigator.onLine : true;
 };
 
 // Helper for graceful degradation
 export const withOfflineFallback = async <T>(
-  onlineHandler: () => Promise<T>,
-  offlineFallback: T | (() => T)
+  onlineHandler:  => Promise<T>,
+  offlineFallback: T | ( => T)
 ): Promise<T> => {
-  if (!isOnline()) {
+  if (!isOnline) {
     return typeof offlineFallback === 'function' 
-      ? (offlineFallback as () => T)() 
+      ? (offlineFallback as  => T) 
       : offlineFallback;
   }
 
   try {
-    return await onlineHandler();
+    return await onlineHandler;
   } catch (error) {
-    if (!isOnline()) {
+    if (!isOnline) {
       return typeof offlineFallback === 'function' 
-        ? (offlineFallback as () => T)() 
+        ? (offlineFallback as  => T) 
         : offlineFallback;
     }
     throw error;

@@ -1,59 +1,26 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback, useMemo } from "react";
 import { Loader2 } from "lucide-react";
-import { BYOKModal } from "@/components/chat/BYOKModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { backend } from "@/integrations/local/client";
 import { useToast } from "@/hooks/use-toast";
 import { ChatMode } from "@/components/chat/ModeSelector";
-import { AIProvider } from "@/components/chat/ProviderSelector";
+type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { AdBanner } from "@/components/chat/AdBanner";
-import { ShareWinBanner } from "@/components/growth/ShareWinBanner";
-import { ShareResultDialog } from "@/components/growth/ShareResultDialog";
+const AdBanner = (props: any) => null;
+const ShareWinBanner = (props: any) => null;
+const ShareResultDialog = (props: any) => null;
 import { ChatMessages } from "@/components/chat/ChatMessages";
 import type { UserContext } from "@/components/chat/UserContextPanel";
 import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
-// Lazy-loaded modal dialogs to eliminate massive initial bundle parsing
-const ImageGenerator = lazy(() =>
-  import("@/components/chat/ImageGenerator").then((m) => ({ default: m.ImageGenerator })),
-);
-const MusicGenerator = lazy(() =>
-  import("@/components/chat/MusicGenerator").then((m) => ({ default: m.MusicGenerator })),
-);
-const WordleGame = lazy(() =>
-  import("@/components/chat/WordleGame").then((m) => ({ default: m.WordleGame })),
-);
-const GoogleIntegrationPanel = lazy(() =>
-  import("@/components/chat/GoogleIntegrationPanel").then((m) => ({ default: m.GoogleIntegrationPanel })),
-);
-const DocumentGenerator = lazy(() =>
-  import("@/components/chat/DocumentGenerator").then((m) => ({ default: m.DocumentGenerator })),
-);
-const CommandPalette = lazy(() =>
-  import("@/components/chat/CommandPalette").then((m) => ({ default: m.CommandPalette })),
-);
-const ShadowTalkLive = lazy(() =>
-  import("@/components/chat/ShadowTalkLive").then((m) => ({ default: m.ShadowTalkLive })),
-);
-const ShadowBrowser = lazy(() =>
-  import("@/components/chat/ShadowBrowser").then((m) => ({ default: m.ShadowBrowser })),
-);
 
-import { useFeatureGating } from "@/hooks/useFeatureGating";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { useUsageTracking } from "@/hooks/useUsageTracking";
-import { useGeoLocation } from "@/hooks/useGeoLocation";
-import { useGuestUsage, GUEST_LIMITS } from "@/hooks/useGuestUsage";
-import { useDailyLimits } from "@/hooks/useDailyLimits";
-import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
-import { useAgenticToolDispatch } from "@/hooks/useAgenticToolDispatch";
+
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
 import { AIProviderRouter } from "@/ai/AIProviderRouter";
@@ -72,26 +39,7 @@ import { useShadowMemoryContext } from "@/contexts/ShadowMemoryContext";
 import { useIntelligenceHub } from "@/hooks/useIntelligenceHub";
 import { useAutoImproveContext } from "@/contexts/AutoImproveContext";
 
-import { trackAgenticEvent } from "@/lib/agenticMetrics";
 
-import { detectChatImageIntent } from "@/lib/chatImageIntent";
-function buildVisionUserMessage(
-  text: string,
-  base64Data: string,
-  mimeType = "image/png",
-): {
-  role: string;
-  content: Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
-} {
-  const url = base64Data.startsWith("data:") ? base64Data : `data:${mimeType};base64,${base64Data}`;
-  return {
-    role: "user",
-    content: [
-      { type: "text" as const, text: text || "Please analyze this image." },
-      { type: "image_url" as const, image_url: { url } },
-    ],
-  };
-}
 
 
 import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareIntelligence";
@@ -109,30 +57,17 @@ import { CHAT_COMMAND_MODAL_ACTIONS, CHAT_COMMAND_NAV_ROUTES } from "@/lib/chatC
 import { consumePendingChatInsert } from "@/lib/pendingChatInsert";
 import { useChatSpeech } from "@/hooks/useChatSpeech";
 
-import { useAutoBrowse } from "@/components/chat/BrowseActivityPanel";
-
-const BrowseActivityPanel = lazy(() =>
-  import("@/components/chat/BrowseActivityPanel").then((m) => ({ default: m.BrowseActivityPanel })),
-);
-const MultiModelOrchestrator = lazy(() =>
-  import("@/components/chat/MultiModelOrchestrator").then((m) => ({ default: m.MultiModelOrchestrator })),
-);
-const VisualReasoning = lazy(() =>
-  import("@/components/chat/VisualReasoning").then((m) => ({ default: m.VisualReasoning })),
-);
-const ImageDecoder = lazy(() =>
-  import("@/components/chat/ImageDecoder").then((m) => ({ default: m.ImageDecoder })),
-);
-const DailyPlanner = lazy(() =>
-  import("@/components/chat/DailyPlanner").then((m) => ({ default: m.DailyPlanner })),
-);
+const MultiModelOrchestrator = (props: any) => null;
+const VisualReasoning = (props: any) => null;
+const ImageDecoder = (props: any) => null;
+const DailyPlanner = (props: any) => null;
 const IntelligenceHub = lazy(() =>
   import("@/components/chat/IntelligenceHub").then((m) => ({ default: m.IntelligenceHub })),
 );
 
 
-import { ChatUpgradeNudge } from "@/components/monetization/ChatUpgradeNudge";
-import { UpgradePrompt } from "@/components/monetization/UpgradePrompt";
+const ChatUpgradeNudge = (props: any) => null;
+const UpgradePrompt = (props: any) => null;
 import { useSubscriptionNudge } from "@/hooks/useSubscriptionNudge";
 import { CHAT_LIMIT_TOAST } from "@/lib/conversionCopy";
 import { getDailyMessageCount, incrementDailyMessageCount } from "@/lib/dailyMessageCounter";
@@ -141,43 +76,7 @@ import { detectAppBuilderIntent, generateAppProject } from "@/lib/appBuilder";
 import { useShadowTalkModel } from "@/hooks/useShadowTalkModel";
 import { SEOHead } from "@/components/SEOHead";
 import { PAGE_SEO, getFounderHomeStructuredData, getChatbotFAQSchema, getSpeakableSchema, getWebSiteWithSearchSchema } from "@/lib/seo";
-import { FounderCrawlStrip } from "@/components/founder/FounderCrawlStrip";
-import { UsageLimitBanner } from "@/components/monetization/UsageLimitBanner";
-const PlanetaryActionModal = lazy(() =>
-  import("@/components/chat/PlanetaryActionModal").then((m) => ({ default: m.PlanetaryActionModal })),
-);
-const ScreenAgent = lazy(() =>
-  import("@/components/chat/ScreenAgent").then((m) => ({ default: m.ScreenAgent })),
-);
-const AgenticTaskRunner = lazy(() =>
-  import("@/components/chat/AgenticTaskRunner").then((m) => ({ default: m.AgenticTaskRunner })),
-);
-const AIAgentWorkflows = lazy(() =>
-  import("@/components/chat/AIAgentWorkflows").then((m) => ({ default: m.AIAgentWorkflows })),
-);
-const AnalyticsDashboard = lazy(() =>
-  import("@/components/chat/AnalyticsDashboard").then((m) => ({ default: m.AnalyticsDashboard })),
-);
-const GeminiKeyAnalytics = lazy(() =>
-  import("@/components/chat/GeminiKeyAnalytics").then((m) => ({ default: m.GeminiKeyAnalytics })),
-);
-const DataOrganizer = lazy(() =>
-  import("@/components/chat/DataOrganizer").then((m) => ({ default: m.DataOrganizer })),
-);
-const UncensoredArena = lazy(() =>
-  import("@/components/chat/UncensoredArena").then((m) => ({ default: m.UncensoredArena })),
-);
-const ShadowCowork = lazy(() =>
-  import("@/components/chat/ShadowCowork").then((m) => ({ default: m.ShadowCowork })),
-);
-const SwarmMode = lazy(() =>
-  import("@/components/chat/SwarmMode").then((m) => ({ default: m.SwarmMode })),
-);
-const NeuralCanvasMode = lazy(() =>
-  import("@/components/chat/NeuralCanvasMode").then((m) => ({ default: m.NeuralCanvasMode })),
-);
 
-import { SignInPrompt } from "@/components/chat/SignInPrompt";
 import { BRAND } from "@/lib/brand";
 import { recordSuccessfulChatSession, getSuccessfulSessionCount } from "@/lib/growth/sessionMilestones";
 import { markHasChatted, completeQuickPrompt, hasChattedBefore } from "@/lib/growth/firstVisit";
@@ -248,17 +147,9 @@ const ChatbotPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, userPlan, signOut, checkSubscription, isAnonymous } = useAuth();
-  const guestUsage = useGuestUsage();
-  const dailyLimits = useDailyLimits();
   const { toast } = useToast();
   
   // Hooks
-  const { checkAccess, isElite, isProOrHigher } = useFeatureGating();
-  const { requestPermission } = usePushNotifications();
-  const { trackChatMessage, trackConversationCreated } = useUsageTracking();
-
-  const toolOrchestrator = useToolOrchestrator();
-  const { dispatchDetectionAsync, continueFromCritic, goToExecute } = useAgenticToolDispatch();
   const {
     captureChatSend,
     capture: captureAutoImprove,
@@ -291,24 +182,13 @@ const ChatbotPage = () => {
   const rejectPendingStep = async () => {};
   const cancelExecution = async () => {};
   
-  // State
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [dailyChats, setDailyChats] = useState(() => getDailyMessageCount());
-  const [nudgeDismissed, setNudgeDismissed] = useState(false);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const messageCount =
-    user && dailyLimits.isLoaded ? dailyLimits.usage.messages : dailyChats;
-  const nudge = useSubscriptionNudge(
-    messageCount,
-    conversations.filter((c) => !c.archived_at).length,
-  );
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [personality, setPersonality] = useState<Personality>("friendly");
   const [chatMode, setChatMode] = useState<ChatMode>("general");
-  const [aiProvider, setAiProvider] = useState<AIProvider>('turbo');
   const aiConfig = { useCustomKey: false, preferredProvider: null };
   const keys: any[] = [];
   const { preferences: chatPreferences, isLoading: chatPrefsLoading } = useChatSettings();
@@ -367,7 +247,7 @@ const ChatbotPage = () => {
   const [showSignInPrompt, setShowSignInPrompt] = useState(false);
   const [signInPromptReason, setSignInPromptReason] = useState<"chats" | "images" | "deepResearch" | "general">("chats");
   const [showBrowseActivity, setShowBrowseActivity] = useState(false);
-  const { browseSession, startBrowseSession, closeBrowseSession } = useAutoBrowse();
+
   const pushPermissionAskedRef = useRef(false);
   const referralCode = useUserReferralCode();
   const [guestArchivedIds, setGuestArchivedIdsState] = useState<Set<string>>(() =>
@@ -395,8 +275,6 @@ const ChatbotPage = () => {
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useGeoLocation();
 
   useEffect(() => {
     warmHardwareProfile();
@@ -442,7 +320,7 @@ const ChatbotPage = () => {
   useEffect(() => {
     if (chatPrefsLoading || appliedChatDefaults.current) return;
     appliedChatDefaults.current = true;
-    setAiProvider(chatPreferences.defaultProvider);
+
     setPersonality(chatPreferences.defaultPersonality as Personality);
     setChatMode(chatPreferences.defaultMode);
     applyChatDefaultsOnce((defaults) => {
@@ -555,7 +433,6 @@ const ChatbotPage = () => {
     setMessages([welcomeMessage()]);
     setMessage("");
     setSelectedFile(null);
-    clearMarketplaceAgentSession();
   };
 
   const handleNewChat = () => {
@@ -912,12 +789,7 @@ const ChatbotPage = () => {
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      let augmented = prependAgentSystemPrompt(chatMessages, marketplaceRuntimeRef.current);
-      augmented = prependChatKnowledgeContext(
-        augmented,
-        user?.email,
-        user?.user_metadata?.full_name as string | undefined,
-      );
+      let augmented = chatMessages;
       const lastUserMsg = [...chatMessages].reverse().find((m) => m.role === "user");
       const lastUser =
         typeof lastUserMsg?.content === "string"
@@ -991,17 +863,14 @@ Structure and Content Guidelines:
 
       const raiseChatHttpError = async (status: number, rawBody: string) => {
         let detail = "Chat request failed";
-        let needsByok = false;
         try {
           const errJson = JSON.parse(rawBody);
           detail = typeof errJson.error === "string" ? errJson.error : detail;
-          needsByok = errJson?.needsByok === true || errJson?.code === "PLATFORM_CREDITS_EXHAUSTED";
         } catch {
           detail = rawBody || detail;
         }
-        if (status === 402 && needsByok) {
-          saveCustomAiConfig({ ...loadCustomAiConfig(), usePlatformDefault: false, provider: '' as const, apiKey: '' });
-          throw new Error("Platform credits exhausted. Please configure your own API key in Settings → Models & AI.");
+        if (status === 402) {
+          throw new Error("Platform credits exhausted. Please upgrade your plan.");
         }
         throw new Error(detail);
       };
@@ -1072,7 +941,7 @@ Structure and Content Guidelines:
 
       let provider;
       try {
-        provider = await AIProviderRouter.getBestProvider();
+        provider = await AIProviderRouter.getBestProvider;
       } catch (err: any) {
         if (err?.message === "offline_not_provisioned") {
           const errMsg = "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.";
@@ -1110,7 +979,7 @@ Structure and Content Guidelines:
       }
       return assistantContent || undefined;
     },
-    [aiProvider, aiConfig, keys, chatMode, personality, user, getChatDefaults, getMemoryContext],
+    [aiConfig, keys, chatMode, personality, user, getChatDefaults, getMemoryContext],
   );
 
   const handleStopGeneration = () => {
@@ -1162,7 +1031,7 @@ Structure and Content Guidelines:
 
     try {
       const startTime = performance.now();
-      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: aiModel, tool_name: "core_chat" });
+      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: "turbo", tool_name: "core_chat" });
       await runChatCompletion(chatMessages, conversationId);
       const endTime = performance.now();
       const totalDuration = endTime - startTime;
@@ -1193,23 +1062,7 @@ Structure and Content Guidelines:
     const msgContent = (overrideText ?? message).trim();
     if ((!msgContent && !selectedFile) || isLoading) return;
 
-    const isGuestLike = !user || isAnonymous;
-    if (isGuestLike) {
-      if (guestUsage.isLoaded && !guestUsage.canPerform("chats")) {
-        toast({ title: "Guest chat limit", description: "Sign in later to lift limits; continuing now." });
-      }
-      if (guestUsage.isLoaded) {
-        guestUsage.trackGuestAction("chats");
-      }
-    }
 
-    if (!isProOrHigher && dailyLimits.isLoaded && !dailyLimits.canPerform("messages")) {
-      // Soft downgrade: keep chat flowing for anonymous users.
-    }
-
-    if (!isProOrHigher && nudge.shouldBlockSend) {
-      // Soft downgrade: do not interrupt sends for anonymous users.
-    }
 
     if (chatMode === "swarm") {
       setSwarmPrompt(msgContent);
@@ -1260,13 +1113,7 @@ Structure and Content Guidelines:
       console.warn("[chat] saveMessage(user) failed", e),
     );
 
-    if (!isProOrHigher) {
-      if (user && dailyLimits.isLoaded) {
-        dailyLimits.trackUsage("messages");
-      } else {
-        setDailyChats(incrementDailyMessageCount());
-      }
-    }
+
 
     const chatMessages: Array<{
       role: string;
@@ -1285,167 +1132,20 @@ Structure and Content Guidelines:
     const imageAttachment =
       userMessage.attachment?.type === "image" ? userMessage.attachment : null;
 
-    // Support editing uploaded images as well as follow-up edits on previous conversation images (like ChatGPT / Gemini)
-    const previousImageMsg = !imageAttachment
-      ? [...messages].reverse().find((m) => (m.type === "ai" && m.imageUrl) || (m.type === "user" && m.attachment?.type === "image" && m.attachment.data))
-      : null;
-    const previousImageData = previousImageMsg?.type === "ai" ? previousImageMsg.imageUrl : previousImageMsg?.attachment?.data;
-
-    const targetImage = imageAttachment ? imageAttachment.data : (previousImageData && detectChatImageIntent(msgContent) === "edit" ? previousImageData : null);
-
-    if (targetImage) {
-      const imageIntent = imageAttachment ? detectChatImageIntent(msgContent) : "edit";
-
-      if (imageIntent === "edit" || imageIntent === "analyze") {
-        const statusId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); }));
-        const isEdit = imageIntent === "edit";
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: statusId,
-            type: "ai",
-            content: isEdit ? "🎨 Analyzing your image and crafting edits…" : "🔍 Analyzing your image in detail…",
-            timestamp: new Date(),
-            toolExecution: {
-              tool: isEdit ? "image_edit" : "image_decoder",
-              status: "running",
-            },
-          },
-        ]);
-
-        try {
-          const { callChatImageEdit, callChatImageAnalyze } = await import("@/lib/chatImageApi");
-          const result = isEdit
-            ? await callChatImageEdit(
-                targetImage,
-                msgContent.trim() || "Enhance and stylize this image",
-              )
-            : await callChatImageAnalyze(targetImage);
-
-
-          const reply =
-            result.content ||
-            (isEdit ? "Here is your edited image." : "Analysis complete.");
-
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === statusId
-                ? {
-                    ...m,
-                    content: reply,
-                    imageUrl: result.imageUrl,
-                    toolExecution: {
-                      tool: isEdit ? "image_edit" : "image_decoder",
-                      status: "complete",
-                      result: isEdit ? "Edited" : "Analyzed",
-                    },
-                  }
-                : m,
-            ),
-          );
-          if (user) void saveMessage(reply, "assistant", conversationId).catch(() => {});
-          learnFromTurn(msgContent || "[image]", reply, conversationId);
-        } catch (err) {
-          const errMsg = err instanceof Error ? err.message : "Image processing failed.";
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === statusId
-                ? {
-                    ...m,
-                    content: `Could not process the image: ${errMsg}`,
-                    toolExecution: {
-                      tool: isEdit ? "image_edit" : "image_decoder",
-                      status: "error",
-                    },
-                  }
-                : m,
-            ),
-          );
-          toast({ title: "Image failed", description: errMsg, variant: "destructive" });
-        } finally {
-          setIsLoading(false);
-        }
-        return;
+    try {
+      const assistantReply = await runChatCompletion(chatMessages, conversationId);
+      learnFromTurn(msgContent, assistantReply ?? "", conversationId);
+    } catch (err) {
+      if (!(err instanceof DOMException && err.name === "AbortError")) {
+        const errMsg = formatChatFetchError(err);
+        toast({ title: "Message failed", description: errMsg, variant: "destructive" });
       }
-
-      if (imageAttachment) {
-        chatMessages[chatMessages.length - 1] = buildVisionUserMessage(
-          msgContent,
-          imageAttachment.data,
-        );
-
-        try {
-          const assistantReply = await runChatCompletion(chatMessages, conversationId);
-          learnFromTurn(msgContent || "[image]", assistantReply ?? "", conversationId);
-        } catch (err) {
-          if (!(err instanceof DOMException && err.name === "AbortError")) {
-            const errMsg = formatChatFetchError(err);
-            toast({ title: "Message failed", description: errMsg, variant: "destructive" });
-          }
-        } finally {
-          setIsLoading(false);
-        }
-        return;
-      }
-    }
-
-
-
-    const toolDispatchUi = {
-      openDeepResearch: (q?: string) => {
-        setShowDeepResearch(true);
-        if (q) setMessage(q);
-      },
-      openImageGenerator: () => setShowImageGenerator(true),
-      openMusicGenerator: (prompt?: string) => {
-        setMusicPrompt(prompt ?? "");
-        setMusicAutoGenerate(Boolean(prompt));
-        setShowMusicGenerator(true);
-      },
-
-      setPendingMessage: (text: string) => setMessage(text),
-      appendAssistantMessage: (
-        content: string,
-        toolExecution?: {
-          tool: string;
-          status: "complete" | "confirm" | "running";
-          params?: Record<string, string>;
-          result?: string;
-        },
-      ) => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })),
-            type: "ai",
-            content,
-            timestamp: new Date(),
-            toolExecution,
-          },
-        ]);
-        if (user) void saveMessage(content, "assistant", conversationId).catch(() => {});
-      },
-    };
-
-    const { outcome: toolOutcome } = await dispatchDetectionAsync(
-      msgContent,
-      toolDispatchUi,
-    );
-
-    if (toolOutcome.handled && toolOutcome.cognitiveLoop) {
-      setCognitiveQuery(toolOutcome.query ?? msgContent);
-      setShowCognitiveLoop(true);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    if (toolOutcome.handled) {
-      const flags = toolOutcome.chatFlags;
-      if (flags?.webSearch || flags?.deepResearch) {
-        try {
-          if (flags.webSearch) {
-            void startBrowseSession(flags.searchQuery ?? msgContent).then(() =>
-              setShowBrowseActivity(true),
+    return;
+    // The following was ripped out:
+    /*
             );
           }
           const assistantReply = await runChatCompletion(
@@ -1474,18 +1174,6 @@ Structure and Content Guidelines:
             const msg = formatChatFetchError(err);
             toast({ title: "Message failed", description: msg, variant: "destructive" });
           }
-        }
-      }
-      setIsLoading(false);
-      return;
-    }
-
-    const toolDetection = toolOrchestrator.detectTool(msgContent);
-    const appIntent =
-      detectAppBuilderIntent(msgContent) ??
-      (toolDetection.tool === "app_builder"
-        ? {
-            platform: (toolDetection.params?.platform === "mobile" ? "mobile" : "web") as
               | "web"
               | "mobile",
             confidence: toolDetection.confidence,
@@ -1579,7 +1267,7 @@ Structure and Content Guidelines:
 
     try {
       const startTime = performance.now();
-      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: aiModel, tool_name: "core_chat" });
+      trackShadowTalkEvent("mission_started", { mission_id: conversationId, user_id: user?.id, model: "turbo", tool_name: "core_chat" });
       
       const assistantReply = await runChatCompletion(chatMessages, conversationId);
 
@@ -1763,131 +1451,6 @@ Structure and Content Guidelines:
     [handleSendMessage],
   );
 
-  const handleCommandAction = (action: string) => {
-    setShowCommandPalette(false);
-
-    if (!CHAT_COMMAND_MODAL_ACTIONS.has(action)) {
-      const navPath = CHAT_COMMAND_NAV_ROUTES[action];
-      if (navPath) {
-        navigate(navPath);
-        return;
-      }
-    }
-
-    switch (action) {
-      case "new-chat":
-        handleNewChat();
-        return;
-      case "deep-research":
-        setShowDeepResearch(true);
-        return;
-      case "image":
-        setShowImageGenerator(true);
-        return;
-      case "music":
-        setMusicPrompt(message.trim());
-        setMusicAutoGenerate(false);
-        setShowMusicGenerator(true);
-        return;
-      case "google":
-        setShowGoogleIntegration(true);
-        return;
-      case "shadowspectre":
-        setChatMode("shadowspectre");
-        return;
-      case "voice":
-        setShowShadowTalkLive(true);
-        return;
-      case "browser":
-        setShowShadowBrowser(true);
-        return;
-      case "missions":
-        navigate("/missioncontrol");
-        return;
-      case "agentic":
-        setShowAgenticRunner(true);
-        return;
-      case "agent-workflows":
-        setShowAgentWorkflows(true);
-        return;
-      case "analytics":
-        setShowAnalytics(true);
-        return;
-      case "gemini-analytics":
-        setShowGeminiAnalytics(true);
-        return;
-      case "organize":
-        setShowDataOrganizer(true);
-        return;
-      case "document":
-      case "document-studio":
-      case "document-generator":
-        if (message.trim()) {
-          setDocumentTopic(message.trim());
-        }
-        setShowDocumentGenerator(true);
-        return;
-
-      case "vision":
-      case "camera":
-        setShowVisualReasoning(true);
-        return;
-      case "image-decoder":
-        setShowImageDecoder(true);
-        return;
-      case "planner":
-        setShowDailyPlanner(true);
-        return;
-      case "eco":
-        setShowPlanetaryActions(true);
-        return;
-      case "screen-agent":
-        setShowScreenAgent(true);
-        return;
-      case "vision-agent":
-        setShowVisionAgent(true);
-        return;
-      case "cognitive-loop":
-        setCognitiveQuery(message.trim() || "Analyze this decision from multiple expert perspectives.");
-        setShowCognitiveLoop(true);
-        return;
-      case "memory":
-      case "memory-panel":
-      case "intelligence-hub":
-        setShowIntelligenceHub(true);
-        return;
-      case "bunker": {
-        const enabled = localStorage.getItem("shadowtalk_bunker_mode") === "true";
-        localStorage.setItem("shadowtalk_bunker_mode", enabled ? "false" : "true");
-        window.dispatchEvent(
-          new CustomEvent("shadowtalk-bunker-changed", { detail: { enabled: !enabled } }),
-        );
-        toast({
-          title: !enabled ? "Bunker mode enabled" : "Bunker mode disabled",
-          description: !enabled
-            ? "Background model downloads can run when configured in Profile."
-            : "Background downloads paused.",
-        });
-        return;
-      }
-      case "wordle":
-        setShowWordle(true);
-        return;
-      case "branching":
-        handleNewChat();
-        toast({
-          title: "New conversation branch",
-          description: "Started a fresh thread — explore an alternate path from here.",
-        });
-        return;
-      default:
-        toast({
-          title: "Try the chat tools menu",
-          description: "Open Tools (⊞) in the header for more actions.",
-        });
-    }
-  };
-
   const [promptSuggestion, setPromptSuggestion] = useState("");
 
   const handleInputSend = useCallback(() => {
@@ -1917,8 +1480,6 @@ Structure and Content Guidelines:
     onKeyPress: handleInputKeyPress,
     isLoading,
     isListening,
-    onToggleVoice: handleToggleLiveVoice,
-    onOpenImageGenerator: handleOpenImageGen,
     onStopGeneration: handleStopGeneration,
     selectedFile,
     onFileSelect: setSelectedFile,
@@ -1926,9 +1487,7 @@ Structure and Content Guidelines:
     onModeChange: setChatMode,
     personality,
     layout: "composer" as const,
-    aiProvider,
-    onProviderChange: setAiProvider,
-    hasKeyForProvider: () => true,
+
     promptSuggestion,
     onPromptAccept: setMessage,
     onPromptClear: handlePromptClear,
@@ -1938,13 +1497,11 @@ Structure and Content Guidelines:
     handleInputKeyPress,
     isLoading,
     isListening,
-    handleToggleLiveVoice,
-    handleOpenImageGen,
     handleStopGeneration,
     selectedFile,
     chatMode,
     personality,
-    aiProvider,
+
     promptSuggestion,
     handlePromptClear,
   ]);
@@ -1954,8 +1511,7 @@ Structure and Content Guidelines:
 
   return (
     <div className="shadowtalk-chat-shell neural-bg settings-scroll-smooth flex h-full min-h-0 flex-col overflow-hidden">
-      <BYOKModal />
-      <SEOHead meta={PAGE_SEO.chatbot} structuredData={[...getFounderHomeStructuredData(), getChatbotFAQSchema(), getSpeakableSchema(["h1", "[data-speakable]"]), getWebSiteWithSearchSchema()]} />
+      <SEOHead meta={PAGE_SEO.chatbot} structuredData={[getChatbotFAQSchema(), getSpeakableSchema(["h1", "[data-speakable]"]), getWebSiteWithSearchSchema()]} />
       <ChatAmbientBackground />
       <motion.div
         className="shadowtalk-chat-main flex w-full min-h-0 flex-1 relative overflow-hidden"
@@ -2008,33 +1564,9 @@ Structure and Content Guidelines:
                 if (isMobile) setShowMobileNav(!showMobileNav);
                 else toggleSidebar();
               }}
-              onOpenStealthVault={() => navigate("/vault")}
-              onExport={handleExport}
-              onManageSubscription={() => navigate("/billing")}
               onSignOut={signOut}
-              onOpenAnalytics={() => setShowAnalytics(true)}
-              onOpenScriptAutomation={() => navigate("/workspace?tab=automate")}
-              onOpenAgentWorkflows={() => setShowAgentWorkflows(true)}
-              onOpenModelFineTuning={() => navigate("/personal-llm")}
-              onOpenWhiteLabelBranding={() => navigate("/enterprise")}
-              onOpenGeminiAnalytics={() => setShowGeminiAnalytics(true)}
-              onOpenCanvas={() => navigate("/ide")}
-              onOpenDeepResearch={() => setShowDeepResearch(true)}
-              onOpenGoogleIntegration={() => setShowGoogleIntegration(true)}
-              onOpenAgenticRunner={() => setShowAgenticRunner(true)}
-              onOpenVisualReasoning={() => setShowVisualReasoning(true)}
-              onOpenCreativeSynthesis={() => setShowCreativeSynthesis(true)}
-              onOpenImageGenerator={() => setShowImageGenerator(true)}
-              onOpenMusicGenerator={() => {
-                setMusicPrompt(message.trim());
-                setMusicAutoGenerate(false);
-                setShowMusicGenerator(true);
-              }}
-              onOpenShadowTalkLive={() => setShowShadowTalkLive(true)}
-              onOpenBrowser={() => setShowShadowBrowser(true)}
-              aiProvider={aiProvider}
-              onProviderChange={setAiProvider}
-              hasKeyForProvider={() => true}
+              onOpenCanvas={(type) => navigate("/ide")}
+
               maxChats="∞"
               dailyChats={messageCount}
               toolsMenuOpen={toolsMenuOpen}
@@ -2052,12 +1584,6 @@ Structure and Content Guidelines:
             </motion.p>
           )}
           <EnterpriseWelcomeBanner email={user?.email} displayName={userDisplayName} />
-          {!isProOrHigher && dailyLimits.isLoaded && (
-            <div className="px-3 pt-2 max-w-3xl mx-auto w-full">
-              <UsageLimitBanner currentUsage={dailyLimits.usage.messages} action="messages" />
-            </div>
-          )}
-          <AdBanner />
 
           <ChatToolbar
             hasActiveChat={hasActiveChat}
@@ -2089,26 +1615,6 @@ Structure and Content Guidelines:
               End-to-end encrypted · Anonymous session
             </motion.div>
           )}
-          {!enterprise.hideMonetization && (
-            <ChatUpgradeNudge
-              open={nudge.shouldShowBanner && !nudgeDismissed}
-              intensity={nudge.intensity}
-              headline={nudge.headline}
-              subline={nudge.subline}
-              used={nudge.used}
-              limit={nudge.limit}
-              recommendedPlan={nudge.recommendedPlan}
-              onDismiss={() => setNudgeDismissed(true)}
-            />
-          )}
-          {!enterprise.hideMonetization && (
-            <UpgradePrompt
-              open={upgradeOpen}
-              onOpenChange={setUpgradeOpen}
-              limitReached={nudge.shouldBlockSend}
-              requiredPlan="premium"
-            />
-          )}
           <div className={`flex-1 min-h-0 relative flex flex-col ${isEmptyChat ? "overflow-y-auto" : "overflow-hidden"}`}>
             <AnimatePresence mode="wait">
               {isEmptyChat ? (
@@ -2126,11 +1632,7 @@ Structure and Content Guidelines:
                     onSelectPrompt={handleQuickPrompt}
                     apiConnectedLabel={null}
                     composerDockStyle={inputDockStyle}
-                    onOpenDocumentStudio={() => setShowDocumentGenerator(true)}
-                    onOpenImageStudio={() => setShowImageGenerator(true)}
-                    onOpenDeepResearch={() => setShowDeepResearch(true)}
                     onOpenAppIde={() => navigate("/ide")}
-                    onOpenLiveVoice={() => setShowShadowTalkLive(true)}
                     isDemo={searchParams.get("demo") === "true"}
                     onExecuteDemo={(promptStr: string) => {
                       setMessage(promptStr);
@@ -2149,71 +1651,47 @@ Structure and Content Guidelines:
                   transition={SETTINGS_SPRING}
                   className="h-full flex flex-col overflow-hidden"
                 >
-                  {activeMarketplaceAgent && marketplaceRuntimeRef.current && (
-                    <MarketplaceAgentBanner
-                      agentName={activeMarketplaceAgent.name}
-                      runtime={marketplaceRuntimeRef.current}
-                      onClear={clearMarketplaceAgentSession}
-                      onStarterSelect={(p) => setMessage(p)}
-                    />
-                  )}
-                  {chatMode === "neural" ? (
-                    <Suspense fallback={<div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">Loading 3D Canvas...</div>}>
-                      <NeuralCanvasMode messages={messages} />
-                    </Suspense>
-                  ) : (
-                    <ChatMessages
-                      messages={messages}
-                      isLoading={isLoading}
-                      showSuggestions={false}
-                      personality={personality}
-                      userPlan={userPlan}
-                      speakingMessageId={speakingMessageId}
-                      isSpeaking={isSpeaking}
-                      onSelectPrompt={handleQuickPrompt}
-                      onEdit={handleEditMessage}
-                      onRegenerate={handleRegenerateMessage}
-                      onTextToSpeech={speakMessage}
-                      onOpenCodeCanvas={(code, language) => {
-                        saveIdePayload({ code, language: language || "javascript" });
-                        navigate("/ide");
-                      }}
-                      onOpenIDE={(code, language) => {
-                        saveIdePayload({ code, language });
-                        navigate("/ide");
-                      }}
-                      onLaunchWebsite={(code) => {
-                        saveIdePayload({ code, language: "html", openPreview: true });
-                        navigate("/ide");
-                      }}
-                      onOpenInBrowser={(url) => {
-                        if (url) window.open(url, "_blank", "noopener,noreferrer");
-                        else setShowShadowBrowser(true);
-                      }}
-                      onShareReply={(content) => openChatShare(content)}
-                      enterpriseShare={enterprise.isEnterpriseUser}
-                      includeReferralInShare={enterprise.includeReferralInShare}
-                      onConfirmTool={handleConfirmTool}
-                      messagesEndRef={messagesEndRef}
-                      layout="gemini"
-                    />
-                  )}
+                  <ChatMessages
+                    messages={messages}
+                    isLoading={isLoading}
+                    showSuggestions={false}
+                    personality={personality}
+                    userPlan={userPlan}
+                    speakingMessageId={speakingMessageId}
+                    isSpeaking={isSpeaking}
+                    onSelectPrompt={handleQuickPrompt}
+                    onEdit={handleEditMessage}
+                    onRegenerate={handleRegenerateMessage}
+                    onTextToSpeech={speakMessage}
+                    onOpenCodeCanvas={(code, language) => {
+                      saveIdePayload({ code, language: language || "javascript" });
+                      navigate("/ide");
+                    }}
+                    onOpenIDE={(code, language) => {
+                      saveIdePayload({ code, language });
+                      navigate("/ide");
+                    }}
+                    onLaunchWebsite={(code) => {
+                      saveIdePayload({ code, language: "html", openPreview: true });
+                      navigate("/ide");
+                    }}
+                    onOpenInBrowser={(url) => {
+                      if (url) window.open(url, "_blank", "noopener,noreferrer");
+                      else setShowShadowBrowser(true);
+                    }}
+                    onShareReply={(content) => openChatShare(content)}
+                    enterpriseShare={enterprise.isEnterpriseUser}
+                    includeReferralInShare={enterprise.includeReferralInShare}
+                    onConfirmTool={handleConfirmTool}
+                    messagesEndRef={messagesEndRef}
+                    layout="gemini"
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          <AnimatePresence>
-            {showSwarmMode && (
-              <Suspense fallback={null}>
-                <SwarmMode
-                  prompt={swarmPrompt}
-                  onClose={() => setShowSwarmMode(false)}
-                  onComplete={handleSwarmComplete}
-                />
-              </Suspense>
-            )}
-          </AnimatePresence>
+
 
 
           {!isEmptyChat && (
@@ -2262,245 +1740,18 @@ Structure and Content Guidelines:
             customLink={chatShareCustomLink ?? undefined}
           />
         </ChatMainPanel>
-      <Suspense fallback={null}>
-      {showImageGenerator && <ImageGenerator onClose={() => setShowImageGenerator(false)} onImageGenerated={(url) => setMessages(prev => [...prev, { id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })), type: 'ai', content: '🎨 Generated image', timestamp: new Date(), imageUrl: url }])} />}
 
-      <MusicGenerator
-        isOpen={showMusicGenerator}
-        onClose={() => {
-          setShowMusicGenerator(false);
-          setMusicAutoGenerate(false);
-        }}
-        initialPrompt={musicPrompt}
-        autoGenerate={musicAutoGenerate}
-        onInsertToChat={(content) => {
-          insertAssistantToChat(content);
-          setShowMusicGenerator(false);
-        }}
-      />
-      <WordleGame isOpen={showWordle} onClose={() => setShowWordle(false)} />
-      <GoogleIntegrationPanel
-        isOpen={showGoogleIntegration}
-        onClose={() => setShowGoogleIntegration(false)}
-        onImportContent={(content, source) => {
-          insertAssistantToChat(`**Imported from ${source}**\n\n${content}`);
-          setShowGoogleIntegration(false);
-        }}
-      />
-      {showDeepResearch && <DeepResearchPanel isOpen={showDeepResearch} onClose={() => setShowDeepResearch(false)} onInsertToChat={(c) => setMessages(prev => [...prev, { id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })), type: 'ai', content: c, timestamp: new Date() }])} />}
-      {showDocumentGenerator && (
-        <DocumentGenerator
-          isOpen={showDocumentGenerator}
-          onClose={() => setShowDocumentGenerator(false)}
-          initialPrompt={documentTopic}
-          onDocumentGenerated={(docContent) => {
-            insertAssistantToChat(docContent);
-            setShowDocumentGenerator(false);
-          }}
-        />
-      )}
 
-      {showCognitiveLoop && (
-        <CognitiveLoopPanel
-          isOpen={showCognitiveLoop}
-          onClose={() => setShowCognitiveLoop(false)}
-          initialQuery={cognitiveQuery}
-          onResult={(result) => {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })),
-                type: "ai",
-                content: result,
-                timestamp: new Date(),
-                toolExecution: {
-                  tool: "cognitive_loop",
-                  status: "complete",
-                  result: "Multi-agent synthesis",
-                },
-              },
-            ]);
-            if (user && currentConversationId) {
-              void saveMessage(result, "assistant", currentConversationId).catch(() => {});
-            }
-            learnFromTurn(cognitiveQuery, result, currentConversationId ?? "");
-            setShowCognitiveLoop(false);
-          }}
-        />
-      )}
-      {showMultiModel && (
-        <MultiModelOrchestrator
-          isOpen={showMultiModel}
-          onClose={() => setShowMultiModel(false)}
-          onResult={(result) => {
-            insertAssistantToChat(result);
-            setShowMultiModel(false);
-          }}
-          initialPrompt={message}
-        />
-      )}
-      {showCreativeSynthesis && (
-        <CreativeSynthesis
-          isOpen={showCreativeSynthesis}
-          onClose={() => setShowCreativeSynthesis(false)}
-          onInsertToChat={(c) => {
-            insertAssistantToChat(c);
-            setShowCreativeSynthesis(false);
-          }}
-          initialPrompt={message}
-        />
-      )}
-      {showVisualReasoning && (
-        <VisualReasoning
-          isOpen={showVisualReasoning}
-          onClose={() => setShowVisualReasoning(false)}
-          onInsertToChat={(c) => {
-            insertAssistantToChat(c);
-            setShowVisualReasoning(false);
-          }}
-        />
-      )}
-      {showImageDecoder && (
-        <ImageDecoder
-          onClose={() => setShowImageDecoder(false)}
-          onDecoded={(analysis) => {
-            insertAssistantToChat(analysis);
-            setShowImageDecoder(false);
-          }}
-          initialImage={selectedFile?.type === "image" ? selectedFile.data : undefined}
-          autoAnalyze={Boolean(selectedFile?.type === "image")}
-        />
-      )}
-      {showDailyPlanner && (
-        <DailyPlanner
-          isOpen={showDailyPlanner}
-          onClose={() => setShowDailyPlanner(false)}
-          onPlanGenerated={(plan) => {
-            insertAssistantToChat(plan);
-            setShowDailyPlanner(false);
-          }}
-        />
-      )}
-      <PlanetaryActionModal
-        isOpen={showPlanetaryActions}
-        onClose={() => setShowPlanetaryActions(false)}
-      />
-      <ScreenAgent
-        isOpen={showScreenAgent}
-        onClose={() => setShowScreenAgent(false)}
-        onSendToChat={(text) => {
-          setMessage(text);
-          setShowScreenAgent(false);
-        }}
-      />
-      <VisionAgentModal
-        isOpen={showVisionAgent}
-        onClose={() => setShowVisionAgent(false)}
-        onMessage={(text, isProactive) => {
-          if (isProactive) {
-            insertAssistantToChat(text);
-          } else {
-            setMessage(text);
-          }
-        }}
-      />
-      {showIntelligenceHub && (
-        <IntelligenceHub isOpen={showIntelligenceHub} onClose={() => setShowIntelligenceHub(false)} />
-      )}
-      {showBrowseActivity && browseSession && (
-        <BrowseActivityPanel
-          isOpen={showBrowseActivity}
-          onClose={() => {
-            setShowBrowseActivity(false);
-            closeBrowseSession();
-          }}
-          session={browseSession}
-          onResultReady={(result) => {
-            insertAssistantToChat(result);
-            setShowBrowseActivity(false);
-            closeBrowseSession();
-          }}
-        />
-      )}
-      <CommandPalette open={showCommandPalette} onOpenChange={setShowCommandPalette} onAction={handleCommandAction} />
-      {showShadowTalkLive && (
-        <Suspense fallback={null}>
-          <ShadowTalkLive
-            isOpen={showShadowTalkLive}
-            onClose={() => setShowShadowTalkLive(false)}
-            onInsertToChat={(content) => setMessage(content)}
-          />
-        </Suspense>
-      )}
-      {showShadowBrowser && (
-        <Suspense fallback={null}>
-          <ShadowBrowser
-            isOpen={showShadowBrowser}
-            onClose={() => setShowShadowBrowser(false)}
-            onInsertToChat={(content) => setMessage(content)}
-          />
-        </Suspense>
-      )}
-
-      <AgenticTaskRunner
-        isOpen={showAgenticRunner}
-        onClose={() => setShowAgenticRunner(false)}
-        onTaskComplete={(result) => {
-          insertAssistantToChat(result);
-          setShowAgenticRunner(false);
-        }}
-      />
-      <AIAgentWorkflows
-        isOpen={showAgentWorkflows}
-        onClose={() => setShowAgentWorkflows(false)}
-        onResult={(result) => {
-          insertAssistantToChat(result);
-          setShowAgentWorkflows(false);
-        }}
-      />
-      {showAnalytics && (
-        <AnalyticsDashboard
-          onClose={() => setShowAnalytics(false)}
-          messageCount={messages.length}
-          conversationCount={conversations.length}
-        />
-      )}
-      {showGeminiAnalytics && (
-        <GeminiKeyAnalytics onClose={() => setShowGeminiAnalytics(false)} />
-      )}
-      <DataOrganizer
-        isOpen={showDataOrganizer}
-        onClose={() => setShowDataOrganizer(false)}
-        onOrganize={(input, output) => {
-          insertAssistantToChat(`**Organized data**\n\n${output}`);
-          setShowDataOrganizer(false);
-        }}
-      />
-      <UncensoredArena
-        open={showUncensoredArena}
-        onClose={() => setShowUncensoredArena(false)}
-      />
-      <ShadowCowork
-        isOpen={showShadowCowork}
-        onClose={() => setShowShadowCowork(false)}
-        onInsertToChat={(content) => {
-          setMessage(content);
-          setShowShadowCowork(false);
-        }}
-      />
-      </Suspense>
-
-      <SignInPrompt
-        open={showSignInPrompt}
-        onOpenChange={setShowSignInPrompt}
-        reason={signInPromptReason}
-        usedCount={guestUsage.usage?.chats}
-        limitCount={GUEST_LIMITS.chats}
-      />
+      
 
       </motion.div>
-      <FounderCrawlStrip />
+      
     </div>
   );
 };
 export default ChatbotPage;
+
+
+
+
+

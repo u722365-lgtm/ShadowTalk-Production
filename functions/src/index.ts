@@ -92,106 +92,6 @@ const openrouterProvider: ProviderConfig = {
 
 const SHARED_POOL: ProviderConfig[] = [groqProvider, googleProvider, openrouterProvider];
 
-// ============================================================
-// BYOK Handler
-// ============================================================
-async function handleByokRequest(
-  opts: {
-    byokProvider: string;
-    byokApiKey: string;
-    messages: any[];
-    model?: string;
-    stream?: boolean;
-    personality?: string;
-    deepResearch?: boolean;
-  },
-  res: any
-) {
-  const { byokProvider, byokApiKey, messages, model, stream = true, personality, deepResearch } = opts;
-
-  let apiUrl: string;
-  let resolvedModel: string;
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${byokApiKey}`,
-  };
-
-  switch (byokProvider) {
-    case "groq":
-      apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-      resolvedModel = model || "llama-3.3-70b-versatile";
-      break;
-    case "google":
-    case "gemini":
-      apiUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-      resolvedModel = model?.replace("google/", "") || "gemini-2.0-flash";
-      break;
-    case "openai":
-      apiUrl = "https://api.openai.com/v1/chat/completions";
-      resolvedModel = model || "gpt-4o-mini";
-      break;
-    case "anthropic":
-      return res.status(400).json({ error: "Anthropic BYOK is supported via client-side direct calls only." });
-    case "openrouter":
-      apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-      resolvedModel = model || "openai/gpt-4o-mini";
-      headers["HTTP-Referer"] = "https://shadowtalk.app";
-      headers["X-Title"] = "ShadowTalk AI (BYOK)";
-      break;
-    default:
-      apiUrl = byokProvider.startsWith("http") ? byokProvider : `https://api.${byokProvider}.com/v1/chat/completions`;
-      resolvedModel = model || "default";
-  }
-
-  const systemPrompts: string[] = ["You are ShadowTalk AI, a powerful and private AI assistant. Be helpful, accurate, and concise."];
-  if (personality && personality !== "default") systemPrompts.push(`Personality mode: ${personality}`);
-  if (deepResearch) systemPrompts.push("The user has requested deep research. Provide thorough, well-structured analysis with citations where possible.");
-
-  const chatMessages = [{ role: "system", content: systemPrompts.join("\n\n") }, ...messages];
-
-  try {
-    const providerResponse = await fetch(apiUrl, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: resolvedModel,
-        messages: chatMessages,
-        stream,
-        max_tokens: deepResearch ? 8192 : 4096,
-      }),
-    });
-
-    if (!providerResponse.ok) {
-      const errText = await providerResponse.text();
-      return res.status(providerResponse.status).json({ error: `BYOK provider error: ${providerResponse.status} — ${errText.slice(0, 300)}` });
-    }
-
-    if (stream) {
-      res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Connection", "keep-alive");
-      res.setHeader("X-Provider", `byok-${byokProvider}`);
-      res.setHeader("X-Model", resolvedModel);
-      
-      const reader = providerResponse.body?.getReader();
-      if (!reader) return res.status(500).json({ error: "Failed to read stream" });
-
-      const decoder = new TextDecoder();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        res.write(decoder.decode(value, { stream: true }));
-      }
-      res.end();
-      return;
-    }
-
-    const data = await providerResponse.json();
-    return res.json({ ...data, _provider: `byok-${byokProvider}` });
-  } catch (err: any) {
-    return res.status(502).json({ error: `BYOK request failed: ${err.message}` });
-  }
-}
 
 // ============================================================
 // Main Chat Function
@@ -209,7 +109,7 @@ export const chat = onRequest((req, res) => {
         try {
           user = await admin.auth().verifyIdToken(tokenMatch[1]);
         } catch (e) {
-          // Token invalid, allow only BYOK
+          // Token invalid
         }
       }
 
@@ -219,16 +119,10 @@ export const chat = onRequest((req, res) => {
         stream = true,
         personality,
         deepResearch,
-        byokProvider,
-        byokApiKey,
       } = req.body || {};
 
-      if (byokProvider && byokApiKey) {
-        return handleByokRequest({ byokProvider, byokApiKey, messages, model, stream, personality, deepResearch }, res);
-      }
-
       if (!user) {
-        return res.status(401).json({ error: "Unauthorized. Sign in or use BYOK mode." });
+        return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
       }
 
       const db = admin.firestore();

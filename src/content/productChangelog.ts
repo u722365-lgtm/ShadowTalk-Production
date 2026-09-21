@@ -72,12 +72,12 @@ export const PRODUCT_CHANGELOG: ProductChangelogEntry[] = [
   },
   {
     version: "2.3.0",
-    title: "BYOK & agentic tools",
+    title: "& agentic tools",
     summary: "Bring your own API keys; Mission Control and expanded chat tooling.",
     publishedAt: "2026-05-20",
-    tags: ["BYOK", "Agents"],
+    tags: ["", "Agents"],
     changes: [
-      { type: "feature", text: "BYOK for Gemini and Kimi — keys in Profile/Settings." },
+      { type: "feature", text: "for Gemini and Kimi — keys in Profile/Settings." },
       { type: "feature", text: "Mission Control (/missioncontrol) for multi-step autonomous workflows." },
       { type: "feature", text: "Command palette (⌘K) for quick navigation and tool launch." },
       { type: "improvement", text: "Tool orchestration with human-in-the-loop confirmations on sensitive actions." },
@@ -118,7 +118,7 @@ export function mergeChangelogWithCms(
       version: e.version,
       title: e.title,
       summary: e.description,
-      publishedAt: e.published_at?.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+      publishedAt: e.published_at?.slice(0, 10) ?? new Date.toISOString.slice(0, 10),
       tags: (e.tags as string[]) ?? [],
       changes: [
         {
@@ -129,6 +129,6 @@ export function mergeChangelogWithCms(
     }));
 
   return [...PRODUCT_CHANGELOG, ...fromCms].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    (a, b) => new Date(b.publishedAt).getTime - new Date(a.publishedAt).getTime,
   );
 }

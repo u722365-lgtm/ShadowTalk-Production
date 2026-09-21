@@ -48,7 +48,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     rows: [
       { category: "Autonomous missions", shadowtalk: "Built-in Mission Control", competitor: "Primarily prompt-response chat" },
       { category: "Tooling", shadowtalk: "30+ tools in one workspace", competitor: "Tooling varies by plan and workflow" },
-      { category: "Privacy controls", shadowtalk: "E2EE options, BYOK, vault, stealth mode", competitor: "Mostly cloud-first" },
+      { category: "Privacy controls", shadowtalk: "E2EE options, vault, stealth mode", competitor: "Mostly cloud-first" },
       { category: "Privacy posture", shadowtalk: "E2EE workflows", competitor: "No primary secure workflow" },
       { category: "Best fit", shadowtalk: "Execution-heavy workflows", competitor: "General chat and writing" },
     ],
@@ -67,7 +67,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     whyShadowTalkWins: [
       "Combines reasoning with execution so users can move from insight to action in one interface.",
       "Includes developer tools, presentations, research, and voice inside the same product.",
-      "Adds enterprise-style privacy posture with vault, BYOK, and local/secure options.",
+      "Adds enterprise-style privacy posture with vault, and local/secure options.",
       "Creates a deeper technical footprint for procurement and search-agent research via docs, facts, and architecture pages.",
     ],
     faq: [
@@ -86,7 +86,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       { category: "Long-context reasoning", shadowtalk: "Strong with workspace context", competitor: "Very strong" },
       { category: "Execution layer", shadowtalk: "Mission Control + tool chains", competitor: "Limited product-native execution" },
       { category: "Developer workspace", shadowtalk: "IDE, tools, docs, API pages", competitor: "Less workspace breadth" },
-      { category: "Privacy posture", shadowtalk: "Vault, BYOK, local options", competitor: "Cloud-first" },
+      { category: "Privacy posture", shadowtalk: "Vault, local options", competitor: "Cloud-first" },
       { category: "Best fit", shadowtalk: "Research + execution teams", competitor: "Writing and reasoning-first teams" },
     ],
   },

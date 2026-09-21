@@ -7,20 +7,20 @@ export class GLMProvider implements AIProvider {
   private baseUrl = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
   private defaultModel = "glm-4";
 
-  private getKey(): string | null {
+  private getKey: string | null {
     try {
-      return sessionStorage.getItem('GLM_BYOK_KEY');
+      return sessionStorage.getItem('GLM__KEY');
     } catch {
       return null;
     }
   }
 
-  isAvailable(): boolean {
-    return Boolean(this.getKey());
+  isAvailable: boolean {
+    return Boolean(this.getKey);
   }
 
   async streamChat(messages: CloudChatMessage[], options?: CloudChatOptions): Promise<CloudChatResult> {
-    const key = this.getKey();
+    const key = this.getKey;
     if (!key) throw new Error("GLM API Key missing");
 
     if (options?.structuredOutput) {
@@ -35,14 +35,14 @@ export class GLMProvider implements AIProvider {
       }
     }
 
-    const controller = new AbortController();
+    const controller = new AbortController;
     
     // Configurable timeout (default 30s)
     const timeoutMs = options?.timeoutMs ?? 30000;
-    const timeoutId = setTimeout(() => controller.abort(new Error("Request timed out")), timeoutMs);
+    const timeoutId = setTimeout( => controller.abort(new Error("Request timed out")), timeoutMs);
     
     if (options?.signal) {
-      options.signal.addEventListener("abort", () => controller.abort(new Error("Request aborted by user")), { once: true });
+      options.signal.addEventListener("abort",  => controller.abort(new Error("Request aborted by user")), { once: true });
     }
 
     const payload = {
@@ -77,7 +77,7 @@ export class GLMProvider implements AIProvider {
     if (!res.ok) {
       let errBody = "";
       try {
-        errBody = await res.text();
+        errBody = await res.text;
       } catch {
         errBody = "Unreadable error response";
       }
@@ -87,7 +87,7 @@ export class GLMProvider implements AIProvider {
 
     if (!res.body) throw new Error("GLM API returned empty response body");
 
-    const reader = res.body.getReader();
+    const reader = res.body.getReader;
     const decoder = new TextDecoder("utf-8");
     let accumulatedText = "";
     
@@ -96,14 +96,14 @@ export class GLMProvider implements AIProvider {
     
     try {
       while (true) {
-        const { done, value } = await reader.read();
+        const { done, value } = await reader.read;
         if (done) break;
         
         const chunk = decoder.decode(value, { stream: true });
         const lines = chunk.split('\n');
         
         for (const line of lines) {
-          if (!line.trim() || line.startsWith(':')) continue;
+          if (!line.trim || line.startsWith(':')) continue;
           if (line.startsWith('data: [DONE]')) break;
           
           if (line.startsWith('data: ')) {
@@ -121,7 +121,7 @@ export class GLMProvider implements AIProvider {
         }
       }
     } finally {
-      reader.releaseLock();
+      reader.releaseLock;
     }
 
     return {

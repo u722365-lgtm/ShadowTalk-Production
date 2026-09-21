@@ -27,7 +27,7 @@ export function toUiProvider(server: AiProviderId): AIProvider | null {
   return 'shadowtalk';
 }
 
-export function isByokProvider(provider: AIProvider): boolean {
+export function isProvider(provider: AIProvider): boolean {
   return provider === 'turbo';
 }
 
@@ -42,7 +42,7 @@ export function hasStoredKeyForProvider(
     model: '',
   },
 ): boolean {
-  if (provider === 'turbo') return isTurboAvailable();
+  if (provider === 'turbo') return isTurboAvailable;
   return true;
 }
 

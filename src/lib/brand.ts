@@ -41,7 +41,7 @@ export const LANDING_COPY = {
     badge: "What you actually get",
     title: ["One workspace.", "Thirty-plus tools."],
     subtitle:
-      "Mission Control, marketplace agents, IDE, research, presentations, Stealth Vault, BYOK, and optional on-device models — listed in /docs, shipped in product.",
+      "Mission Control, marketplace agents, IDE, research, presentations, Stealth Vault, and optional on-device models — listed in /docs, shipped in product.",
   },
   pricing: {
     badge: "Transparent tiers",
@@ -118,11 +118,11 @@ export const CHAT_WELCOME_LINES = [
 export const CHAT_EMPTY_HEADLINE = "What should ShadowTalk execute for you?";
 
 export function pickBrandHook(seed?: number): string {
-  const i = seed ?? Math.floor(Math.random() * BRAND_HOOKS.length);
+  const i = seed ?? Math.floor(Math.random * BRAND_HOOKS.length);
   return BRAND_HOOKS[i % BRAND_HOOKS.length];
 }
 
 export function pickChatWelcome(seed?: number): string {
-  const i = seed ?? Math.floor(Math.random() * CHAT_WELCOME_LINES.length);
+  const i = seed ?? Math.floor(Math.random * CHAT_WELCOME_LINES.length);
   return CHAT_WELCOME_LINES[i % CHAT_WELCOME_LINES.length];
 }

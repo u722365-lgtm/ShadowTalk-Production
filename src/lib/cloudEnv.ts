@@ -3,22 +3,22 @@
  */
 
 /** Always returns empty string in local-only mode. */
-export function getApiBaseUrl(): string {
+export function getApiBaseUrl: string {
   return "";
 }
 
 /** Always returns empty string since API keys are now on the backend. */
-export function getApiKey(): string {
+export function getApiKey: string {
   return "";
 }
 
 /** Returns true since cloud is now configured via Firebase Functions. */
-export function isCloudConfigured(): boolean {
+export function isCloudConfigured: boolean {
   return true;
 }
 
 /** Returns the URL for the chat function. */
-export function getChatFunctionUrl(): string {
+export function getChatFunctionUrl: string {
   return "";
 }
 
@@ -42,7 +42,7 @@ export function getChatFetchHeaders(accessToken?: string | null): Record<string,
 }
 
 export const DESKTOP_ENV_SETUP_HINT =
-  "ShadowTalk runs in local-only mode. Configure BYOK keys in Settings for cloud inference.";
+  "ShadowTalk runs in local-only mode. Configure keys in Settings for cloud inference.";
 
 /** Format a fetch error for display. */
 export function formatChatFetchError(err: unknown): string {
@@ -50,7 +50,7 @@ export function formatChatFetchError(err: unknown): string {
     err instanceof Error ? err.message : "Error connecting to chat service.";
   if (msg === "Failed to fetch" || msg.includes("NetworkError")) {
     return (
-      "Could not reach the chat service. Check your internet connection and BYOK settings."
+      "Could not reach the chat service. Check your internet connection and settings."
     );
   }
   return msg;

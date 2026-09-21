@@ -2,7 +2,7 @@
 
 ## Value proposition
 - Agentic workspace with 30+ tools, encrypted chat, missions, code IDE, and desktop app.
-- Free start, no card. BYOK and local offline models.
+- Free start, no card. local offline models.
 - Founder-built in Karachi with transparency and privacy-first design.
 
 ## Headlines

@@ -5,7 +5,7 @@
  * Keeps key resolution logic DRY.
  */
 
-import { loadCustomAiConfig, hasActiveCustomKey, type CustomAiKeysConfig } from '@/lib/customApiKeys';
+
 
 // ---- Provider Constants ----
 
@@ -55,28 +55,6 @@ export function resolveTurboKey(): string | null {
     return envKey;
   }
 
-  // 1. Check localStorage (BYOK config)
-  try {
-    const config: CustomAiKeysConfig = loadCustomAiConfig();
-    if (hasActiveCustomKey(config)) {
-      if ((config.provider as string) === 'groq' || (config.provider as string) === 'turbo') {
-        return config.apiKey;
-      }
-      if (config.apiKey.startsWith('gsk_')) {
-        return config.apiKey;
-      }
-    }
-  } catch {
-    // silent — localStorage may be unavailable
-  }
-
-  // 2. Check sessionStorage (dedicated turbo key from settings)
-  try {
-    const turboKey = sessionStorage.getItem('shadowtalk_turbo_groq_key');
-    if (turboKey && turboKey.startsWith('gsk_')) return turboKey;
-  } catch {
-    // silent
-  }
 
   // 3. Platform embedded key — always available for free-tier users
   return PLATFORM_GROQ_KEY;

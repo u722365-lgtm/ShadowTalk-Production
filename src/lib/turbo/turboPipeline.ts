@@ -1,7 +1,7 @@
 /**
  * ShadowTalk-Turbo Pipeline — chat-oriented streaming fast path.
  *
- * Streams directly from Groq (BYOK) with an OpenRouter free-tier fallback,
+ * Streams directly from Groq with an OpenRouter free-tier fallback,
  * bypassing the edge function entirely for lowest possible TTFT.
  */
 

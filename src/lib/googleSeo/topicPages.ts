@@ -60,7 +60,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       {
         heading: "ShadowTalk vs ChatGPT for builders",
         paragraphs: [
-          "ChatGPT excels at conversation. ShadowTalk adds Mission Control for autonomous multi-step tasks, tool chains from natural language, Stealth Vault encryption, and BYOK for your own API keys.",
+          "ChatGPT excels at conversation. ShadowTalk adds Mission Control for autonomous multi-step tasks, tool chains from natural language, Stealth Vault encryption, and for your own API keys.",
           "Developers get an in-browser IDE with live preview; researchers get cited deep research; teams get workspace memory and marketplace agents.",
         ],
       },
@@ -108,7 +108,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       "ShadowTalk AI review: agentic workspace with Mission Control, 30+ tools, E2EE chat, desktop app. Free tier. Honest verdict for developers and founders.",
     h1: "ShadowTalk AI review (2026)",
     snippet:
-      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with Mission Control, strong privacy options (E2EE, vault, BYOK), and integrated dev tools. Free to try; Pro from $5/month.",
+      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with Mission Control, strong privacy options (E2EE, vault, ), and integrated dev tools. Free to try; Pro from $5/month.",
     sections: [
       {
         heading: "Pros",
@@ -280,15 +280,15 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "private-ai-chat-no-training",
     title: "Private AI Chat With No Training on Your Data — ShadowTalk AI",
     metaDescription:
-      "Privacy-first AI chat: BYOK, end-to-end encryption, and an offline on-device mode with zero cloud egress. shadowtalk-ai.com/anonymous-ai",
+      "Privacy-first AI chat: , end-to-end encryption, and an offline on-device mode with zero cloud egress. shadowtalk-ai.com/anonymous-ai",
     h1: "Private AI chat that doesn't train on you",
     snippet:
-      "ShadowTalk AI is privacy-first by design: end-to-end encrypted chat with passphrase unlock, BYOK so your provider keys stay on your device, and an optional offline on-device model with no cloud egress—plus anonymous no-login chat on the free tier.",
+      "ShadowTalk AI is privacy-first by design: end-to-end encrypted chat with passphrase unlockso your provider keys stay on your device, and an optional offline on-device model with no cloud egress—plus anonymous no-login chat on the free tier.",
     sections: [
       {
         heading: "How ShadowTalk protects your data",
         paragraphs: [
-          "Your API keys are stored encrypted on your device (BYOK); the workspace never sits between you and your provider by default.",
+          "Your API keys are stored encrypted on your device ; the workspace never sits between you and your provider by default.",
           "Enable the device-only pledge and offline models (WebLLM) to keep conversations entirely local with zero network calls.",
         ],
       },

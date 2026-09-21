@@ -51,7 +51,7 @@ export const FREE_TIER_MARKETING = {
 } as const;
 
 export const PRICING_PAGE_HOOK =
-  "Cancel anytime. 30-day money-back on paid plans. Your data stays under your control with Vault, BYOK, and on-device options.";
+  "Cancel anytime. 30-day money-back on paid plans. Your data stays under your control with Vault, and on-device options.";
 
 export const COMMUNITY_MARKETING = {
   title: "Building in public",

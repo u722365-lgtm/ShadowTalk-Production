@@ -16,16 +16,16 @@ export const PRICING_TRANSPARENCY = {
   cancel: "Cancel anytime from billing or your payment provider — no lock-in contracts.",
   refund: "30-day money-back guarantee on paid plans (see Terms for details).",
   data:
-    "Cloud chat uses our servers; Stealth Vault, BYOK, and optional on-device models keep sensitive work under your control.",
+    "Cloud chat uses our servers; Stealth Vault, and optional on-device models keep sensitive work under your control.",
   privacyLinks: [
     { href: "/privacy", label: "Privacy Policy" },
     { href: "/transparency", label: "Transparency" },
     { href: "/gdpr", label: "GDPR" },
   ],
-  trustBullets: getRiskReversalBullets(),
+  trustBullets: getRiskReversalBullets,
 } as const;
 
-export function getFreeTierSummary(): string {
+export function getFreeTierSummary: string {
   return `Free: ${FREE_TIER_DAILY.messages} messages/day, ${FREE_TIER_DAILY.fileUploads} uploads, ${FREE_TIER_DAILY.webSearches} web searches — no card required.`;
 }
 

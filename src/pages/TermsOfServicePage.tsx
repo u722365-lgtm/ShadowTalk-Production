@@ -98,9 +98,9 @@ You agree not to misuse the Service or facilitate any of the following prohibite
   },
   {
     id: "section-7",
-    title: "7. API Access & Bring Your Own Key (BYOK)",
+    title: "7. API Access & ",
     content: `
-Users utilizing Bring Your Own Key (BYOK) configurations:
+Users utilizing  configurations:
 - Acknowledge that API keys are stored client-side in their browser's secure sandbox.
 - Remain solely responsible for monitoring direct billing, token consumption, and rate limits incurred directly with their third-party AI model providers (Groq, OpenAI, Anthropic).
 - Indemnify ShadowTalk AI against any unauthorized API expenditures resulting from compromised local client environments.
@@ -136,8 +136,8 @@ For legal notices, terms inquiries, or formal communication:
   },
 ];
 
-export const TermsOfServicePage = () => {
-  const navigate = useNavigate();
+export const TermsOfServicePage =  => {
+  const navigate = useNavigate;
   const lastUpdated = "February 28, 2026";
   const [activeSection, setActiveSection] = useState<string>("section-1");
 
@@ -159,7 +159,7 @@ export const TermsOfServicePage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/chatbot")}
+          onClick={ => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -239,7 +239,7 @@ export const TermsOfServicePage = () => {
                   {TERMS_SECTIONS.map((sec) => (
                     <button
                       key={sec.id}
-                      onClick={() => scrollToSection(sec.id)}
+                      onClick={ => scrollToSection(sec.id)}
                       className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors truncate ${
                         activeSection === sec.id
                           ? "bg-primary/10 text-primary font-medium border-l-2 border-primary"
@@ -274,7 +274,7 @@ export const TermsOfServicePage = () => {
                   </h3>
                   <div className="prose prose-invert prose-sm max-w-none text-muted-foreground leading-relaxed text-xs sm:text-sm space-y-3">
                     {sec.content.split("\n\n").map((para, i) => {
-                      const trimmed = para.trim();
+                      const trimmed = para.trim;
                       if (trimmed.startsWith("- ")) {
                         return (
                           <ul key={i} className="list-disc pl-5 space-y-1">

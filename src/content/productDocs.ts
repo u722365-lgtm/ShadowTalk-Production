@@ -350,7 +350,7 @@ export const DOC_PRIVACY_SECTIONS: DocWorkspaceTopic[] = [
     ],
   },
   {
-    title: "Bring Your Own Key (BYOK)",
+    title: "",
     items: [
       "Configure your personal Groq, OpenAI, or Anthropic API keys in /settings.",
       "Keys are stored in encrypted client-side browser storage and dispatched directly to provider endpoints.",
@@ -468,7 +468,7 @@ export const DOC_FAQ: DocFaqItem[] = [
   },
   {
     q: "Which AI models can I use?",
-    a: "ShadowTalk natively routes between Groq Llama-3.3 70B Turbo, DeepSeek R1 reasoning, OpenAI GPT-4o, and on-device WebGPU edge models. You can also supply your own BYOK API keys in /settings.",
+    a: "ShadowTalk natively routes between Groq Llama-3.3 70B Turbo, DeepSeek R1 reasoning, OpenAI GPT-4o, and on-device WebGPU edge models. You can also supply your own API keys in /settings.",
   },
   {
     q: "How do I access the Developer API?",
@@ -530,5 +530,5 @@ export function docSearchBlob(parts: {
     ...parts.faq.map((f) => `${f.q} ${f.a}`),
     ...parts.troubleshooting.map((t) => `${t.issue} ${t.solutions.join(" ")}`),
     ...parts.workspace.map((w) => `${w.title} ${w.items.join(" ")}`),
-  ].join(" ").toLowerCase();
+  ].join(" ").toLowerCase;
 }

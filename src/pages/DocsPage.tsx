@@ -141,7 +141,7 @@ const PlanCellValue = ({ value, accent }: { value: PlanCell; accent?: "primary" 
   return <span className={textClass}>{value}</span>;
 };
 
-const FeatureComparison = () => (
+const FeatureComparison =  => (
   <div className="overflow-x-auto">
     <table className="w-full border-collapse text-sm">
       <thead>
@@ -182,15 +182,15 @@ const FeatureComparison = () => (
   </div>
 );
 
-const DocsPage = () => {
-  const navigate = useNavigate();
+const DocsPage =  => {
+  const navigate = useNavigate;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const q = searchQuery.trim().toLowerCase();
-  const matches = (text: string) => !q || text.toLowerCase().includes(q);
+  const q = searchQuery.trim.toLowerCase;
+  const matches = (text: string) => !q || text.toLowerCase.includes(q);
 
   const features = useMemo(
-    () =>
+     =>
       DOC_FEATURES.filter(
         (f) => matches(f.title) || matches(f.description) || matches(f.badge ?? ""),
       ).map((f) => ({
@@ -203,17 +203,17 @@ const DocsPage = () => {
   );
 
   const quickStartSteps = useMemo(
-    () => DOC_QUICK_START.filter((s) => matches(s.title) || matches(s.description)),
+     => DOC_QUICK_START.filter((s) => matches(s.title) || matches(s.description)),
     [q],
   );
 
   const docRoutes = useMemo(
-    () => DOC_ROUTES.filter((r) => matches(r.path) || matches(r.label) || matches(r.desc)),
+     => DOC_ROUTES.filter((r) => matches(r.path) || matches(r.label) || matches(r.desc)),
     [q],
   );
 
   const workspaceGuide = useMemo(
-    () =>
+     =>
       DOC_WORKSPACE_GUIDE.filter(
         (w) => matches(w.title) || w.items.some((item) => matches(item)),
       ),
@@ -221,59 +221,59 @@ const DocsPage = () => {
   );
 
   const faqItems = useMemo(
-    () => DOC_FAQ.filter((f) => matches(f.q) || matches(f.a)),
+     => DOC_FAQ.filter((f) => matches(f.q) || matches(f.a)),
     [q],
   );
 
   const troubleshooting = useMemo(
-    () => DOC_TROUBLESHOOTING.filter((t) => matches(t.issue) || t.solutions.some(matches)),
+     => DOC_TROUBLESHOOTING.filter((t) => matches(t.issue) || t.solutions.some(matches)),
     [q],
   );
 
   const tools = useMemo(
-    () => DOC_TOOLS.filter((t) => matches(t.name) || matches(t.trigger) || matches(t.description) || matches(t.plan ?? "")),
+     => DOC_TOOLS.filter((t) => matches(t.name) || matches(t.trigger) || matches(t.description) || matches(t.plan ?? "")),
     [q],
   );
 
   const overviewSections = useMemo(
-    () => DOC_OVERVIEW.filter((o) => matches(o.title) || o.paragraphs.some(matches)),
+     => DOC_OVERVIEW.filter((o) => matches(o.title) || o.paragraphs.some(matches)),
     [q],
   );
 
   const privacySections = useMemo(
-    () => DOC_PRIVACY_SECTIONS.filter((p) => matches(p.title) || p.items.some(matches)),
+     => DOC_PRIVACY_SECTIONS.filter((p) => matches(p.title) || p.items.some(matches)),
     [q],
   );
 
   const pricingTiers = useMemo(
-    () => DOC_PRICING_TIERS.filter((p) => matches(p.name) || matches(p.tagline) || p.highlights.some(matches)),
+     => DOC_PRICING_TIERS.filter((p) => matches(p.name) || matches(p.tagline) || p.highlights.some(matches)),
     [q],
   );
 
   const glossary = useMemo(
-    () => DOC_GLOSSARY.filter((g) => matches(g.term) || matches(g.definition)),
+     => DOC_GLOSSARY.filter((g) => matches(g.term) || matches(g.definition)),
     [q],
   );
 
   const missionSteps = useMemo(
-    () => DOC_MISSION_CONTROL.filter((m) => matches(m.title) || matches(m.description)),
+     => DOC_MISSION_CONTROL.filter((m) => matches(m.title) || matches(m.description)),
     [q],
   );
 
   const desktopSections = useMemo(
-    () => DOC_DESKTOP.filter((d) => matches(d.title) || d.items.some(matches)),
+     => DOC_DESKTOP.filter((d) => matches(d.title) || d.items.some(matches)),
     [q],
   );
 
-  const routeGroups = useMemo(() => {
-    const groups = new Map<string, typeof docRoutes>();
+  const routeGroups = useMemo( => {
+    const groups = new Map<string, typeof docRoutes>;
     for (const route of docRoutes) {
       const group = route.group ?? "Other";
       const list = groups.get(group) ?? [];
       list.push(route);
       groups.set(group, list);
     }
-    return [...groups.entries()];
+    return [...groups.entries];
   }, [docRoutes]);
 
   const activeTab = q
@@ -292,7 +292,7 @@ const DocsPage = () => {
       }
     : null;
 
-  const hasSearchResults = useMemo(() => {
+  const hasSearchResults = useMemo( => {
     if (!q) return true;
     if (activeTab && Object.values(activeTab).some(Boolean)) return true;
     return docSearchBlob({
@@ -439,22 +439,22 @@ const DocsPage = () => {
             
             {/* Quick Links */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-2 mt-8">
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/chatbot')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/chatbot')}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-primary" /> Chatbot
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/workspace')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/workspace')}>
                 <Brain className="h-3.5 w-3.5 mr-1.5 text-secondary" /> Business Memory
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/analytics')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/analytics')}>
                 <TrendingUp className="h-3.5 w-3.5 mr-1.5 text-emerald-400" /> Analytics
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/shadow-memory')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/shadow-memory')}>
                 <Shield className="h-3.5 w-3.5 mr-1.5 text-amber-400" /> Shadow Memory
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/developers')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/developers')}>
                 <Code className="h-3.5 w-3.5 mr-1.5 text-violet-400" /> Developers API
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/pricing')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/pricing')}>
                 <Crown className="h-3.5 w-3.5 mr-1.5 text-pink-400" /> Pricing
               </Button>
             </motion.div>
@@ -482,7 +482,7 @@ const DocsPage = () => {
 
             {q && !hasSearchResults && (
               <p className="text-center text-muted-foreground py-8 glass-subtle rounded-xl">
-                No results for &ldquo;{searchQuery}&rdquo;. Try &ldquo;chatbot&rdquo;, &ldquo;BYOK&rdquo;, or &ldquo;privacy&rdquo;.
+                No results for &ldquo;{searchQuery}&rdquo;. Try &ldquo;chatbot&rdquo;, &ldquo;&rdquo;, or &ldquo;privacy&rdquo;.
               </p>
             )}
 
@@ -583,7 +583,7 @@ const DocsPage = () => {
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground">{row.desc}</p>
-                              <Button variant="link" className="px-0 mt-2 h-auto" onClick={() => navigate(row.path)}>
+                              <Button variant="link" className="px-0 mt-2 h-auto" onClick={ => navigate(row.path)}>
                                 Open <ChevronRight className="h-3 w-3 ml-1" />
                               </Button>
                             </CardContent>
@@ -657,7 +657,7 @@ const DocsPage = () => {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <Button variant="outline" className="rounded-xl" onClick={() => navigate("/chatbot")}>
+                  <Button variant="outline" className="rounded-xl" onClick={ => navigate("/chatbot")}>
                     <Rocket className="h-4 w-4 mr-2" /> Launch Web App
                   </Button>
                 </div>
@@ -713,16 +713,16 @@ const DocsPage = () => {
               </DocSection>
 
               <div className="flex flex-wrap gap-3">
-                <Button className="btn-glow rounded-xl" onClick={() => navigate("/chatbot")}>
+                <Button className="btn-glow rounded-xl" onClick={ => navigate("/chatbot")}>
                   <MessageSquare className="h-4 w-4 mr-2" /> Open Chatbot
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/workspace")}>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/workspace")}>
                   <Brain className="h-4 w-4 mr-2" /> Business Memory
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/analytics")}>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/analytics")}>
                   <TrendingUp className="h-4 w-4 mr-2" /> Analytics Dashboard
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/shadow-memory")}>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/shadow-memory")}>
                   <Shield className="h-4 w-4 mr-2" /> Shadow Memory Journal
                 </Button>
               </div>
@@ -891,10 +891,10 @@ const DocsPage = () => {
                 </div>
               </DocSection>
               <div className="flex flex-wrap gap-3">
-                <Button className="btn-glow rounded-xl" onClick={() => navigate("/studio")}>
+                <Button className="btn-glow rounded-xl" onClick={ => navigate("/studio")}>
                   <Rocket className="h-4 w-4 mr-2" /> Open Model Studio
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/templates")}>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/templates")}>
                   <Sparkles className="h-4 w-4 mr-2" /> Prompt Templates
                 </Button>
               </div>
@@ -984,7 +984,7 @@ const DocsPage = () => {
             <TabsContent value="privacy" className="space-y-8">
               <DocSection title="Privacy & security">
                 <p className="text-muted-foreground mb-6">
-                  ShadowTalk is privacy-native: choose cloud routing, BYOK, client-side vault, or on-device inference per task.
+                  ShadowTalk is privacy-native: choose cloud routing, client-side vault, or on-device inference per task.
                 </p>
                 <div className="grid gap-5 md:grid-cols-2">
                   {privacySections.map((section, idx) => (
@@ -1014,9 +1014,9 @@ const DocsPage = () => {
                 </div>
               </DocSection>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/private-ai")}>Private AI Hub</Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/shadow-memory")}>Shadow Memory Journal</Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/about")}>Ethics & Privacy</Button>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/private-ai")}>Private AI Hub</Button>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/shadow-memory")}>Shadow Memory Journal</Button>
+                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/about")}>Ethics & Privacy</Button>
               </div>
             </TabsContent>
 
@@ -1025,7 +1025,7 @@ const DocsPage = () => {
               <DocSection title="Plans & limits">
                 <p className="text-muted-foreground mb-6">
                   Free unlocks all feature types with daily limits. Paid plans remove caps and add vault, and API access.
-                  Pakistan local payments: <button type="button" className="text-primary underline" onClick={() => navigate("/founder-access")}>/founder-access</button>.
+                  Pakistan local payments: <button type="button" className="text-primary underline" onClick={ => navigate("/founder-access")}>/founder-access</button>.
                 </p>
                 <div className="grid gap-5 md:grid-cols-2">
                   {pricingTiers.map((tier, i) => (
@@ -1062,7 +1062,7 @@ const DocsPage = () => {
                   </CardContent>
                 </Card>
                 <div className="mt-4">
-                  <Button className="btn-glow rounded-xl" onClick={() => navigate("/pricing")}>
+                  <Button className="btn-glow rounded-xl" onClick={ => navigate("/pricing")}>
                     <Crown className="h-4 w-4 mr-2" /> View live pricing
                   </Button>
                 </div>
@@ -1191,10 +1191,10 @@ const DocsPage = () => {
                   <h3 className="text-xl font-bold mb-2 tracking-tight">Still Need Help?</h3>
                   <p className="text-muted-foreground mb-6">Our support team is available to assist you</p>
                   <div className="flex justify-center gap-4 flex-wrap">
-                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={() => navigate('/chatbot')}>
+                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={ => navigate('/chatbot')}>
                       <MessageSquare className="h-4 w-4 mr-2" /> Open workspace
                     </Button>
-                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={() => navigate('/about')}>
+                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={ => navigate('/about')}>
                       <Users className="h-4 w-4 mr-2" /> About & Contact
                     </Button>
                   </div>

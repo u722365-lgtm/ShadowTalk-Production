@@ -42,7 +42,7 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
   const defaultImage = `${baseUrl}/og-image.svg`;
   const brand = 'ShadowTalk AI';
   // Avoid double-branding the title if it already contains the brand name.
-  const fullTitle = meta.title.toLowerCase().includes('shadowtalk')
+  const fullTitle = meta.title.toLowerCase.includes('shadowtalk')
     ? meta.title
     : `${meta.title} | ${brand}`;
 
@@ -68,7 +68,7 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
 
  
  // Structured data for Organization
- export function getOrganizationSchema() {
+ export function getOrganizationSchema {
    return {
      '@context': 'https://schema.org',
      '@type': 'Organization',
@@ -107,7 +107,7 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
    };
  }
 
- export function getSoftwareApplicationSchema() {
+ export function getSoftwareApplicationSchema {
    return {
      '@context': 'https://schema.org',
      '@type': 'SoftwareApplication',
@@ -133,13 +133,13 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
        'Deep Research with citations',
        'ShadowTalk Live voice mode',
        'Code IDE and App Builder',
-       'Stealth Vault and BYOK',
+       'Stealth Vault and ',
        'Marketplace AI agents',
      ],
    };
  }
 
-export function getWebSiteSchema() {
+export function getWebSiteSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -149,11 +149,11 @@ export function getWebSiteSchema() {
   };
 }
 
-export function getProfilePageSchema() {
+export function getProfilePageSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
-    mainEntity: getPersonSchema()
+    mainEntity: getPersonSchema
   };
 }
 
@@ -227,7 +227,7 @@ export const FOUNDER_HOME_FAQ = [
  }
 
  /** Canonical Person schema for Zain Ahmed — use on founder profile pages */
- export function getPersonSchema() {
+ export function getPersonSchema {
    return {
      '@context': 'https://schema.org',
      '@type': 'Person',
@@ -269,7 +269,7 @@ export const FOUNDER_HOME_FAQ = [
    };
  }
 
-export function getCofounderPersonSchema() {
+export function getCofounderPersonSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -290,8 +290,8 @@ export function getCofounderPersonSchema() {
   };
 }
 
-export function getFounderHomeStructuredData() {
-  return [getPersonSchema(), getFAQSchema([...FOUNDER_HOME_FAQ])];
+export function getFounderHomeStructuredData {
+  return [getPersonSchema, getFAQSchema([...FOUNDER_HOME_FAQ])];
 }
 
 /** Privacy + product FAQ for /chatbot — targets AI Overviews & voice search */
@@ -338,7 +338,7 @@ export const CHATBOT_FAQ = [
   },
 ] as const;
 
-export function getChatbotFAQSchema() {
+export function getChatbotFAQSchema {
   return getFAQSchema([...CHATBOT_FAQ]);
 }
 
@@ -355,7 +355,7 @@ export function getSpeakableSchema(cssSelectors: string[] = [".speakable", "h1",
 }
 
 /** WebSite schema with SearchAction — enables Google sitelinks searchbox */
-export function getWebSiteWithSearchSchema() {
+export function getWebSiteWithSearchSchema {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",

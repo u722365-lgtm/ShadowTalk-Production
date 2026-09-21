@@ -52,7 +52,7 @@ const STATIC_FAQS: FAQItem[] = [
     id: "faq-how-different-chatgpt",
     category: "product",
     question: "How is ShadowTalk AI different from ChatGPT or simple chat wrappers?",
-    answer: "Standard chatbots are reactive single-turn engines. ShadowTalk is an agentic workspace that plans and finishes multi-step tasks across real-world tools, includes a built-in browser IDE, provides Business Memory across sessions, supports Bring Your Own Key (BYOK), and offers ultra-low latency inference via Groq Llama 3.3 70B (600+ tok/s) and DeepSeek R1 reasoning.",
+    answer: "Standard chatbots are reactive single-turn engines. ShadowTalk is an agentic workspace that plans and finishes multi-step tasks across real-world tools, includes a built-in browser IDE, provides Business Memory across sessions, supports , and offers ultra-low latency inference via Groq Llama 3.3 70B (600+ tok/s) and DeepSeek R1 reasoning.",
   },
   {
     id: "faq-free-tier",
@@ -82,7 +82,7 @@ const STATIC_FAQS: FAQItem[] = [
     id: "faq-security-privacy",
     category: "security",
     question: "How does ShadowTalk protect my confidential data?",
-    answer: "ShadowTalk enforces client-side encryption for the Stealth Vault, stores local telemetry inside IndexedDB sandboxes, supports BYOK where API keys never touch our database, and guarantees that your proprietary business conversations are never used to train foundation models.",
+    answer: "ShadowTalk enforces client-side encryption for the Stealth Vault, stores local telemetry inside IndexedDB sandboxes, supports where API keys never touch our database, and guarantees that your proprietary business conversations are never used to train foundation models.",
   },
   {
     id: "faq-pricing-tiers",
@@ -126,14 +126,14 @@ const CATEGORY_MAP = [
   { id: "founder", label: "Founder & Team", icon: Code },
 ];
 
-export const FAQPage = () => {
-  const navigate = useNavigate();
+export const FAQPage =  => {
+  const navigate = useNavigate;
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [accordionValues, setAccordionValues] = useState<string[]>([]);
 
   // Merge static FAQs with AEO answer corpus for complete coverage
-  const allFaqs = useMemo(() => {
+  const allFaqs = useMemo( => {
     const combined = [...STATIC_FAQS];
     AEO_ANSWER_CORPUS.forEach((aeo, idx) => {
       // Map category
@@ -145,7 +145,7 @@ export const FAQPage = () => {
       else if (aeoCat === "privacy" || aeoCat === "security") cat = "security";
 
       // Prevent duplicate questions
-      if (!combined.some((item) => item.question.toLowerCase() === aeo.question.toLowerCase())) {
+      if (!combined.some((item) => item.question.toLowerCase === aeo.question.toLowerCase)) {
         combined.push({
           id: `aeo-${idx}`,
           category: cat,
@@ -157,27 +157,27 @@ export const FAQPage = () => {
     return combined;
   }, []);
 
-  const filteredFaqs = useMemo(() => {
+  const filteredFaqs = useMemo( => {
     return allFaqs.filter((item) => {
       const matchesCat = activeCategory === "all" || item.category === activeCategory;
-      const q = searchQuery.toLowerCase().trim();
+      const q = searchQuery.toLowerCase.trim;
       const matchesQuery =
         !q ||
-        item.question.toLowerCase().includes(q) ||
-        item.answer.toLowerCase().includes(q);
+        item.question.toLowerCase.includes(q) ||
+        item.answer.toLowerCase.includes(q);
       return matchesCat && matchesQuery;
     });
   }, [allFaqs, activeCategory, searchQuery]);
 
-  const handleExpandAll = () => {
+  const handleExpandAll =  => {
     setAccordionValues(filteredFaqs.map((f) => f.id));
   };
 
-  const handleCollapseAll = () => {
+  const handleCollapseAll =  => {
     setAccordionValues([]);
   };
 
-  const faqSchema = useMemo(() => {
+  const faqSchema = useMemo( => {
     return getFAQSchema(
       filteredFaqs.slice(0, 25).map((f) => ({
         question: f.question,
@@ -196,7 +196,7 @@ export const FAQPage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/chatbot")}
+          onClick={ => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -227,14 +227,14 @@ export const FAQPage = () => {
             <div className="relative max-w-2xl mx-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search questions (e.g. 'refunds', 'Groq speed', 'BYOK', 'missions')..."
+                placeholder="Search questions (e.g. 'refunds', 'Groq speed', '', 'missions')..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-6 text-base bg-background/80 border-border/60 rounded-xl shadow-lg focus-visible:ring-primary/40"
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={ => setSearchQuery("")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-mono"
                 >
                   Clear
@@ -256,7 +256,7 @@ export const FAQPage = () => {
                 return (
                   <button
                     key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
+                    onClick={ => setActiveCategory(cat.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap border ${
                       isActive
                         ? "bg-primary text-primary-foreground border-primary shadow-sm"
@@ -330,7 +330,7 @@ export const FAQPage = () => {
                     <AccordionTrigger className="text-left font-semibold text-base sm:text-lg text-foreground hover:text-primary transition-colors py-4">
                       <div className="flex items-start gap-3 pr-4">
                         <span className="text-xs font-mono text-primary/70 mt-1">
-                          {(idx + 1).toString().padStart(2, "0")}.
+                          {(idx + 1).toString.padStart(2, "0")}.
                         </span>
                         <span>{faq.question}</span>
                       </div>

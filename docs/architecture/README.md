@@ -4,7 +4,7 @@ This directory contains high-level system architecture flowcharts representing t
 
 ## Available Diagrams
 - **API Routing Flowchart**: Client request management, rate limiting, and gateway routing.
-- **AI Provider Routing**: Core logic handling Offline AI vs Cloud AI vs BYOK providers.
+- **AI Provider Routing**: Core logic handling Offline AI vs Cloud AI vs providers.
 - **Authentication**: JWT, token validation, and OAuth flows.
 - **Database Storage**: SQL, NoSQL, Caching, and Vector databases.
 - **Message Streaming**: Real-time event queues, WebSockets, and AI chunk SSE streaming.

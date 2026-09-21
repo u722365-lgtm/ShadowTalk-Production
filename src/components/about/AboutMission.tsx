@@ -3,7 +3,7 @@ import { Target, WifiOff, Globe, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp, fadeUpStagger, viewportOnce } from "./aboutMotion";
 
-const AboutMission = () => {
+const AboutMission =  => {
   return (
     <section className="py-20 px-4 relative">
       <div className="container mx-auto max-w-5xl">
@@ -42,7 +42,7 @@ const AboutMission = () => {
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
                   { icon: WifiOff, title: "Offline-First", desc: "Sovereign AI that works anywhere, anytime" },
-                  { icon: Shield, title: "Privacy-Native", desc: "Vault, BYOK, and optional on-device AI — you choose cloud vs local" },
+                  { icon: Shield, title: "Privacy-Native", desc: "Vault, and optional on-device AI — you choose cloud vs local" },
                   { icon: Globe, title: "Pakistan-Built", desc: "World-class tech from the Global South" },
                 ].map((item, i) => (
                   <motion.div

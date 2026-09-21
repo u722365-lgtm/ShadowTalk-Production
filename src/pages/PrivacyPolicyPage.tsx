@@ -64,7 +64,7 @@ We collect information in the following categories:
 - IP addresses, connection latency, crash logs, and API response timings necessary for load balancing and abuse mitigation.
 
 ### D. Client-Side Keys & Vault Data
-- **Bring Your Own Key (BYOK)**: API keys you supply for external providers (e.g., Groq, OpenAI, Anthropic) are saved in your browser's local sandbox storage and never transmitted to our backend databases.
+- ****: API keys you supply for external providers (e.g., Groq, OpenAI, Anthropic) are saved in your browser's local sandbox storage and never transmitted to our backend databases.
 - **Stealth Vault Records**: Private credentials and secrets stored in the Stealth Vault are encrypted client-side using AES-GCM-256 before persistence.
     `,
   },
@@ -116,7 +116,7 @@ We require all sub-processors to implement enterprise security standards and abi
     content: `
 You maintain full control over the lifespan of your data:
 
-- **Local Storage Control**: You can purge all cached conversation transcripts, BYOK keys, and mission states at any moment via your browser settings or our [GDPR Management Page](/gdpr).
+- **Local Storage Control**: You can purge all cached conversation transcriptskeys, and mission states at any moment via your browser settings or our [GDPR Management Page](/gdpr).
 - **Server-Side Accounts**: Active account profiles and cloud sync records are retained as long as your account remains open. If you delete your account, all associated database records are permanently purged within 30 days.
 - **Inference Ephemerality**: Model provider APIs process queries transiently in volatile memory and do not retain customer chat payloads beyond immediate generation and short-term abuse inspection windows (typically 30 days max).
     `,
@@ -165,8 +165,8 @@ If you have questions, feedback, or privacy-related requests, please contact our
   },
 ];
 
-export const PrivacyPolicyPage = () => {
-  const navigate = useNavigate();
+export const PrivacyPolicyPage =  => {
+  const navigate = useNavigate;
   const lastUpdated = "February 28, 2026";
   const [activeSection, setActiveSection] = useState<string>("section-1");
 
@@ -188,7 +188,7 @@ export const PrivacyPolicyPage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/chatbot")}
+          onClick={ => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -239,7 +239,7 @@ export const PrivacyPolicyPage = () => {
 
               <div className="space-y-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-center sm:justify-start gap-1.5">
-                  <Key className="h-4 w-4" /> Client-Side BYOK
+                  <Key className="h-4 w-4" /> Client-Side 
                 </span>
                 <p className="text-xs text-muted-foreground">External API keys remain sandboxed inside your local browser storage.</p>
               </div>
@@ -277,7 +277,7 @@ export const PrivacyPolicyPage = () => {
                     {PRIVACY_SECTIONS.map((section) => (
                       <button
                         key={section.id}
-                        onClick={() => scrollToSection(section.id)}
+                        onClick={ => scrollToSection(section.id)}
                         className={`w-full text-left text-xs py-2 px-2.5 rounded transition-colors ${
                           activeSection === section.id
                             ? "bg-primary/20 text-primary font-medium"
@@ -355,14 +355,14 @@ export const PrivacyPolicyPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => navigate("/gdpr")}
+                      onClick={ => navigate("/gdpr")}
                       className="border-primary/40 hover:bg-primary/20 gap-1 text-xs"
                     >
                       GDPR Portal <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => navigate("/contact")}
+                      onClick={ => navigate("/contact")}
                       className="gap-1 text-xs"
                     >
                       Contact DPO

@@ -47,8 +47,8 @@ const pillars = [
   },
   {
     icon: KeyRound,
-    title: "Bring your own key",
-    body: "Prefer to route through your own OpenAI, Anthropic, or Google endpoint? BYOK is a first-class option.",
+    title: "",
+    body: "Prefer to route through your own OpenAI, Anthropic, or Google endpoint? is a first-class option.",
   },
 ];
 
@@ -61,9 +61,9 @@ const compareRows: Array<{ feature: string; shadow: string; chatgpt: string; cla
   { feature: "Free tier without card", shadow: "Yes", chatgpt: "Yes", claude: "Yes" },
 ];
 
-export default function PrivateAiHubPage() {
+export default function PrivateAiHubPage {
   const structuredData = [
-    getSoftwareApplicationSchema(),
+    getSoftwareApplicationSchema,
     getFAQSchema([...CHATBOT_FAQ]),
     getSpeakableSchema(["h1", "[data-speakable]"]),
   ];

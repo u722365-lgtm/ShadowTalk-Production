@@ -94,30 +94,30 @@ const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: "cs-4",
-    title: "Zero-Telemetry Corporate Intelligence with BYOK & Client-Side Vault",
+    title: "Zero-Telemetry Corporate Intelligence with & Client-Side Vault",
     industry: "E-Commerce",
     persona: "Enterprise CTOs & Data Directors",
     companyContext: "Omnichannel e-commerce retailer managing proprietary sales models and customer SKU trends.",
     problem: "Corporate policy prohibited sharing proprietary merchandising figures with public LLM vendors due to training and data retention fears.",
-    solution: "Implemented ShadowTalk with Bring Your Own Key (BYOK) and client-side encrypted Business Memory. Key credentials and memory states remain inside the company's browser sandbox.",
+    solution: "Implemented ShadowTalk with  and client-side encrypted Business Memory. Key credentials and memory states remain inside the company's browser sandbox.",
     outcome: "Full enterprise AI adoption across 8 business units with absolute compliance with strict zero-training policies.",
     metrics: [
       { label: "Data Leakage Risk", value: "0%" },
       { label: "Internal Adoption", value: "250+ users" },
       { label: "API Cost Savings", value: "Zero Markup" },
     ],
-    framework: "Problem: Corporate data privacy barriers → Solution: BYOK direct endpoint routing + client-side encrypted memory → Outcome: Safe enterprise scale.",
+    framework: "Problem: Corporate data privacy barriers → Solution: direct endpoint routing + client-side encrypted memory → Outcome: Safe enterprise scale.",
     ctaPrompt: "Forecast quarterly SKU replenishment demand based on seasonal inventory patterns.",
   },
 ];
 
 const INDUSTRIES = ["All", "Fintech & Strategy", "Developer Tooling", "Research & Legal", "E-Commerce"];
 
-export const CaseStudiesPage = () => {
-  const navigate = useNavigate();
+export const CaseStudiesPage =  => {
+  const navigate = useNavigate;
   const [activeIndustry, setActiveIndustry] = useState("All");
 
-  const filteredStudies = useMemo(() => {
+  const filteredStudies = useMemo( => {
     if (activeIndustry === "All") return CASE_STUDIES;
     return CASE_STUDIES.filter((cs) => cs.industry === activeIndustry);
   }, [activeIndustry]);
@@ -132,7 +132,7 @@ export const CaseStudiesPage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/chatbot")}
+          onClick={ => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -165,7 +165,7 @@ export const CaseStudiesPage = () => {
                 { value: "85%", label: "Faster Research Velocity", sub: "Multi-source synthesis" },
                 { value: "10x", label: "Workflow Throughput", sub: "Mission Control S.E.E." },
                 { value: "40+ hrs", label: "Saved per Engineer/Mo", sub: "In-browser shell & IDE" },
-                { value: "100%", label: "Client Data Sovereignty", sub: "BYOK & Local Memory" },
+                { value: "100%", label: "Client Data Sovereignty", sub: "& Local Memory" },
               ].map((stat, i) => (
                 <div key={i} className="glass-subtle rounded-xl p-4 border border-border/50 text-center">
                   <div className="text-2xl sm:text-3xl font-bold gradient-text">{stat.value}</div>
@@ -187,7 +187,7 @@ export const CaseStudiesPage = () => {
               return (
                 <button
                   key={ind}
-                  onClick={() => setActiveIndustry(ind)}
+                  onClick={ => setActiveIndustry(ind)}
                   className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"
