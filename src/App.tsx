@@ -43,15 +43,15 @@ import { NetworkTransitionOverlay } from "@/components/chat/NetworkTransitionOve
 const ChatbotPage = lazy(() => import("./pages/ChatbotPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
- const AuthDesignGalleryPage = lazy(() => import("./pages/AuthDesignGalleryPage"));
- const AuthDesignPreviewPage = lazy(() => import("./pages/AuthDesignPreviewPage"));
- const SharedAnswerPage = lazy(() => import("./pages/SharedAnswerPage"));
- const SessionsPage = lazy(() => import("./pages/SessionsPage"));
- const PricingPage = lazy(() => import("./pages/PricingPage"));
- const DocsPage = lazy(() => import("./pages/DocsPage"));
- const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
- const PrivateAiHubPage = lazy(() => import("./pages/PrivateAiHubPage"));
- // const StrategyAgentPage = lazy(() => import("./pages/StrategyAgentPage"));
+const AuthDesignGalleryPage = lazy(() => import("./pages/AuthDesignGalleryPage"));
+const AuthDesignPreviewPage = lazy(() => import("./pages/AuthDesignPreviewPage"));
+const SharedAnswerPage = lazy(() => import("./pages/SharedAnswerPage"));
+const SessionsPage = lazy(() => import("./pages/SessionsPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const DocsPage = lazy(() => import("./pages/DocsPage"));
+const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
+const PrivateAiHubPage = lazy(() => import("./pages/PrivateAiHubPage"));
+// const StrategyAgentPage = lazy(() => import("./pages/StrategyAgentPage"));
 const DeveloperPortalPage = lazy(() => import("./pages/DeveloperPortalPage"));
 const OrgAdminPage = lazy(() => import("./pages/OrgAdminPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
@@ -131,7 +131,6 @@ const ShadowScaleEngine = lazy(() =>
    },
  });
  
-
 const AnimatedRoutes = () => {
   const location = useLocation();
   useReferralCapture();
@@ -177,10 +176,10 @@ const AnimatedRoutes = () => {
           <Route path="/privacy-score" element={<PageTransition><PrivacyScorePage /></PageTransition>} />
           <Route path="/trust" element={<PageTransition><TrustPage /></PageTransition>} />
           <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
-                    <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
-                    <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
+          <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
+          <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
 
-                    {/* Company, Support, Legal & Status Pages */}
+          {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
           <Route path="/help" element={<PageTransition><HelpCenterPage /></PageTransition>} />
           <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />

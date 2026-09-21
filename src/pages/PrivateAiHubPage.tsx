@@ -61,7 +61,7 @@ const compareRows: Array<{ feature: string; shadow: string; chatgpt: string; cla
   { feature: "Free tier without card", shadow: "Yes", chatgpt: "Yes", claude: "Yes" },
 ];
 
-export default function PrivateAiHubPage {
+export default function PrivateAiHubPage() {
   const structuredData = [
     getSoftwareApplicationSchema,
     getFAQSchema([...CHATBOT_FAQ]),

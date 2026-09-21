@@ -141,7 +141,7 @@ const PlanCellValue = ({ value, accent }: { value: PlanCell; accent?: "primary" 
   return <span className={textClass}>{value}</span>;
 };
 
-const FeatureComparison =  => (
+const FeatureComparison = () => (
   <div className="overflow-x-auto">
     <table className="w-full border-collapse text-sm">
       <thead>
@@ -182,91 +182,50 @@ const FeatureComparison =  => (
   </div>
 );
 
-const DocsPage =  => {
-  const navigate = useNavigate;
+const DocsPage = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const q = searchQuery.trim.toLowerCase;
-  const matches = (text: string) => !q || text.toLowerCase.includes(q);
+  const q = searchQuery.trim().toLowerCase();
+  const matches = (text: string) => !q || text.toLowerCase().includes(q);
 
-  const features = useMemo(
-     =>
-      DOC_FEATURES.filter(
-        (f) => matches(f.title) || matches(f.description) || matches(f.badge ?? ""),
-      ).map((f) => ({
-        icon: DOC_FEATURE_ICONS[f.icon],
-        title: f.title,
-        description: f.description,
-        badge: f.badge,
-      })),
-    [q],
-  );
+  const features = useMemo(() => DOC_FEATURES.filter(
+    (f) => matches(f.title) || matches(f.description) || matches(f.badge ?? ""),
+  ).map((f) => ({
+    icon: DOC_FEATURE_ICONS[f.icon],
+    title: f.title,
+    description: f.description,
+    badge: f.badge,
+  })), [q]);
 
-  const quickStartSteps = useMemo(
-     => DOC_QUICK_START.filter((s) => matches(s.title) || matches(s.description)),
-    [q],
-  );
+  const quickStartSteps = useMemo(() => DOC_QUICK_START.filter((s) => matches(s.title) || matches(s.description)), [q]);
 
-  const docRoutes = useMemo(
-     => DOC_ROUTES.filter((r) => matches(r.path) || matches(r.label) || matches(r.desc)),
-    [q],
-  );
+  const docRoutes = useMemo(() => DOC_ROUTES.filter((r) => matches(r.path) || matches(r.label) || matches(r.desc)), [q]);
 
-  const workspaceGuide = useMemo(
-     =>
-      DOC_WORKSPACE_GUIDE.filter(
-        (w) => matches(w.title) || w.items.some((item) => matches(item)),
-      ),
-    [q],
-  );
+  const workspaceGuide = useMemo(() => DOC_WORKSPACE_GUIDE.filter(
+    (w) => matches(w.title) || w.items.some((item) => matches(item)),
+  ), [q]);
 
-  const faqItems = useMemo(
-     => DOC_FAQ.filter((f) => matches(f.q) || matches(f.a)),
-    [q],
-  );
+  const faqItems = useMemo(() => DOC_FAQ.filter((f) => matches(f.q) || matches(f.a)), [q]);
 
-  const troubleshooting = useMemo(
-     => DOC_TROUBLESHOOTING.filter((t) => matches(t.issue) || t.solutions.some(matches)),
-    [q],
-  );
+  const troubleshooting = useMemo(() => DOC_TROUBLESHOOTING.filter((t) => matches(t.issue) || t.solutions.some(matches)), [q]);
 
-  const tools = useMemo(
-     => DOC_TOOLS.filter((t) => matches(t.name) || matches(t.trigger) || matches(t.description) || matches(t.plan ?? "")),
-    [q],
-  );
+  const tools = useMemo(() => DOC_TOOLS.filter((t) => matches(t.name) || matches(t.trigger) || matches(t.description) || matches(t.plan ?? "")), [q]);
 
-  const overviewSections = useMemo(
-     => DOC_OVERVIEW.filter((o) => matches(o.title) || o.paragraphs.some(matches)),
-    [q],
-  );
+  const overviewSections = useMemo(() => DOC_OVERVIEW.filter((o) => matches(o.title) || o.paragraphs.some(matches)), [q]);
 
-  const privacySections = useMemo(
-     => DOC_PRIVACY_SECTIONS.filter((p) => matches(p.title) || p.items.some(matches)),
-    [q],
-  );
+  const privacySections = useMemo(() => DOC_PRIVACY_SECTIONS.filter((p) => matches(p.title) || p.items.some(matches)), [q]);
 
-  const pricingTiers = useMemo(
-     => DOC_PRICING_TIERS.filter((p) => matches(p.name) || matches(p.tagline) || p.highlights.some(matches)),
-    [q],
-  );
+  const pricingTiers = useMemo(() => DOC_PRICING_TIERS.filter((p) => matches(p.name) || matches(p.tagline) || p.highlights.some(matches)), [q]);
 
-  const glossary = useMemo(
-     => DOC_GLOSSARY.filter((g) => matches(g.term) || matches(g.definition)),
-    [q],
-  );
+  const glossary = useMemo(() => DOC_GLOSSARY.filter((g) => matches(g.term) || matches(g.definition)), [q]);
 
-  const missionSteps = useMemo(
-     => DOC_MISSION_CONTROL.filter((m) => matches(m.title) || matches(m.description)),
-    [q],
-  );
+  const missionSteps = useMemo(() => DOC_MISSION_CONTROL.filter((m) => matches(m.title) || matches(m.description)), [q]);
 
-  const desktopSections = useMemo(
-     => DOC_DESKTOP.filter((d) => matches(d.title) || d.items.some(matches)),
-    [q],
-  );
+  const desktopSections = useMemo(() => DOC_DESKTOP.filter((d) => matches(d.title) || d.items.some(matches)), [q]);
 
-  const routeGroups = useMemo( => {
-    const groups = new Map<string, typeof docRoutes>;
+  const routeGroups = useMemo(() => {
+    const groups = new Map<string, typeof docRoutes>();
     for (const route of docRoutes) {
       const group = route.group ?? "Other";
       const list = groups.get(group) ?? [];
@@ -292,16 +251,16 @@ const DocsPage =  => {
       }
     : null;
 
-  const hasSearchResults = useMemo( => {
-    if (!q) return true;
-    if (activeTab && Object.values(activeTab).some(Boolean)) return true;
-    return docSearchBlob({
-      features: DOC_FEATURES,
-      faq: DOC_FAQ,
-      troubleshooting: DOC_TROUBLESHOOTING,
-      workspace: DOC_WORKSPACE_GUIDE,
-    }).includes(q);
-  }, [q, activeTab]);
+  const hasSearchResults = useMemo(() => {
+      if (!q) return true;
+      if (activeTab && Object.values(activeTab).some(Boolean)) return true;
+      return docSearchBlob({
+        features: DOC_FEATURES,
+        faq: DOC_FAQ,
+        troubleshooting: DOC_TROUBLESHOOTING,
+        workspace: DOC_WORKSPACE_GUIDE,
+      }).includes(q);
+    }, [q, activeTab]);
 
   const apiEndpoints = [
     {

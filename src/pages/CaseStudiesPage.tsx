@@ -113,11 +113,11 @@ const CASE_STUDIES: CaseStudy[] = [
 
 const INDUSTRIES = ["All", "Fintech & Strategy", "Developer Tooling", "Research & Legal", "E-Commerce"];
 
-export const CaseStudiesPage =  => {
-  const navigate = useNavigate;
+export const CaseStudiesPage = () => {
+  const navigate = useNavigate();
   const [activeIndustry, setActiveIndustry] = useState("All");
 
-  const filteredStudies = useMemo( => {
+  const filteredStudies = useMemo(() => {
     if (activeIndustry === "All") return CASE_STUDIES;
     return CASE_STUDIES.filter((cs) => cs.industry === activeIndustry);
   }, [activeIndustry]);
