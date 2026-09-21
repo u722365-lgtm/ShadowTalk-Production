@@ -96,7 +96,7 @@ export const handleAPIError = async (
       });
       // Optionally redirect to login
       if (typeof window !== 'undefined') {
-        setTimeout( => {
+        setTimeout(() => {
           window.location.href = '/auth';
         }, 2000);
       }
@@ -180,8 +180,8 @@ export const isOnline = : boolean => {
 
 // Helper for graceful degradation
 export const withOfflineFallback = async <T>(
-  onlineHandler:  => Promise<T>,
-  offlineFallback: T | ( => T)
+  onlineHandler: () => Promise<T>,
+  offlineFallback: T | (() => T)
 ): Promise<T> => {
   if (!isOnline) {
     return typeof offlineFallback === 'function' 

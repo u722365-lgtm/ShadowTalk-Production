@@ -165,7 +165,7 @@ If you have questions, feedback, or privacy-related requests, please contact our
   },
 ];
 
-export const PrivacyPolicyPage =  => {
+export const PrivacyPolicyPage = () => {
   const navigate = useNavigate;
   const lastUpdated = "February 28, 2026";
   const [activeSection, setActiveSection] = useState<string>("section-1");
@@ -188,7 +188,7 @@ export const PrivacyPolicyPage =  => {
         <Button
           variant="outline"
           size="sm"
-          onClick={ => navigate("/chatbot")}
+          onClick={() => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -277,7 +277,7 @@ export const PrivacyPolicyPage =  => {
                     {PRIVACY_SECTIONS.map((section) => (
                       <button
                         key={section.id}
-                        onClick={ => scrollToSection(section.id)}
+                        onClick={() => scrollToSection(section.id)}
                         className={`w-full text-left text-xs py-2 px-2.5 rounded transition-colors ${
                           activeSection === section.id
                             ? "bg-primary/20 text-primary font-medium"
@@ -355,14 +355,14 @@ export const PrivacyPolicyPage =  => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={ => navigate("/gdpr")}
+                      onClick={() => navigate("/gdpr")}
                       className="border-primary/40 hover:bg-primary/20 gap-1 text-xs"
                     >
                       GDPR Portal <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                       size="sm"
-                      onClick={ => navigate("/contact")}
+                      onClick={() => navigate("/contact")}
                       className="gap-1 text-xs"
                     >
                       Contact DPO

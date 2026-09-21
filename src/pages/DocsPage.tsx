@@ -398,22 +398,22 @@ const DocsPage = () => {
             
             {/* Quick Links */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex flex-wrap justify-center gap-2 mt-8">
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/chatbot')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/chatbot')}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-primary" /> Chatbot
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/workspace')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/workspace')}>
                 <Brain className="h-3.5 w-3.5 mr-1.5 text-secondary" /> Business Memory
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/analytics')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/analytics')}>
                 <TrendingUp className="h-3.5 w-3.5 mr-1.5 text-emerald-400" /> Analytics
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/shadow-memory')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/shadow-memory')}>
                 <Shield className="h-3.5 w-3.5 mr-1.5 text-amber-400" /> Shadow Memory
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/developers')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/developers')}>
                 <Code className="h-3.5 w-3.5 mr-1.5 text-violet-400" /> Developers API
               </Button>
-              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={ => navigate('/pricing')}>
+              <Button variant="outline" size="sm" className="rounded-full glass-subtle border-border/30 hover:border-primary/40 text-xs" onClick={() => navigate('/pricing')}>
                 <Crown className="h-3.5 w-3.5 mr-1.5 text-pink-400" /> Pricing
               </Button>
             </motion.div>
@@ -542,7 +542,7 @@ const DocsPage = () => {
                             </CardHeader>
                             <CardContent>
                               <p className="text-sm text-muted-foreground">{row.desc}</p>
-                              <Button variant="link" className="px-0 mt-2 h-auto" onClick={ => navigate(row.path)}>
+                              <Button variant="link" className="px-0 mt-2 h-auto" onClick={() => navigate(row.path)}>
                                 Open <ChevronRight className="h-3 w-3 ml-1" />
                               </Button>
                             </CardContent>
@@ -616,7 +616,7 @@ const DocsPage = () => {
                   ))}
                 </div>
                 <div className="mt-4">
-                  <Button variant="outline" className="rounded-xl" onClick={ => navigate("/chatbot")}>
+                  <Button variant="outline" className="rounded-xl" onClick={() => navigate("/chatbot")}>
                     <Rocket className="h-4 w-4 mr-2" /> Launch Web App
                   </Button>
                 </div>
@@ -672,16 +672,16 @@ const DocsPage = () => {
               </DocSection>
 
               <div className="flex flex-wrap gap-3">
-                <Button className="btn-glow rounded-xl" onClick={ => navigate("/chatbot")}>
+                <Button className="btn-glow rounded-xl" onClick={() => navigate("/chatbot")}>
                   <MessageSquare className="h-4 w-4 mr-2" /> Open Chatbot
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/workspace")}>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/workspace")}>
                   <Brain className="h-4 w-4 mr-2" /> Business Memory
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/analytics")}>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/analytics")}>
                   <TrendingUp className="h-4 w-4 mr-2" /> Analytics Dashboard
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/shadow-memory")}>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/shadow-memory")}>
                   <Shield className="h-4 w-4 mr-2" /> Shadow Memory Journal
                 </Button>
               </div>
@@ -850,10 +850,10 @@ const DocsPage = () => {
                 </div>
               </DocSection>
               <div className="flex flex-wrap gap-3">
-                <Button className="btn-glow rounded-xl" onClick={ => navigate("/studio")}>
+                <Button className="btn-glow rounded-xl" onClick={() => navigate("/studio")}>
                   <Rocket className="h-4 w-4 mr-2" /> Open Model Studio
                 </Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/templates")}>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/templates")}>
                   <Sparkles className="h-4 w-4 mr-2" /> Prompt Templates
                 </Button>
               </div>
@@ -973,9 +973,9 @@ const DocsPage = () => {
                 </div>
               </DocSection>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/private-ai")}>Private AI Hub</Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/shadow-memory")}>Shadow Memory Journal</Button>
-                <Button variant="outline" className="rounded-xl" onClick={ => navigate("/about")}>Ethics & Privacy</Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/private-ai")}>Private AI Hub</Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/shadow-memory")}>Shadow Memory Journal</Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/about")}>Ethics & Privacy</Button>
               </div>
             </TabsContent>
 
@@ -984,7 +984,7 @@ const DocsPage = () => {
               <DocSection title="Plans & limits">
                 <p className="text-muted-foreground mb-6">
                   Free unlocks all feature types with daily limits. Paid plans remove caps and add vault, and API access.
-                  Pakistan local payments: <button type="button" className="text-primary underline" onClick={ => navigate("/founder-access")}>/founder-access</button>.
+                  Pakistan local payments: <button type="button" className="text-primary underline" onClick={() => navigate("/founder-access")}>/founder-access</button>.
                 </p>
                 <div className="grid gap-5 md:grid-cols-2">
                   {pricingTiers.map((tier, i) => (
@@ -1021,7 +1021,7 @@ const DocsPage = () => {
                   </CardContent>
                 </Card>
                 <div className="mt-4">
-                  <Button className="btn-glow rounded-xl" onClick={ => navigate("/pricing")}>
+                  <Button className="btn-glow rounded-xl" onClick={() => navigate("/pricing")}>
                     <Crown className="h-4 w-4 mr-2" /> View live pricing
                   </Button>
                 </div>
@@ -1150,10 +1150,10 @@ const DocsPage = () => {
                   <h3 className="text-xl font-bold mb-2 tracking-tight">Still Need Help?</h3>
                   <p className="text-muted-foreground mb-6">Our support team is available to assist you</p>
                   <div className="flex justify-center gap-4 flex-wrap">
-                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={ => navigate('/chatbot')}>
+                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={() => navigate('/chatbot')}>
                       <MessageSquare className="h-4 w-4 mr-2" /> Open workspace
                     </Button>
-                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={ => navigate('/about')}>
+                    <Button variant="outline" className="rounded-xl glass-subtle border-border/30 hover:border-primary/40" onClick={() => navigate('/about')}>
                       <Users className="h-4 w-4 mr-2" /> About & Contact
                     </Button>
                   </div>

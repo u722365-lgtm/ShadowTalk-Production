@@ -132,7 +132,7 @@ export const CaseStudiesPage = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={ => navigate("/chatbot")}
+          onClick={() => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -187,7 +187,7 @@ export const CaseStudiesPage = () => {
               return (
                 <button
                   key={ind}
-                  onClick={ => setActiveIndustry(ind)}
+                  onClick={() => setActiveIndustry(ind)}
                   className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"

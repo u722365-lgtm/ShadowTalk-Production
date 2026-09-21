@@ -13,7 +13,7 @@ class AIProviderRouterImpl {
     this.preferLocalOverride = preferLocal;
   }
 
-  async getBestProvider: Promise<AIProvider> {
+  async getBestProvider(): Promise<AIProvider> {
     const isOnline = navigator.onLine; // Basic check, will be enhanced with OfflineDetector
     
     // Explicit Local Override

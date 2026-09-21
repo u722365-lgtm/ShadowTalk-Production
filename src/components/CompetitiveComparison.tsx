@@ -37,7 +37,7 @@ const tableRowVariants = {
   }),
 };
 
-const CompetitiveComparison =  => {
+const CompetitiveComparison = () => {
   const tableRef = useRef(null);
   const tableInView = useInView(tableRef, { once: true, margin: "-80px" });
   const { hoverLift, variants, viewport } = useLandingMotion;

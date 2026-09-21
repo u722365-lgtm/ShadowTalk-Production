@@ -3,7 +3,7 @@ import { Target, WifiOff, Globe, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp, fadeUpStagger, viewportOnce } from "./aboutMotion";
 
-const AboutMission =  => {
+const AboutMission = () => {
   return (
     <section className="py-20 px-4 relative">
       <div className="container mx-auto max-w-5xl">

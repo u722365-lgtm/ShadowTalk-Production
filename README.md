@@ -10,11 +10,10 @@ ShadowTalk is an elite, minimal agentic AI workspace focused entirely on doing t
 
 ## What is ShadowTalk?
 
-Unlike bloated AI platforms with dozens of confusing hubs and marketplaces, ShadowTalk focuses on the "Big Three" autonomous capabilities:
+Unlike bloated AI platforms with dozens of confusing hubs and marketplaces, ShadowTalk focuses on its core autonomous capabilities:
 
-1. **Shadow DreamState**: Autonomous background processing. While you are away, your AI continues to work—researching, monitoring data, and synthesizing reports for when you return.
-2. **Shadow Omniscience**: Total contextual awareness. An AI that connects the dots across all your uploaded documents, past conversations, and data silos to give you answers based on *your* reality.
-3. **Shadow Twin**: Your digital clone. An AI fine-tuned to your exact writing style, logic, and operational preferences that can act on your behalf.
+1. **Shadow Omniscience**: Total contextual awareness. An AI that connects the dots across all your uploaded documents, past conversations, and data silos to give you answers based on *your* reality.
+2. **Shadow Twin**: Your digital clone. An AI fine-tuned to your exact writing style, logic, and operational preferences that can act on your behalf.
 
 ### The Turbo Engine Architecture
 
@@ -29,8 +28,7 @@ Under the hood, ShadowTalk uses a proprietary routing engine to optimize for spe
 1. **Launch the app**: Navigate to [shadowtalk-ai-7a513.web.app/chatbot](https://shadowtalk-ai-7a513.web.app/chatbot).
 2. **Authenticate**: Sign in via the `/auth` page to ensure your history and sessions are saved.
 3. **Chat**: Use the main composer to ask questions or trigger tasks. The Turbo Engine will automatically route your request to the best model.
-4. **Leverage the Big Three**:
-   - Ask the AI to run a long-term research task to trigger **DreamState**.
+4. **Leverage the Core Features**:
    - Upload documents and ask complex synthesized questions to leverage **Omniscience**.
    - Ask the AI to write an email or document in your exact tone to utilize your **Twin**.
 

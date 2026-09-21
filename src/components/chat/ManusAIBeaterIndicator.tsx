@@ -95,7 +95,7 @@ const StatusDot = ({ status }: { status: Status }) => {
   return <span className={c.cls}>{c.icon}</span>;
 };
 
-export const ManusAIBeaterIndicator =  => {
+export const ManusAIBeaterIndicator = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 

@@ -523,6 +523,6 @@ export function getAnswersByCategory(category: AeoCategory): AeoAnswer[] {
   return AEO_ANSWER_CORPUS.filter((a) => a.category === category);
 }
 
-export function getAeoFaqPairs: { question: string; answer: string }[] {
+export function getAeoFaqPairs(): { question: string; answer: string }[] {
   return AEO_ANSWER_CORPUS.map((a) => ({ question: a.question, answer: a.answer }));
 }

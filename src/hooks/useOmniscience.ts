@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
 import { turboComplete } from "@/lib/turbo/turboEngine";
+import { z } from 'zod';
+
+const predictionSchema = z.object({
+  type: z.enum(['completion', 'security', 'optimization', 'test']).catch('completion'),
+  title: z.string(),
+  description: z.string(),
+  codeSnippet: z.string().optional(),
+  confidence: z.number().min(0).max(1).catch(0.8)
+});
+
+const responseSchema = z.array(predictionSchema);
 
 export type OmnisciencePrediction = {
   id: string;
@@ -57,16 +68,21 @@ Provide 1 to 3 highly relevant predictions. If the code is trivial, return an em
 
         try {
           const parsed = JSON.parse(rawResponse);
-          if (Array.isArray(parsed)) {
-            const validPredictions = parsed.map(p => ({
+          const validated = responseSchema.safeParse(parsed);
+          
+          if (validated.success) {
+            const validPredictions = validated.data.map(p => ({
               id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })),
-              type: p.type || 'completion',
-              title: p.title || 'Suggestion',
-              description: p.description || '',
+              type: p.type,
+              title: p.title,
+              description: p.description,
               codeSnippet: p.codeSnippet,
-              confidence: p.confidence || 0.8
+              confidence: p.confidence
             }));
             setPredictions(validPredictions);
+          } else {
+            console.error("[Omniscience] Zod validation failed", validated.error);
+            setPredictions([]);
           }
         } catch (parseError) {
           console.error("[Omniscience] Failed to parse AI JSON response", parseError);

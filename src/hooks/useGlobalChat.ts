@@ -81,7 +81,7 @@ export function useGlobalChat {
     [],
   );
 
-  const abort = useCallback( => {
+  const abort = useCallback(() => {
     abortRef.current?.abort;
     abortRef.current = null;
   }, []);

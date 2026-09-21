@@ -126,14 +126,14 @@ const CATEGORY_MAP = [
   { id: "founder", label: "Founder & Team", icon: Code },
 ];
 
-export const FAQPage =  => {
+export const FAQPage = () => {
   const navigate = useNavigate;
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [accordionValues, setAccordionValues] = useState<string[]>([]);
 
   // Merge static FAQs with AEO answer corpus for complete coverage
-  const allFaqs = useMemo( => {
+  const allFaqs = useMemo(() => {
     const combined = [...STATIC_FAQS];
     AEO_ANSWER_CORPUS.forEach((aeo, idx) => {
       // Map category
@@ -157,7 +157,7 @@ export const FAQPage =  => {
     return combined;
   }, []);
 
-  const filteredFaqs = useMemo( => {
+  const filteredFaqs = useMemo(() => {
     return allFaqs.filter((item) => {
       const matchesCat = activeCategory === "all" || item.category === activeCategory;
       const q = searchQuery.toLowerCase.trim;
@@ -169,15 +169,15 @@ export const FAQPage =  => {
     });
   }, [allFaqs, activeCategory, searchQuery]);
 
-  const handleExpandAll =  => {
+  const handleExpandAll = () => {
     setAccordionValues(filteredFaqs.map((f) => f.id));
   };
 
-  const handleCollapseAll =  => {
+  const handleCollapseAll = () => {
     setAccordionValues([]);
   };
 
-  const faqSchema = useMemo( => {
+  const faqSchema = useMemo(() => {
     return getFAQSchema(
       filteredFaqs.slice(0, 25).map((f) => ({
         question: f.question,
@@ -196,7 +196,7 @@ export const FAQPage =  => {
         <Button
           variant="outline"
           size="sm"
-          onClick={ => navigate("/chatbot")}
+          onClick={() => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -234,7 +234,7 @@ export const FAQPage =  => {
               />
               {searchQuery && (
                 <button
-                  onClick={ => setSearchQuery("")}
+                  onClick={() => setSearchQuery("")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-mono"
                 >
                   Clear
@@ -256,7 +256,7 @@ export const FAQPage =  => {
                 return (
                   <button
                     key={cat.id}
-                    onClick={ => setActiveCategory(cat.id)}
+                    onClick={() => setActiveCategory(cat.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap border ${
                       isActive
                         ? "bg-primary text-primary-foreground border-primary shadow-sm"

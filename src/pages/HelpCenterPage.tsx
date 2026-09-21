@@ -251,13 +251,13 @@ const CATEGORIES = [
   { id: "troubleshooting", label: "Troubleshooting", icon: HelpCircle },
 ];
 
-export const HelpCenterPage =  => {
+export const HelpCenterPage = () => {
   const navigate = useNavigate;
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
 
-  const filteredArticles = useMemo( => {
+  const filteredArticles = useMemo(() => {
     return HELP_ARTICLES.filter((article) => {
       const matchesCat = activeCategory === "all" || article.category === activeCategory;
       const query = searchQuery.toLowerCase.trim;
@@ -280,7 +280,7 @@ export const HelpCenterPage =  => {
         <Button
           variant="outline"
           size="sm"
-          onClick={ => navigate("/chatbot")}
+          onClick={() => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -317,7 +317,7 @@ export const HelpCenterPage =  => {
               />
               {searchQuery && (
                 <button
-                  onClick={ => setSearchQuery("")}
+                  onClick={() => setSearchQuery("")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-mono"
                 >
                   Clear
@@ -338,7 +338,7 @@ export const HelpCenterPage =  => {
               return (
                 <button
                   key={cat.id}
-                  onClick={ => setActiveCategory(cat.id)}
+                  onClick={() => setActiveCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap border ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
@@ -373,7 +373,7 @@ export const HelpCenterPage =  => {
               <p className="text-xs text-muted-foreground mb-4">
                 We couldn't find matching articles for "{searchQuery}". Try searching for terms like "Groq", "Missions", "API", or "".
               </p>
-              <Button variant="outline" size="sm" onClick={ => { setSearchQuery(""); setActiveCategory("all"); }}>
+              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}>
                 Reset Filters
               </Button>
             </div>
@@ -387,7 +387,7 @@ export const HelpCenterPage =  => {
                   transition={{ delay: idx * 0.05, duration: 0.4 }}
                 >
                   <Card
-                    onClick={ => setSelectedArticle(article)}
+                    onClick={() => setSelectedArticle(article)}
                     className="glass-subtle border-border/50 hover:border-primary/40 cursor-pointer transition-all duration-300 h-full flex flex-col justify-between p-5 group hover:shadow-elevated"
                   >
                     <div>

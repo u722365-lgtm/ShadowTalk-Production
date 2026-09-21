@@ -25,7 +25,7 @@ export const PRICING_TRANSPARENCY = {
   trustBullets: getRiskReversalBullets,
 } as const;
 
-export function getFreeTierSummary: string {
+export function getFreeTierSummary(): string {
   return `Free: ${FREE_TIER_DAILY.messages} messages/day, ${FREE_TIER_DAILY.fileUploads} uploads, ${FREE_TIER_DAILY.webSearches} web searches — no card required.`;
 }
 

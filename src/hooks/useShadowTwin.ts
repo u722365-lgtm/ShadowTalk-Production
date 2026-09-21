@@ -10,15 +10,26 @@ export function useShadowTwin(activeProject?: Project) {
   const [isTwinModeActive, setIsTwinModeActive] = useState(false);
   const [styleVector, setStyleVector] = useState<string | null>(null);
 
-  const extractAllFilesContext = (nodes: FileNode[]): string => {
-    let context = "";
+  const extractAllFilesContext = (nodes: FileNode[], currentContext: string = "", maxChars: number = 100000): string => {
+    let context = currentContext;
+    const allowedExtensions = ['.ts', '.tsx', '.js', '.jsx', '.css', '.html', '.py', '.rs', '.go', '.java', '.cpp', '.c', '.md'];
+    
     for (const node of nodes) {
+      if (context.length > maxChars) break;
+      
       if (node.type === "file" && node.content) {
-        context += `\n--- File: ${node.path} ---\n${node.content}\n`;
+        const isAllowed = allowedExtensions.some(ext => node.name.endsWith(ext) || node.path.endsWith(ext));
+        if (isAllowed) {
+          context += `\n--- File: ${node.path} ---\n${node.content}\n`;
+        }
       }
-      if (node.children) {
-        context += extractAllFilesContext(node.children);
+      if (node.children && context.length <= maxChars) {
+        context = extractAllFilesContext(node.children, context, maxChars);
       }
+    }
+    
+    if (context.length > maxChars) {
+      return context.slice(0, maxChars) + "\n... [TRUNCATED DUE TO CONTEXT LIMITS]";
     }
     return context;
   };

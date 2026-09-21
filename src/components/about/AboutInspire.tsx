@@ -28,15 +28,15 @@ const PILLARS = [
   },
 ];
 
-const AboutInspire =  => {
+const AboutInspire = () => {
   const [wordIndex, setWordIndex] = useState(0);
   const { scrollYProgress } = useScroll;
   const y = useTransform(scrollYProgress, [0.15, 0.45], [80, -40]);
   const opacity = useTransform(scrollYProgress, [0.12, 0.35], [0.4, 1]);
 
-  useEffect( => {
-    const t = setInterval( => setWordIndex((i) => (i + 1) % ROTATING_WORDS.length), 2800);
-    return  => clearInterval(t);
+  useEffect(() => {
+    const t = setInterval(() => setWordIndex((i) => (i + 1) % ROTATING_WORDS.length), 2800);
+    return () => clearInterval(t);
   }, []);
 
   return (

@@ -136,7 +136,7 @@ For legal notices, terms inquiries, or formal communication:
   },
 ];
 
-export const TermsOfServicePage =  => {
+export const TermsOfServicePage = () => {
   const navigate = useNavigate;
   const lastUpdated = "February 28, 2026";
   const [activeSection, setActiveSection] = useState<string>("section-1");
@@ -159,7 +159,7 @@ export const TermsOfServicePage =  => {
         <Button
           variant="outline"
           size="sm"
-          onClick={ => navigate("/chatbot")}
+          onClick={() => navigate("/chatbot")}
           className="gap-2 glass-strong border-border/50 hover:border-primary/40 shadow-lg backdrop-blur-xl"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -239,7 +239,7 @@ export const TermsOfServicePage =  => {
                   {TERMS_SECTIONS.map((sec) => (
                     <button
                       key={sec.id}
-                      onClick={ => scrollToSection(sec.id)}
+                      onClick={() => scrollToSection(sec.id)}
                       className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors truncate ${
                         activeSection === sec.id
                           ? "bg-primary/10 text-primary font-medium border-l-2 border-primary"

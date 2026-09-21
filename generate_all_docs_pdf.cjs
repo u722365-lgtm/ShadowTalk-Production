@@ -272,11 +272,6 @@ const vol1HTML = `<!DOCTYPE html>
 
     <div class="grid-3 avoid-break">
       <div class="stat-box">
-        <div class="stat-number">DreamState</div>
-        <div class="stat-label">Background Agent</div>
-        <p style="font-size: 8pt; color: #475569; margin-top: 4px;">Executes long-horizon multi-turn tasks while the user is disconnected.</p>
-      </div>
-      <div class="stat-box">
         <div class="stat-number">Omniscience</div>
         <div class="stat-label">Context Memory</div>
         <p style="font-size: 8pt; color: #475569; margin-top: 4px;">Connects facts across sessions and attached documents via adaptive vector graphs.</p>
