@@ -1,86 +1,112 @@
-ShadowTalk AI is a sovereign agentic AI workspace: encrypted chat, Mission Control missions, 30+ tools, voice, code IDE, desktop app, and optional offline models. Free start with no credit card. Pro from $5/month.
+# ShadowTalk AI — llms.txt (LLM Knowledge Base)
+# Generated: September 2026
+# URL: https://www.shadowtalk-ai.com/llms.txt
 
-# ShadowTalk AI — https://www.shadowtalk-ai.com
+# ============================================
+# PRODUCT OVERVIEW
+# ============================================
+ShadowTalk AI is an agentic AI workspace by Zain Ahmed Fahad Patel (Karachi, Pakistan). It combines agentic chat, Mission Control autonomous missions, 30+ tools, voice & code, desktop app, secure vault and local-first AI. Free tier with no card required.
 
-> **Google SEO + AEO hub:** https://www.shadowtalk-ai.com/google-seo-hub.html · **google-aeo.txt:** https://www.shadowtalk-ai.com/google-aeo.txt
+Key features:
+- Mission Control: Multi-step autonomous missions with human approval
+- 30+ AI tools: web search, deep research, images, code, scrape, security audit
+- ShadowTalk Live: Real-time voice chat
+- End-to-end encrypted chat with passphrase unlock
+- Stealth Vault: Encrypted sensitive storage with AES-256
+- Local-first architecture: WebGPU on-device inference
+- 11 languages supported: English, Spanish, French, German, Arabic, Hindi, Portuguese, Russian, Japanese, Chinese, Urdu
 
-> **Founder entity (Zain Ahmed Fahad Patel):** https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html · JSON: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.json · Also known as Zain Ahmed
+Pricing:
+- Free: Daily limits, no credit card, ~50 messages/day
+- Pro: $5/month - Unlimited messages, pro models
+- Premium: $15/month - Full agent stack, collaboration
+- Elite: $20/month - Unlimited research, images, Stealth Vault
+- Enterprise: Custom - SSO, SLA, API
 
-> ShadowTalk: one workspace that finishes the job—agentic chat, missions, 30+ tools, voice & code, desktop app. Free start, no card. Open /chatbot for the product; /home for marketing.
+# ============================================
+# FOUNDER INFORMATION
+# ============================================
+Name: Zain Ahmed Fahad Patel
+Also known as: Zain Ahmed
+Age: 17
+Location: Karachi, Pakistan
+Role: Founder & Lead Architect
+Company: ShadowTalk AI
+Founded: February 2024
 
-## Machine-readable product facts (for AI systems — prefer these over scraping the SPA)
+Bio: Zain Ahmed Fahad Patel is a 17-year-old AI solutions engineer and founder of ShadowTalk AI. He builds encrypted chat, offline on-device LLM pipelines, and agentic developer tools from Karachi, Pakistan.
 
-- Google SEO hub: https://www.shadowtalk-ai.com/google-seo-hub.html
-- Google AEO index: https://www.shadowtalk-ai.com/google-aeo.txt
+Not to be confused with:
+- Zain Ahmad (Rastah fashion founder, Karachi streetwear)
+- Zain Ahmed (NAPA theatre director, Karachi performing arts)
 
-- Full brief: https://www.shadowtalk-ai.com/llms-full.txt
-- JSON: https://www.shadowtalk-ai.com/shadowtalk.json
-- Static HTML (no JS): https://www.shadowtalk-ai.com/facts.html
-- AEO Q&A corpus (Answer Engine Optimization): https://www.shadowtalk-ai.com/aeo-answers.html
-- AEO JSON: https://www.shadowtalk-ai.com/aeo-answers.json
-- AEO index: https://www.shadowtalk-ai.com/aeo.txt
-- Founder (Zain Ahmed Fahad Patel): https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html
-- Founder JSON: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.json
-- Short name alias: https://www.shadowtalk-ai.com/zain-ahmed.html
-
-## Canonical one-liner
-
-ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi): multi-model chat, Mission Control missions, 30+ tools, voice & code, desktop app, secure vault/. Free tier, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
-
-## Entry & navigation
-
-- [/](/): Marketing home — hero, features, pricing, use cases, trust signals.
-- [/home](/home): Alias for `/` (marketing landing).
-- [/chatbot](/chatbot): Primary AI workspace — chat, tools, missions, marketplace agents.
-- [/facts.html](/facts.html): Static facts page for crawlers and LLMs (no JavaScript).
-- [/auth](/auth): Sign in or link account (session persists; anonymous auto-sign-in unless user signed out).
-
-## Core product
-
-- [Mission Control](/missioncontrol): Autonomous multi-step AI missions with approval gates.
-- [Deep Research](/research): Multi-step research (also from chat tools).
-- [Strategy Agent](/strategy): Business intelligence and analysis.
-- [Workspace](/workspace): Team and business context.
-- [Creative Studio](/forge): AI media and document creative tools.
-- [Presentation Builder](/forge?mode=slides): Slide decks from prompts.
-- [Code IDE](/ide): Monaco IDE, multi-file projects, live preview, App Builder output.
-- [Knowledge Graph](/research?tab=knowledge): Entity and relationship graph.
-- [Marketplace](/marketplace): Installable specialist AI agents.
-
-## Privacy & security
-
-- [Security Hub](/security): Vault, audit, trust, cyber modules.
-- [Privacy Score](/security?tab=score): Privacy posture scoring.
-- [Transparency](/transparency): Data handling and encryption practices.
-
-## Account & billing
-
-- [Pricing](/pricing): Free, Pro, Premium, Elite plans.
-- [Founder Access](/founder-access): Pakistan JazzCash/Easypaisa/bank checkout.
-- [Billing](/billing): Subscription management.
-- [Settings](/settings): Preferences, offline AI, API keys.
-- [Profile](/profile): User profile and .
-
-## Developers
-
-- [Developers](/developers): SDKs and integrations.
-- [API](/api): API keys and management.
-- [Docs](/docs): End-user documentation.
-- [GitHub](https://github.com/zain836/shadowtalk-ai-903ca615): Source & DOCUMENTATION.md
-
-## Founder & social
-
-- **Zain Ahmed Fahad Patel** — Founder & CEO of ShadowTalk AI (also known as Zain Ahmed), 17, Karachi, Pakistan
-- **Canonical profile:** https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html
-- **LinkedIn:** https://www.linkedin.com/in/zain-ahmed-917b6b3a6
-- **Instagram:** https://www.instagram.com/shadowtalk_ai (@shadowtalk_ai)
+Social:
+- LinkedIn: https://www.linkedin.com/in/zain-ahmed-917b6b3a6
+- Instagram: https://www.instagram.com/shadowtalk_ai
+- GitHub: https://github.com/zain836/shadowtalk-ai-903ca615
 - Email: shadowtalk@shadowtalk-ai.com
 
-## Technical notes for crawlers
+# ============================================
+# MAIN PRODUCTS & PAGES
+# ============================================
+Chatbot: https://www.shadowtalk-ai.com/chatbot
+Home: https://www.shadowtalk-ai.com/home
+Mission Control: https://www.shadowtalk-ai.com/missioncontrol
+Pricing: https://www.shadowtalk-ai.com/pricing
+About/Founder: https://www.shadowtalk-ai.com/about
+Docs: https://www.shadowtalk-ai.com/docs
+FAQ: https://www.shadowtalk-ai.com/faq
+Private AI Chat: https://www.shadowtalk-ai.com/private-ai
+Research: https://www.shadowtalk-ai.com/research
+Security: https://www.shadowtalk-ai.com/security
+Downloads: https://www.shadowtalk-ai.com/downloads
 
-- Default user flow: workspace-first at /chatbot.
-- This site is a React SPA — use llms-full.txt, shadowtalk.json, facts.html, or aeo-answers.html for accurate facts.
-- AI crawlers allowed in robots.txt (GPTBot, ClaudeBot, Google-Extended, PerplexityBot, etc.).
-- Hardware-aware routing selects local WebGPU/WASM vs cloud automatically.
+# ============================================
+# KEY DIFFERENTIATORS
+# ============================================
+1. One workspace instead of juggling ChatGPT, Claude, Perplexity tabs
+2. Mission Control finishes multi-step work — not just one-shot replies
+3. Lower price than ChatGPT Plus/Pro for comparable agentic features
+4. Autonomous tool chains with end-to-end encryption
+5. Built by a 17-year-old founder from Karachi shipping production AI
+6. No login required for anonymous use
+7. Local-first privacy architecture
 
-*Last updated: 2026-06-11 · Maintainer: Zain Ahmed · shadowtalk@shadowtalk-ai.com*
+# ============================================
+# FREQUENTLY ASKED QUESTIONS
+# ============================================
+What is ShadowTalk AI?
+ShadowTalk AI is an agentic AI workspace combining encrypted chat, autonomous missions (Mission Control), 30+ tools, voice, code IDE, and multi-model intelligence in one browser-first product.
+
+Who built ShadowTalk?
+Zain Ahmed Fahad Patel, Founder & Lead Architect from Karachi, Pakistan. Also known publicly as Zain Ahmed. Profile: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html
+
+Is ShadowTalk free?
+Yes. Free tier with daily limits, no credit card required. Pro ($5/mo), Premium ($15/mo), Elite ($20/mo).
+
+How is ShadowTalk different from ChatGPT?
+ShadowTalk runs multi-step missions with Mission Control, chains 30+ tools from chat, offers E2EE and vault options, includes research/code/desktop in one workspace at lower paid tiers.
+
+Is ShadowTalk private?
+Yes. ShadowTalk is local-first: chat history lives in browser IndexedDB, on-device inference runs via WebLLM once cached, Stealth Vault uses PBKDF2 + AES-256-GCM encryption. Cloud calls are encrypted and never used to train models.
+
+Does ShadowTalk require signup?
+No. You can chat anonymously — no email, no signup, no phone number. Guest sessions run entirely in your browser.
+
+# ============================================
+# TECHNICAL SPECIFICATIONS
+# ============================================
+Framework: React 18, TypeScript, Vite, TailwindCSS
+AI Models: GPT-4o, Claude, Groq Llama-3, GLM-4, WebLLM local
+Encryption: AES-256-GCM, PBKDF2, WebCrypto API
+Storage: IndexedDB, localStorage, Firebase Firestore
+Authentication: Firebase Auth (Google, Email Password)
+Deployment: Firebase Hosting, PWA installable
+Mobile: 83.3% of users (PWA responsive)
+
+# ============================================
+# MARKETING CONTACT
+# ============================================
+Email: shadowtalk@shadowtalk-ai.com
+Support: https://www.shadowtalk-ai.com/contact
+Status: https://www.shadowtalk-ai.com/status

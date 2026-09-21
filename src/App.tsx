@@ -68,6 +68,7 @@ const PrivacyScorePage = lazy(() => import("./pages/PrivacyScorePage"));
 const TrustPage = lazy(() => import("./pages/TrustPage"));
 const KnowledgeGraphPage = lazy(() => import("./pages/KnowledgeGraphPage"));
 const SecurityAuditPage = lazy(() => import("./pages/SecurityAuditPage"));
+const AgenticAIWorkspacePage = lazy(() => import("./pages/AgenticAIWorkspacePage"));
 
 // Production Company, Support & Legal Pages
 const ContactPage = lazy(() => import("./pages/ContactPage"));
@@ -176,9 +177,10 @@ const AnimatedRoutes = () => {
           <Route path="/privacy-score" element={<PageTransition><PrivacyScorePage /></PageTransition>} />
           <Route path="/trust" element={<PageTransition><TrustPage /></PageTransition>} />
           <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
-          <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
+                    <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
+                    <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
 
-          {/* Company, Support, Legal & Status Pages */}
+                    {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
           <Route path="/help" element={<PageTransition><HelpCenterPage /></PageTransition>} />
           <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />

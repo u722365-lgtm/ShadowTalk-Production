@@ -3,16 +3,16 @@ import { AI_KNOWLEDGE_CANONICAL_PITCH } from "@/lib/aiPublicKnowledge";
 import { FOUNDER_CANONICAL, FOUNDER_SAME_AS } from "@/lib/founderIdentity";
 import { COFOUNDER_CANONICAL } from "@/lib/cofounderIdentity";
 
-  // SEO utilities and structured data helpers
+// SEO utilities and structured data helpers
 
-  /**
-   * Canonical founder portrait — used as og:image on founder/about pages and as
-   * the `image` property in Person schema so Google Knowledge Panel and AI
-   * assistants (ChatGPT, Perplexity, Gemini) surface this photo when users
-   * search "ShadowTalk AI" or "Zain Ahmed Fahad Patel".
-   */
-  export const FOUNDER_IMAGE_URL =
-    'https://www.shadowtalk-ai.com/__l5e/assets-v1/1adc1bc7-e5a1-46b7-aa6a-30f07df7d437/founder-zain-ahmed.png';
+/**
+ * Canonical founder portrait — used as og:image on founder/about pages and as
+ * the `image` property in Person schema so Google Knowledge Panel and AI
+ * assistants (ChatGPT, Perplexity, Gemini) surface this photo when users
+ * search "ShadowTalk AI" or "Zain Ahmed Fahad Patel".
+ */
+export const FOUNDER_IMAGE_URL =
+  'https://www.shadowtalk-ai.com/__l5e/assets-v1/1adc1bc7-e5a1-46b7-aa6a-30f07df7d437/founder-zain-ahmed.png';
  
 /** Google/Bing search snippet — keep ≤160 characters (conversion-focused) */
 export const SITE_SEARCH_DESCRIPTION =
@@ -33,7 +33,7 @@ export interface PageMeta {
    ogType?: 'website' | 'article' | 'product' | 'profile';
    twitterCard?: 'summary' | 'summary_large_image';
    noIndex?: boolean;
- }
+}
  
 // Generate meta tags for a page
 export function generateMetaTags(meta: PageMeta): Record<string, string> {
@@ -65,81 +65,73 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
     robots: meta.noIndex ? 'noindex, nofollow' : 'index, follow',
   };
 }
-
  
- // Structured data for Organization
- export function getOrganizationSchema {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'Organization',
-     name: 'ShadowTalk AI',
-      url: 'https://www.shadowtalk-ai.com',
-      logo: 'https://www.shadowtalk-ai.com/pwa-512x512.png',
-     description: AI_KNOWLEDGE_CANONICAL_PITCH,
-     founder: {
-       '@type': 'Person',
-       '@id': FOUNDER_CANONICAL['@id'],
-       name: FOUNDER_CANONICAL.name,
-       jobTitle: FOUNDER_CANONICAL.jobTitle,
-       url: FOUNDER_CANONICAL.canonicalProfileUrl,
-       sameAs: [FOUNDER_CANONICAL.linkedin, FOUNDER_CANONICAL.instagram],
-     },
-     sameAs: [
-       ...SOCIAL_SAME_AS,
-       'https://github.com/zain836/shadowtalk-ai-903ca615',
-     ],
-     contactPoint: {
-       '@type': 'ContactPoint',
-       contactType: 'customer support',
-       email: 'shadowtalk@shadowtalk-ai.com',
-       availableLanguage: ['English'],
-     },
-     ceo: {
-       '@type': 'Person',
-       name: 'Abdul Rauf',
-       url: 'https://www.shadowtalk-ai.com/abdul-rauf-ceo.html'
-     },
-     cfo: {
-       '@type': 'Person',
-       name: 'Muhammad Umar',
-       url: 'https://www.shadowtalk-ai.com/muhammad-umar-cfo.html'
-     }
-   };
- }
 
- export function getSoftwareApplicationSchema {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'SoftwareApplication',
-     name: 'ShadowTalk AI',
-     url: 'https://www.shadowtalk-ai.com',
-     applicationCategory: 'BusinessApplication',
-     operatingSystem: 'Web, Windows, iOS, Android',
-     description: AI_KNOWLEDGE_CANONICAL_PITCH,
-     author: {
-       '@type': 'Person',
-       name: FOUNDER_SOCIAL.linkedin.name,
-       url: FOUNDER_SOCIAL.linkedin.url,
-     },
-     offers: {
-       '@type': 'Offer',
-       price: '0',
-       priceCurrency: 'USD',
-     },
-     featureList: [
-       'Mission Control autonomous missions',
-       '30+ AI tools from natural language',
-       'End-to-end encrypted chat',
-       'Deep Research with citations',
-       'ShadowTalk Live voice mode',
-       'Code IDE and App Builder',
-       'Stealth Vault and ',
-       'Marketplace AI agents',
-     ],
-   };
- }
+// Structured data for Organization
+export function getOrganizationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ShadowTalk AI',
+    url: 'https://www.shadowtalk-ai.com',
+    logo: 'https://www.shadowtalk-ai.com/pwa-512x512.png',
+    description: AI_KNOWLEDGE_CANONICAL_PITCH,
+    founder: {
+      '@type': 'Person',
+      '@id': FOUNDER_CANONICAL['@id'],
+      name: FOUNDER_CANONICAL.name,
+      jobTitle: FOUNDER_CANONICAL.jobTitle,
+      url: FOUNDER_CANONICAL.canonicalProfileUrl,
+      sameAs: [FOUNDER_CANONICAL.linkedin, FOUNDER_CANONICAL.instagram],
+    },
+    sameAs: [
+      ...SOCIAL_SAME_AS,
+      'https://github.com/zain836/shadowtalk-ai-903ca615',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'shadowtalk@shadowtalk-ai.com',
+      availableLanguage: ['English', 'Spanish', 'French', 'German', 'Arabic', 'Hindi', 'Portuguese', 'Russian', 'Japanese', 'Chinese', 'Urdu'],
+    },
+  };
+}
 
-export function getWebSiteSchema {
+export function getSoftwareApplicationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'ShadowTalk AI',
+    url: 'https://www.shadowtalk-ai.com',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web, Windows, iOS, Android',
+    description: AI_KNOWLEDGE_CANONICAL_PITCH,
+    author: {
+      '@type': 'Person',
+      name: FOUNDER_SOCIAL.linkedin.name,
+      url: FOUNDER_SOCIAL.linkedin.url,
+    },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    featureList: [
+      'Mission Control autonomous missions',
+      '30+ AI tools from natural language',
+      'End-to-end encrypted chat',
+      'Deep Research with citations',
+      'ShadowTalk Live voice mode',
+      'Code IDE and App Builder',
+      'Stealth Vault and end-to-end encryption',
+      'Marketplace AI agents',
+      'Local-first privacy architecture',
+      'Multi-model intelligent routing',
+    ],
+  };
+}
+
+export function getWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -149,11 +141,11 @@ export function getWebSiteSchema {
   };
 }
 
-export function getProfilePageSchema {
+export function getProfilePageSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
-    mainEntity: getPersonSchema
+    mainEntity: getPersonSchema(),
   };
 }
 
@@ -196,7 +188,7 @@ export const FOUNDER_HOME_FAQ = [
   {
     question: "Who founded ShadowTalk AI?",
     answer:
-      "ShadowTalk AI was founded by Zain Ahmed Fahad Patel (also known as Zain Ahmed), Founder & Lead Architect, an AI solutions engineer based in Karachi, Pakistan (founded February 2024). Official profile: shadowtalk-ai.com/zain-ahmed-fahad-patel.html",
+      "ShadowTalk AI was founded by Zain Ahmed Fahad Patel (also known as Zain Ahmed), Founder & Lead Architect, a 17-year-old AI solutions engineer based in Karachi, Pakistan (founded February 2024). Official profile: shadowtalk-ai.com/zain-ahmed-fahad-patel.html",
   },
   {
     question: "Who is Zain Ahmed Fahad Patel?",
@@ -206,92 +198,92 @@ export const FOUNDER_HOME_FAQ = [
   {
     question: "Is Zain Ahmed the founder of ShadowTalk?",
     answer:
-      "Yes. Zain Ahmed (full name Zain Ahmed Fahad Patel) is the founder of ShadowTalk AI — not the Rastah fashion co-founder or the NAPA theatre director.",
+      "Yes. Zain Ahmed (full name Zain Ahmed Fahad Patel) is the founder of ShadowTalk AI — not the Rastah fashion co-founder or the NAPA theatre director. Zain Ahmed (ShadowTalk) is a separate person from Zain Ahmad (Rastah) and Zain Ahmed (NAPA theatre).",
   },
 ] as const;
 
  // Structured data for FAQ page
- export function getFAQSchema(faqs: Array<{ question: string; answer: string }>) {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'FAQPage',
-     mainEntity: faqs.map((faq) => ({
-       '@type': 'Question',
-       name: faq.question,
-       acceptedAnswer: {
-         '@type': 'Answer',
-         text: faq.answer,
-       },
-     })),
-   };
- }
-
- /** Canonical Person schema for Zain Ahmed — use on founder profile pages */
- export function getPersonSchema {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'Person',
-     '@id': FOUNDER_CANONICAL['@id'],
-     name: FOUNDER_CANONICAL.fullName,
-     givenName: FOUNDER_CANONICAL.givenName,
-     additionalName: FOUNDER_CANONICAL.additionalName,
-     familyName: FOUNDER_CANONICAL.familyName,
-     alternateName: [...FOUNDER_CANONICAL.alternateName],
-     jobTitle: FOUNDER_CANONICAL.jobTitle,
-     description: FOUNDER_CANONICAL.description,
-     url: FOUNDER_CANONICAL.canonicalProfileUrl,
-      image: {
-        '@type': 'ImageObject',
-        url: FOUNDER_IMAGE_URL,
-        contentUrl: FOUNDER_IMAGE_URL,
-        caption: 'Zain Ahmed Fahad Patel — Founder of ShadowTalk AI',
-        width: 800,
-        height: 1000,
-      },
-     email: FOUNDER_CANONICAL.email,
-     worksFor: FOUNDER_CANONICAL.worksFor,
-     founder: {
-       '@type': 'Organization',
-       name: 'ShadowTalk AI',
-       url: 'https://www.shadowtalk-ai.com',
-       foundingDate: FOUNDER_CANONICAL.founded,
-     },
-     knowsAbout: [...FOUNDER_CANONICAL.knowsAbout],
-     homeLocation: {
-       '@type': 'Place',
-       name: `${FOUNDER_CANONICAL.location.city}, ${FOUNDER_CANONICAL.location.country}`,
-     },
-     sameAs: [
-       ...FOUNDER_SAME_AS,
-       'https://www.shadowtalk-ai.com/about',
-       'https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel',
-     ],
-   };
- }
-
-export function getCofounderPersonSchema {
+export function getFAQSchema(faqs: Array<{ question: string; answer: string }>) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Person',
-    '@id': COFOUNDER_CANONICAL['@id'],
-    name: COFOUNDER_CANONICAL.fullName,
-    givenName: COFOUNDER_CANONICAL.givenName,
-    familyName: COFOUNDER_CANONICAL.familyName,
-    jobTitle: COFOUNDER_CANONICAL.jobTitle,
-    description: COFOUNDER_CANONICAL.description,
-    url: COFOUNDER_CANONICAL.canonicalProfileUrl,
-    email: COFOUNDER_CANONICAL.email,
-    worksFor: COFOUNDER_CANONICAL.worksFor,
-    knowsAbout: [...COFOUNDER_CANONICAL.knowsAbout],
-    homeLocation: {
-      '@type': 'Place',
-      name: `${COFOUNDER_CANONICAL.location.city}, ${COFOUNDER_CANONICAL.location.country}`,
-    },
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
   };
 }
 
-export function getFounderHomeStructuredData {
-  return [getPersonSchema, getFAQSchema([...FOUNDER_HOME_FAQ])];
+/** Canonical Person schema for Zain Ahmed — use on founder profile pages */
+export function getPersonSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': FOUNDER_CANONICAL['@id'],
+    name: FOUNDER_CANONICAL.fullName,
+    givenName: FOUNDER_CANONICAL.givenName,
+    additionalName: FOUNDER_CANONICAL.additionalName,
+    familyName: FOUNDER_CANONICAL.familyName,
+    alternateName: [...FOUNDER_CANONICAL.alternateName],
+    jobTitle: FOUNDER_CANONICAL.jobTitle,
+    description: FOUNDER_CANONICAL.description,
+    url: FOUNDER_CANONICAL.canonicalProfileUrl,
+     image: {
+      '@type': 'ImageObject',
+      url: FOUNDER_IMAGE_URL,
+      contentUrl: FOUNDER_IMAGE_URL,
+      caption: 'Zain Ahmed Fahad Patel — Founder of ShadowTalk AI',
+      width: 800,
+      height: 1000,
+    },
+    email: FOUNDER_CANONICAL.email,
+    worksFor: FOUNDER_CANONICAL.worksFor,
+    founder: {
+      '@type': 'Organization',
+      name: 'ShadowTalk AI',
+      url: 'https://www.shadowtalk-ai.com',
+      foundingDate: FOUNDER_CANONICAL.founded,
+    },
+    knowsAbout: [...FOUNDER_CANONICAL.knowsAbout],
+    homeLocation: {
+      '@type': 'Place',
+      name: `${FOUNDER_CANONICAL.location.city}, ${FOUNDER_CANONICAL.location.country}`,
+    },
+    sameAs: [
+      ...FOUNDER_SAME_AS,
+      'https://www.shadowtalk-ai.com/about',
+      'https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel',
+    ],
+  };
+}
+
+export function getCofounderPersonSchema() {
+ return {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': COFOUNDER_CANONICAL['@id'],
+  name: COFOUNDER_CANONICAL.fullName,
+  givenName: COFOUNDER_CANONICAL.givenName,
+  familyName: COFOUNDER_CANONICAL.familyName,
+  jobTitle: COFOUNDER_CANONICAL.jobTitle,
+  description: COFOUNDER_CANONICAL.description,
+  url: COFOUNDER_CANONICAL.canonicalProfileUrl,
+  email: COFOUNDER_CANONICAL.email,
+  worksFor: COFOUNDER_CANONICAL.worksFor,
+  knowsAbout: [...COFOUNDER_CANONICAL.knowsAbout],
+  homeLocation: {
+   '@type': 'Place',
+   name: `${COFOUNDER_CANONICAL.location.city}, ${COFOUNDER_CANONICAL.location.country}`,
+  },
+ };
+}
+
+export function getFounderHomeStructuredData() {
+  return [getPersonSchema(), getFAQSchema([...FOUNDER_HOME_FAQ])];
 }
 
 /** Privacy + product FAQ for /chatbot — targets AI Overviews & voice search */
@@ -299,7 +291,7 @@ export const CHATBOT_FAQ = [
   {
     question: "Is ShadowTalk AI free to use?",
     answer:
-      "Yes. ShadowTalk AI offers a free tier with generous daily limits — no credit card required. Pro ($5/mo), Premium ($15/mo), and Elite ($20/mo) plans unlock higher quotas, priority routing, and advanced tools like Mission Control and Video Studio.",
+      "Yes. ShadowTalk AI offers a free tier with generous daily limits — no credit card required. Pro ($5/mo), Premium ($15/mo), and Elite ($20/mo) plans unlock higher limits, priority routing, and advanced tools like Mission Control and Video Studio.",
   },
   {
     question: "Does ShadowTalk AI require a login or signup?",
@@ -314,7 +306,7 @@ export const CHATBOT_FAQ = [
   {
     question: "How is ShadowTalk different from ChatGPT, Claude, or Gemini?",
     answer:
-      "ShadowTalk combines agentic chat with 30+ built-in tools (Mission Control, Deep Research, Code IDE, Video Studio, Vault) in a single workspace. requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
+      "ShadowTalk combines agentic chat with 30+ built-in tools (Mission Control, Deep Research, Code IDE, Video Studio, Vault) in a single workspace. It requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
   },
   {
     question: "Is ShadowTalk private?",
@@ -338,39 +330,39 @@ export const CHATBOT_FAQ = [
   },
 ] as const;
 
-export function getChatbotFAQSchema {
-  return getFAQSchema([...CHATBOT_FAQ]);
+export function getChatbotFAQSchema() {
+ return getFAQSchema([...CHATBOT_FAQ]);
 }
 
 /** Speakable markup — voice assistants (Google Assistant, Alexa) read these sections aloud */
 export function getSpeakableSchema(cssSelectors: string[] = [".speakable", "h1", "[data-speakable]"]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    speakable: {
-      "@type": "SpeakableSpecification",
-      cssSelector: cssSelectors,
-    },
-  };
+ return {
+   "@context": "https://schema.org",
+   "@type": "WebPage",
+   speakable: {
+     "@type": "SpeakableSpecification",
+     cssSelector: cssSelectors,
+   },
+ };
 }
 
 /** WebSite schema with SearchAction — enables Google sitelinks searchbox */
-export function getWebSiteWithSearchSchema {
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "ShadowTalk AI",
-    url: "https://www.shadowtalk-ai.com",
-    description: AI_KNOWLEDGE_CANONICAL_PITCH,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: "https://www.shadowtalk-ai.com/answers?q={search_term_string}",
-      },
-      "query-input": "required name=search_term_string",
-    },
-  };
+export function getWebSiteWithSearchSchema() {
+ return {
+   "@context": "https://schema.org",
+   "@type": "WebSite",
+   name: "ShadowTalk AI",
+   url: "https://www.shadowtalk-ai.com",
+   description: AI_KNOWLEDGE_CANONICAL_PITCH,
+   potentialAction: {
+     "@type": "SearchAction",
+     target: {
+       "@type": "EntryPoint",
+       urlTemplate: "https://www.shadowtalk-ai.com/answers?q={search_term_string}",
+     },
+     "query-input": "required name=search_term_string",
+   },
+ };
 }
 
 /** AI-citation-ready canonical summaries (GEO) — surfaced on About page + press kit */
@@ -379,7 +371,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "what-is-shadowtalk",
     question: "What is ShadowTalk AI?",
     answer:
-      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, autonomous missions, deep research, a code IDE, video studio, and 30+ tools in one browser-first product. ",
+      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, autonomous missions, 30+ tools, voice & code, desktop app, secure vault and local-first AI. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step missions and tool chains from one workspace.",
   },
   {
     id: "privacy",
@@ -409,7 +401,25 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "data-retention",
     question: "Does ShadowTalk store chat data?",
     answer:
-      "No. ShadowTalk does not store chat history on its servers. All conversations are persisted locally in the user's browser via IndexedDB.  Cloud calls to the AI provider are stateless and never used for training.",
+      "No. ShadowTalk does not store chat history on its servers. All conversations are persisted locally in the user's browser via IndexedDB. Cloud calls to the AI provider are stateless and never used for training.",
+  },
+  {
+    id: "mission-control",
+    question: "What is Mission Control in ShadowTalk?",
+    answer:
+      "Mission Control (S.E.E. framework) is ShadowTalk's multi-step autonomous workflow system. It breaks down complex goals into sub-tasks, executes them with AI agents, and waits for human approval at checkpoints. It's how you research, write, and ship complex projects from one interface.",
+  },
+  {
+    id: "agentic-vs-chat",
+    question: "What is the difference between agentic AI and regular AI chat?",
+    answer:
+      "Regular AI chat returns text responses to queries. Agentic AI (like ShadowTalk) can plan, execute, and iterate on tasks using tools — it can browse, code, analyze, and produce deliverables without further prompts from you.",
+  },
+  {
+    id: "local-ai",
+    question: "Does ShadowTalk work offline?",
+    answer:
+      "Yes. Once the local WebLLM model is cached, ShadowTalk can run completely offline. Personal chats never touch the cloud, and all conversations stay encrypted on your device.",
   },
 ] as const;
 
@@ -428,42 +438,42 @@ export const HREFLANG_LOCALES = [
   { code: "ur", label: "Urdu" },
 ] as const;
  
- // Structured data for Product (Pricing)
- export function getProductSchema(product: {
-   name: string;
-   description: string;
-   price: number;
-   currency?: string;
- }) {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'Product',
-     name: product.name,
-     description: product.description,
-     offers: {
-       '@type': 'Offer',
-       price: product.price,
-       priceCurrency: product.currency || 'USD',
-       availability: 'https://schema.org/InStock',
-     },
-   };
- }
+// Structured data for Product (Pricing)
+export function getProductSchema(product: {
+  name: string;
+  description: string;
+  price: number;
+  currency?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description,
+    offers: {
+      '@type': 'Offer',
+      price: product.price,
+      priceCurrency: product.currency || 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+  };
+}
  
- // Structured data for Breadcrumbs
- export function getBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
-   return {
-     '@context': 'https://schema.org',
-     '@type': 'BreadcrumbList',
-     itemListElement: items.map((item, index) => ({
-       '@type': 'ListItem',
-       position: index + 1,
-       name: item.name,
-       item: item.url,
-     })),
-   };
- }
- 
- // Page-specific SEO configurations
+// Structured data for Breadcrumbs
+export function getBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+// Page-specific SEO configurations
 export const PAGE_SEO: Record<string, PageMeta> = {
   home: {
     title: 'Think AI. Think ShadowTalk. — Agentic AI Workspace',
@@ -480,13 +490,14 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'Mission Control',
       'GPT alternative',
       'privacy AI',
+      'ChatGPT alternative',
     ],
     canonical: 'https://www.shadowtalk-ai.com/home',
   },
   pricing: {
     title: 'Pricing — Free to Start, Cancel Anytime',
     description: 'ShadowTalk pricing: Free tier with stated daily limits. Pro $5/mo, Premium $15/mo, Elite $20/mo. Cancel anytime, 30-day money-back, data handling disclosed upfront.',
-    keywords: ['AI pricing', 'chatbot subscription', 'AI plans'],
+    keywords: ['AI pricing', 'chatbot subscription', 'AI plans', 'Pro AI $5'],
     canonical: 'https://www.shadowtalk-ai.com/pricing',
   },
   chatbot: {
@@ -498,10 +509,10 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'ShadowTalk',
       'Zain Ahmed Fahad Patel',
       'Zain Ahmed founder ShadowTalk',
-      'AI chat',
-      'chatbot',
       'agentic AI',
       'Karachi AI founder',
+      'anonymous AI chat',
+      'AI chatbot no login',
     ],
     canonical: 'https://www.shadowtalk-ai.com/chatbot',
   },
@@ -515,17 +526,29 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'no login AI chatbot',
       'anonymous AI chat',
       'ChatGPT alternative no signup',
-      
       'local AI chatbot',
       'privacy AI',
       'ShadowTalk AI',
     ],
     canonical: 'https://www.shadowtalk-ai.com/private-ai',
   },
+  agenticAIWorkspace: {
+    title: 'Agentic AI Workspace — What It Is & How It Works',
+    description:
+      'Learn what an agentic AI workspace is: AI that plans, executes, and iterates on tasks using tools. Compare with traditional chatbots like ChatGPT, Claude, and Gemini.',
+    keywords: [
+      'agentic AI workspace',
+      'what is agentic AI',
+      'AI tools comparison',
+      'ChatGPT vs Claude',
+      'autonomous AI agents',
+    ],
+    canonical: 'https://www.shadowtalk-ai.com/agentic-ai-workspace',
+  },
   docs: {
     title: 'Documentation',
     description: 'Learn how to use ShadowTalk AI effectively. Guides, tutorials, and API documentation.',
-    keywords: ['documentation', 'guides', 'tutorials', 'API docs'],
+    keywords: ['documentation', 'guides', 'tutorials', 'API docs', 'ShadowTalk AI docs'],
     canonical: 'https://www.shadowtalk-ai.com/docs',
   },
   about: {
@@ -551,7 +574,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'Zain Ahmed Fahad Patel',
       'Zain Ahmed Fahad Patel ShadowTalk',
       'Zain Ahmed Fahad Patel founder',
-      'Zain Ahmed ShadowTalk AI',
+      `Zain Ahmed Fahad Patel ShadowTalk AI`,
       'Zain Ahmed founder',
       'ShadowTalk AI founder Karachi',
     ],
@@ -592,7 +615,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'Fatima',
       'Fatima ShadowTalk',
       'Fatima co-founder',
-      'Fatima developer ShadowTalk AI',
+      `Fatima developer ShadowTalk AI`,
       'ShadowTalk AI co-founder',
       'ShadowTalk second developer',
       'Karachi AI software architect',
@@ -605,7 +628,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
     title: 'Computer Mode — In-Browser Shell',
     description:
       'ShadowTalk Computer Mode: real npm/node shell in your browser via WebContainer. Run code, install packages, and pair with Mission Control.',
-    keywords: ['computer use', 'code sandbox', 'WebContainer', 'AI agent shell'],
+    keywords: ['computer use', 'code sandbox', 'WebContainer', 'AI agent shell', 'browser terminal'],
     canonical: 'https://www.shadowtalk-ai.com/computer',
   },
   facts: {
@@ -699,8 +722,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   security: {
     title: 'Security Hub — Vault, Audit & Cyber Command',
-    description:
-      'ShadowTalk Security Hub: Stealth Vault, privacy audit, ShadowSpectre cyber copilot, and compliance tools in one place.',
+    description: 'ShadowTalk Security Hub: Stealth Vault, privacy audit, ShadowSpectre cyber copilot, and compliance tools in one place.',
     keywords: ['AI security', 'Stealth Vault', 'ShadowSpectre', 'cybersecurity AI'],
     canonical: 'https://www.shadowtalk-ai.com/security',
   },
@@ -725,7 +747,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   careers: {
     title: 'Careers',
     description: 'Join the ShadowTalk AI team. View open positions and help build the future of AI.',
-    keywords: ['careers', 'jobs', 'hiring', 'AI jobs'],
+    keywords: ['careers', 'jobs', 'hiring', 'AI jobs', 'Karachi AI jobs'],
     canonical: 'https://www.shadowtalk-ai.com/careers',
   },
   billing: {
@@ -749,7 +771,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   founderAccess: {
     title: 'Founder Access — Direct Activation for Pakistan & International',
     description: 'Activate subscriptions and paid features directly: JazzCash, Easypaisa, bank, USDT, or international card. Document generation and premium tiers available.',
-    keywords: ['founder access', 'JazzCash', 'Easypaisa', 'bank transfer Pakistan', 'USDT', 'document generation', 'direct activation'],
+    keywords: ['founder access', 'JazzCash', 'Easypaisa', 'bank transfer Pakistan', 'USDT', 'document generation', 'direct activation', 'Pakistan AI payments'],
     canonical: 'https://www.shadowtalk-ai.com/founder-access',
   },
   referral: {
