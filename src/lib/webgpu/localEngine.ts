@@ -22,7 +22,23 @@ export async function getLocalEngine(
   }
 
   if (!enginePromise) {
+    // Determine if we are running locally (Electron/Capacitor) or Web.
+    // If it's the bundled app, the models are in the public folder (served at /models/...).
+    const isNativeApp = !!(window as any).Capacitor || navigator.userAgent.toLowerCase().includes('electron');
+    
+    // We construct a custom AppConfig so WebLLM doesn't fetch from huggingface.
+    const customAppConfig = {
+      model_list: [
+        {
+          model_id: WEBGPU_MODEL,
+          model_url: isNativeApp ? `/models/${WEBGPU_MODEL}` : `https://huggingface.co/mlc-ai/${WEBGPU_MODEL}`,
+          model_lib_url: `https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_43/${WEBGPU_MODEL}-webgpu.wasm`
+        }
+      ]
+    };
+
     enginePromise = CreateMLCEngine(WEBGPU_MODEL, {
+      appConfig: customAppConfig,
       initProgressCallback: (report: InitProgressReport) => {
         if (_progressCallback) _progressCallback(report);
       }

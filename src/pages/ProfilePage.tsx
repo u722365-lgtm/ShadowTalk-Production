@@ -133,7 +133,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
     void loadProfile();
-  }, [user]);
+  }, [user, navigate, loadProfile]);
 
   useEffect(() => {
     const oauth = searchParams.get("oauth");
@@ -143,7 +143,7 @@ const ProfilePage = () => {
     }
   }, [searchParams, setSearchParams, toast]);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user) return;
     const [profileRes, settingsRes] = await Promise.all([
       backend.from("profiles").select("*").eq("id", user.id).maybeSingle(),
@@ -181,7 +181,7 @@ const ProfilePage = () => {
     setNotifWeeklyDigest(ext.weeklyDigest);
 
     setIsLoading(false);
-  };
+  }, [user]);
 
   const persistProfile = useCallback(
     async (opts?: { silent?: boolean }) => {

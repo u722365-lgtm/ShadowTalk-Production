@@ -7,8 +7,9 @@
  */
 
 import { flushSync } from "react-dom";
-import { cloudAuthHeaders, cloudFunctionUrl } from "@/lib/cloudConfig";
+import { cloudAuthHeaders, cloudFunctionUrl, cloudAnonKey } from "@/lib/cloudConfig";
 import { applyImageWatermark } from "@/lib/imageWatermark";
+import { fbAuth } from "@/integrations/firebase/app";
 
 export interface GenerateImageOptions {
   model?: string;
@@ -26,11 +27,16 @@ export function isCloudImageConfigured(): boolean {
 }
 
 function getFunctionUrl(): string {
-  return cloudFunctionUrl("generate-image");
+  return cloudFunctionUrl("generateImage");
 }
 
-function authHeaders() {
-  return cloudAuthHeaders();
+async function authHeaders() {
+  const idToken = await fbAuth().currentUser?.getIdToken().catch(() => null);
+  const token = idToken || cloudAnonKey();
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
 }
 
 type Frame =
@@ -57,7 +63,7 @@ export async function generateCloudImage(
 
   const res = await fetch(url, {
     method: "POST",
-    headers: authHeaders(),
+    headers: await authHeaders(),
     body: JSON.stringify({ ...requestBody, stream: true }),
     signal: opts.signal,
   });
@@ -139,7 +145,7 @@ export async function generateCloudImage(
     // Zero events = transport hiccup → replay once, non-streamed.
     const replay = await fetch(url, {
       method: "POST",
-      headers: authHeaders(),
+      headers: await authHeaders(),
       body: JSON.stringify({ ...requestBody, stream: false }),
       signal: opts.signal,
     });

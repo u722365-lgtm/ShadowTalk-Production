@@ -315,4 +315,130 @@ export const drive = onRequest((req, res) => {
   });
 });
 
+// ============================================================
+// Image Generation
+// ============================================================
+export const generateImage = onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    if (req.method === "OPTIONS") return;
+
+    try {
+      const authHeader = req.headers.authorization || "";
+      const tokenMatch = authHeader.match(/^Bearer (.*)$/);
+      let user: admin.auth.DecodedIdToken | null = null;
+
+      if (tokenMatch) {
+        try {
+          user = await admin.auth().verifyIdToken(tokenMatch[1]);
+        } catch (e) {
+          // Token invalid
+        }
+      }
+
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
+      }
+
+      const db = admin.firestore();
+      
+      // Get user plan
+      const profileDoc = await db.collection("profiles").doc(user.uid).get();
+      const plan = profileDoc.data()?.plan || "free";
+      const limits = PLANS[plan] || PLANS.free;
+
+      // Check daily usage limits for free/pro plans
+      if (limits.imagesPerDay > 0) {
+        const today = new Date().toISOString().split("T")[0];
+        const usageId = `${user.uid}_${today}`;
+        const usageDoc = await db.collection("daily_usage").doc(usageId).get();
+        const usageData = usageDoc.data();
+
+        if (usageData && usageData.images >= limits.imagesPerDay) {
+          return res.status(429).json({ error: "Daily image limit reached. Upgrade for more." });
+        }
+      }
+
+      const apiKey = process.env.LOVABLE_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ error: "AI is not configured (missing LOVABLE_API_KEY)." });
+      }
+
+      const { prompt, model = "google/gemini-3-pro-image", stream = true, referenceImage = "" } = req.body || {};
+      
+      if (!prompt || typeof prompt !== "string") {
+        return res.status(400).json({ error: "prompt is required" });
+      }
+
+      const content: any[] = [{ type: 'text', text: prompt.trim() }];
+      if (referenceImage) {
+        content.push({ type: 'image_url', image_url: { url: referenceImage } });
+      }
+
+      const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/images/generations';
+      const upstream = await fetch(GATEWAY_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: referenceImage ? content : prompt.trim() }],
+          modalities: ['image', 'text'],
+          ...(stream ? { stream: true } : {}),
+        }),
+      });
+
+      if (!upstream.ok || !upstream.body) {
+        const text = await upstream.text().catch(() => '');
+        let message = text.slice(0, 500) || 'Image generation failed';
+        try {
+          const parsed = JSON.parse(text);
+          message = parsed?.error?.message ?? parsed?.message ?? message;
+        } catch { /* keep raw text */ }
+        return res.status(upstream.status || 500).json({ error: message });
+      }
+
+      // Log usage (fire and forget)
+      db.collection("usage_analytics").add({
+        user_id: user.uid,
+        action_type: "generate_image",
+        feature_used: model,
+        created_at: admin.firestore.FieldValue.serverTimestamp()
+      }).catch(console.error);
+
+      // Increment daily usage
+      const today = new Date().toISOString().split("T")[0];
+      const usageId = `${user.uid}_${today}`;
+      db.collection("daily_usage").doc(usageId).set({
+        user_id: user.uid,
+        usage_date: today,
+        images: admin.firestore.FieldValue.increment(1),
+      }, { merge: true }).catch(console.error);
+
+      if (!stream) {
+        const json = await upstream.json();
+        return res.json(json);
+      }
+
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      const reader = upstream.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(decoder.decode(value, { stream: true }));
+      }
+      res.end();
+      return;
+    } catch (err: any) {
+      console.error("Image generation error:", err);
+      return res.status(500).json({ error: err.message || "Unexpected error" });
+    }
+  });
+});
+
 

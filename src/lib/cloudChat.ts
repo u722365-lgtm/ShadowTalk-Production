@@ -6,6 +6,7 @@
  */
 
 import { cloudAnonKey, cloudFunctionUrl } from "@/lib/cloudConfig";
+import { fbAuth } from "@/integrations/firebase/app";
 
 export interface CloudChatMessage {
   role: "system" | "user" | "assistant";
@@ -43,9 +44,9 @@ export async function streamCloudChat(
     return { content: "", error: "Lovable Cloud AI is not configured." };
   }
 
-  // Auth is handled outside Lovable Cloud, so there is never a Cloud session to
-  // look up — skip the lookup entirely and authorize with the publishable key.
-  const anonKey = cloudAnonKey();
+  // Get Firebase ID token for authorization against Firebase Functions
+  const idToken = await fbAuth().currentUser?.getIdToken().catch(() => null);
+  const authHeader = idToken ? `Bearer ${idToken}` : `Bearer ${cloudAnonKey()}`;
 
   const maxRetries = 1;
   let attempt = 0;
@@ -57,8 +58,7 @@ export async function streamCloudChat(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: anonKey,
-          Authorization: `Bearer ${anonKey}`,
+          Authorization: authHeader,
         },
         body: JSON.stringify({
           messages,

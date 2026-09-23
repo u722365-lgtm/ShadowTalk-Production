@@ -65,3 +65,6 @@ dev-dist/
 artifacts/
 dist_electron/
 .firebase/
+
+# Offline Model Weights
+public/models/
