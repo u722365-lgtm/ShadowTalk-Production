@@ -174,7 +174,7 @@ export const fetchWithRetry = async (
 };
 
 // Helper to check if user is online
-export const isOnline = : boolean => {
+export const isOnline = (): boolean => {
   return typeof navigator !== 'undefined' ? navigator.onLine : true;
 };
 
@@ -183,18 +183,18 @@ export const withOfflineFallback = async <T>(
   onlineHandler: () => Promise<T>,
   offlineFallback: T | (() => T)
 ): Promise<T> => {
-  if (!isOnline) {
+  if (!isOnline()) {
     return typeof offlineFallback === 'function' 
-      ? (offlineFallback as  => T) 
+      ? (offlineFallback as () => T)() 
       : offlineFallback;
   }
 
   try {
-    return await onlineHandler;
+    return await onlineHandler();
   } catch (error) {
-    if (!isOnline) {
+    if (!isOnline()) {
       return typeof offlineFallback === 'function' 
-        ? (offlineFallback as  => T) 
+        ? (offlineFallback as () => T)() 
         : offlineFallback;
     }
     throw error;

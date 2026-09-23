@@ -338,7 +338,11 @@ function ChatShadowSidebarInner({
                 type="button"
                 onClick={() => {
                   settingsHapticTick();
-                  onOpenSettings ? onOpenSettings() : navigate("/settings");
+                  if (onOpenSettings) {
+                    onOpenSettings();
+                  } else {
+                    navigate("/settings");
+                  }
                 }}
                 className={cn(
                   "flex items-center rounded-xl text-slate-400 hover:text-cyan-300 hover:bg-white/5 active:scale-98 transition-colors h-10 overflow-hidden",

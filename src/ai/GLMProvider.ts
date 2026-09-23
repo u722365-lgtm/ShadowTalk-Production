@@ -121,7 +121,7 @@ export class GLMProvider implements AIProvider {
         }
       }
     } finally {
-      reader.releaseLock;
+      reader.releaseLock();
     }
 
     return {

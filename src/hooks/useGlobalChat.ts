@@ -28,7 +28,7 @@ export interface GlobalChatResponse {
   error?: string;
 }
 
-export function useGlobalChat {
+export function useGlobalChat() {
   const [isLoading, setIsLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -82,7 +82,7 @@ export function useGlobalChat {
   );
 
   const abort = useCallback(() => {
-    abortRef.current?.abort;
+    abortRef.current?.abort();
     abortRef.current = null;
   }, []);
 
