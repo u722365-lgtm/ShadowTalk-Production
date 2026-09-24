@@ -126,7 +126,7 @@ export const chat = onRequest((req, res) => {
       }
 
       const db = admin.firestore();
-      
+
       // Get user plan
       const profileDoc = await db.collection("profiles").doc(user.uid).get();
       const plan = profileDoc.data()?.plan || "free";
@@ -217,7 +217,7 @@ export const chat = onRequest((req, res) => {
 
             const reader = providerResponse.body?.getReader();
             if (!reader) throw new Error("Failed to read stream");
-            
+
             const decoder = new TextDecoder();
             while (true) {
               const { done, value } = await reader.read();
@@ -340,7 +340,7 @@ export const generateImage = onRequest((req, res) => {
       }
 
       const db = admin.firestore();
-      
+
       // Get user plan
       const profileDoc = await db.collection("profiles").doc(user.uid).get();
       const plan = profileDoc.data()?.plan || "free";
@@ -364,7 +364,7 @@ export const generateImage = onRequest((req, res) => {
       }
 
       const { prompt, model = "google/gemini-3-pro-image", stream = true, referenceImage = "" } = req.body || {};
-      
+
       if (!prompt || typeof prompt !== "string") {
         return res.status(400).json({ error: "prompt is required" });
       }
