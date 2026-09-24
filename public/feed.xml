@@ -25,14 +25,14 @@
     <title>ShadowTalk vs Claude</title>
     <link>https://www.shadowtalk-ai.com/vs/claude.html</link>
     <guid isPermaLink="true">https://www.shadowtalk-ai.com/vs/claude.html</guid>
-    <description>ShadowTalk AI vs Claude: combine Anthropic-quality reasoning (BYOK) with missions, tools, browser, and vault in one product at shadowtalk-ai.com.</description>
+    <description>ShadowTalk AI vs Claude: combine Anthropic-quality reasoning  with missions, tools, browser, and vault in one product at shadowtalk-ai.com.</description>
     <pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate>
   </item>
   <item>
     <title>ShadowTalk vs Gemini</title>
     <link>https://www.shadowtalk-ai.com/vs/gemini.html</link>
     <guid isPermaLink="true">https://www.shadowtalk-ai.com/vs/gemini.html</guid>
-    <description>ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, offline models, and Mission Control — not locked to one ecosystem.</description>
+    <description>ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, stealth models, and Mission Control — not locked to one ecosystem.</description>
     <pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate>
   </item>
   <item>
@@ -88,7 +88,7 @@
     <title>ShadowTalk vs Copilot for Coding</title>
     <link>https://www.shadowtalk-ai.com/vs/copilot-code.html</link>
     <guid isPermaLink="true">https://www.shadowtalk-ai.com/vs/copilot-code.html</guid>
-    <description>Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, offline mode, and BYOK outside Microsoft lock-in.</description>
+    <description>Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, and outside Microsoft lock-in.</description>
     <pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate>
   </item>
   <item>
@@ -151,7 +151,7 @@
     <title>Is ShadowTalk a ChatGPT wrapper?</title>
     <link>https://www.shadowtalk-ai.com/answers#shadowtalk-vs-chatgpt-wrapper</link>
     <guid isPermaLink="true">https://www.shadowtalk-ai.com/answers#shadowtalk-vs-chatgpt-wrapper</guid>
-    <description>No. ShadowTalk AI is not a thin ChatGPT wrapper—it runs Mission Control multi-step missions, chains 30+ tools from natural language, includes a browser IDE, marketplace agents, Stealth Vault encryption, BYOK API keys, and optional on-device inference. The architecture is an agentic workspace, not a reskinned chat API.</description>
+    <description>No. ShadowTalk AI is not a thin ChatGPT wrapper—it runs Mission Control multi-step missions, chains 30+ tools from natural language, includes a browser IDE, marketplace agents, Stealth Vault encryptionAPI keys, and optional on-device inference. The architecture is an agentic workspace, not a reskinned chat API.</description>
     <pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate>
   </item>
   <item>

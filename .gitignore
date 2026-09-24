@@ -68,3 +68,8 @@ dist_electron/
 
 # Offline Model Weights
 public/models/
+
+# Ignore local LLM models
+Llama-*/
+public/models/
+.venv/

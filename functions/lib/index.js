@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.drive = exports.audio = exports.chat = void 0;
+exports.generateImage = exports.drive = exports.audio = exports.chat = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const cors = require("cors");
@@ -110,90 +110,6 @@ const openrouterProvider = {
 };
 const SHARED_POOL = [groqProvider, googleProvider, openrouterProvider];
 // ============================================================
-// BYOK Handler
-// ============================================================
-async function handleByokRequest(opts, res) {
-    const { byokProvider, byokApiKey, messages, model, stream = true, personality, deepResearch } = opts;
-    let apiUrl;
-    let resolvedModel;
-    const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${byokApiKey}`,
-    };
-    switch (byokProvider) {
-        case "groq":
-            apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-            resolvedModel = model || "llama-3.3-70b-versatile";
-            break;
-        case "google":
-        case "gemini":
-            apiUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-            resolvedModel = model?.replace("google/", "") || "gemini-2.0-flash";
-            break;
-        case "openai":
-            apiUrl = "https://api.openai.com/v1/chat/completions";
-            resolvedModel = model || "gpt-4o-mini";
-            break;
-        case "anthropic":
-            return res.status(400).json({ error: "Anthropic BYOK is supported via client-side direct calls only." });
-        case "openrouter":
-            apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-            resolvedModel = model || "openai/gpt-4o-mini";
-            headers["HTTP-Referer"] = "https://shadowtalk.app";
-            headers["X-Title"] = "ShadowTalk AI (BYOK)";
-            break;
-        default:
-            apiUrl = byokProvider.startsWith("http") ? byokProvider : `https://api.${byokProvider}.com/v1/chat/completions`;
-            resolvedModel = model || "default";
-    }
-    const systemPrompts = ["You are ShadowTalk AI, a powerful and private AI assistant. Be helpful, accurate, and concise."];
-    if (personality && personality !== "default")
-        systemPrompts.push(`Personality mode: ${personality}`);
-    if (deepResearch)
-        systemPrompts.push("The user has requested deep research. Provide thorough, well-structured analysis with citations where possible.");
-    const chatMessages = [{ role: "system", content: systemPrompts.join("\n\n") }, ...messages];
-    try {
-        const providerResponse = await fetch(apiUrl, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-                model: resolvedModel,
-                messages: chatMessages,
-                stream,
-                max_tokens: deepResearch ? 8192 : 4096,
-            }),
-        });
-        if (!providerResponse.ok) {
-            const errText = await providerResponse.text();
-            return res.status(providerResponse.status).json({ error: `BYOK provider error: ${providerResponse.status} — ${errText.slice(0, 300)}` });
-        }
-        if (stream) {
-            res.setHeader("Content-Type", "text/event-stream");
-            res.setHeader("Cache-Control", "no-cache");
-            res.setHeader("Connection", "keep-alive");
-            res.setHeader("X-Provider", `byok-${byokProvider}`);
-            res.setHeader("X-Model", resolvedModel);
-            const reader = providerResponse.body?.getReader();
-            if (!reader)
-                return res.status(500).json({ error: "Failed to read stream" });
-            const decoder = new TextDecoder();
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done)
-                    break;
-                res.write(decoder.decode(value, { stream: true }));
-            }
-            res.end();
-            return;
-        }
-        const data = await providerResponse.json();
-        return res.json({ ...data, _provider: `byok-${byokProvider}` });
-    }
-    catch (err) {
-        return res.status(502).json({ error: `BYOK request failed: ${err.message}` });
-    }
-}
-// ============================================================
 // Main Chat Function
 // ============================================================
 exports.chat = (0, https_1.onRequest)((req, res) => {
@@ -209,15 +125,12 @@ exports.chat = (0, https_1.onRequest)((req, res) => {
                     user = await admin.auth().verifyIdToken(tokenMatch[1]);
                 }
                 catch (e) {
-                    // Token invalid, allow only BYOK
+                    // Token invalid
                 }
             }
-            const { messages, model, stream = true, personality, deepResearch, byokProvider, byokApiKey, } = req.body || {};
-            if (byokProvider && byokApiKey) {
-                return handleByokRequest({ byokProvider, byokApiKey, messages, model, stream, personality, deepResearch }, res);
-            }
+            const { messages, model, stream = true, personality, deepResearch, } = req.body || {};
             if (!user) {
-                return res.status(401).json({ error: "Unauthorized. Sign in or use BYOK mode." });
+                return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
             }
             const db = admin.firestore();
             // Get user plan
@@ -388,6 +301,118 @@ exports.drive = (0, https_1.onRequest)((req, res) => {
         catch (err) {
             console.error("Drive action error:", err);
             return res.status(500).json({ error: "Drive action failed" });
+        }
+    });
+});
+// ============================================================
+// Image Generation
+// ============================================================
+exports.generateImage = (0, https_1.onRequest)((req, res) => {
+    corsHandler(req, res, async () => {
+        if (req.method === "OPTIONS")
+            return;
+        try {
+            const authHeader = req.headers.authorization || "";
+            const tokenMatch = authHeader.match(/^Bearer (.*)$/);
+            let user = null;
+            if (tokenMatch) {
+                try {
+                    user = await admin.auth().verifyIdToken(tokenMatch[1]);
+                }
+                catch (e) {
+                    // Token invalid
+                }
+            }
+            if (!user) {
+                return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
+            }
+            const db = admin.firestore();
+            // Get user plan
+            const profileDoc = await db.collection("profiles").doc(user.uid).get();
+            const plan = profileDoc.data()?.plan || "free";
+            const limits = PLANS[plan] || PLANS.free;
+            // Check daily usage limits for free/pro plans
+            if (limits.imagesPerDay > 0) {
+                const today = new Date().toISOString().split("T")[0];
+                const usageId = `${user.uid}_${today}`;
+                const usageDoc = await db.collection("daily_usage").doc(usageId).get();
+                const usageData = usageDoc.data();
+                if (usageData && usageData.images >= limits.imagesPerDay) {
+                    return res.status(429).json({ error: "Daily image limit reached. Upgrade for more." });
+                }
+            }
+            const apiKey = process.env.LOVABLE_API_KEY;
+            if (!apiKey) {
+                return res.status(500).json({ error: "AI is not configured (missing LOVABLE_API_KEY)." });
+            }
+            const { prompt, model = "google/gemini-3-pro-image", stream = true, referenceImage = "" } = req.body || {};
+            if (!prompt || typeof prompt !== "string") {
+                return res.status(400).json({ error: "prompt is required" });
+            }
+            const content = [{ type: 'text', text: prompt.trim() }];
+            if (referenceImage) {
+                content.push({ type: 'image_url', image_url: { url: referenceImage } });
+            }
+            const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/images/generations';
+            const upstream = await fetch(GATEWAY_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [{ role: 'user', content: referenceImage ? content : prompt.trim() }],
+                    modalities: ['image', 'text'],
+                    ...(stream ? { stream: true } : {}),
+                }),
+            });
+            if (!upstream.ok || !upstream.body) {
+                const text = await upstream.text().catch(() => '');
+                let message = text.slice(0, 500) || 'Image generation failed';
+                try {
+                    const parsed = JSON.parse(text);
+                    message = parsed?.error?.message ?? parsed?.message ?? message;
+                }
+                catch { /* keep raw text */ }
+                return res.status(upstream.status || 500).json({ error: message });
+            }
+            // Log usage (fire and forget)
+            db.collection("usage_analytics").add({
+                user_id: user.uid,
+                action_type: "generate_image",
+                feature_used: model,
+                created_at: admin.firestore.FieldValue.serverTimestamp()
+            }).catch(console.error);
+            // Increment daily usage
+            const today = new Date().toISOString().split("T")[0];
+            const usageId = `${user.uid}_${today}`;
+            db.collection("daily_usage").doc(usageId).set({
+                user_id: user.uid,
+                usage_date: today,
+                images: admin.firestore.FieldValue.increment(1),
+            }, { merge: true }).catch(console.error);
+            if (!stream) {
+                const json = await upstream.json();
+                return res.json(json);
+            }
+            res.setHeader("Content-Type", "text/event-stream");
+            res.setHeader("Cache-Control", "no-cache");
+            res.setHeader("Connection", "keep-alive");
+            const reader = upstream.body.getReader();
+            const decoder = new TextDecoder();
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done)
+                    break;
+                res.write(decoder.decode(value, { stream: true }));
+            }
+            res.end();
+            return;
+        }
+        catch (err) {
+            console.error("Image generation error:", err);
+            return res.status(500).json({ error: err.message || "Unexpected error" });
         }
     });
 });
