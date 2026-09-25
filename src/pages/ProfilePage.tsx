@@ -130,19 +130,6 @@ const ProfilePage = () => {
   const currentPlanDetails = PLAN_DETAILS[planKey] || PLAN_DETAILS.free;
   const { balance, transactions, isLoading: creditsLoading } = useShadowCredits();
 
-  useEffect(() => {
-    if (!user) { navigate("/auth"); return; }
-    void loadProfile();
-  }, [user, navigate, loadProfile]);
-
-  useEffect(() => {
-    const oauth = searchParams.get("oauth");
-    if (oauth === "success") {
-      toast({ title: "Account linked", description: "Your integration was connected successfully." });
-      setSearchParams({ tab: "linked" }, { replace: true });
-    }
-  }, [searchParams, setSearchParams, toast]);
-
   const loadProfile = useCallback(async () => {
     if (!user) return;
     const [profileRes, settingsRes] = await Promise.all([
@@ -182,6 +169,21 @@ const ProfilePage = () => {
 
     setIsLoading(false);
   }, [user]);
+
+  useEffect(() => {
+    if (!user) { navigate("/auth"); return; }
+    void loadProfile();
+  }, [user, navigate, loadProfile]);
+
+  useEffect(() => {
+    const oauth = searchParams.get("oauth");
+    if (oauth === "success") {
+      toast({ title: "Account linked", description: "Your integration was connected successfully." });
+      setSearchParams({ tab: "linked" }, { replace: true });
+    }
+  }, [searchParams, setSearchParams, toast]);
+
+
 
   const persistProfile = useCallback(
     async (opts?: { silent?: boolean }) => {
