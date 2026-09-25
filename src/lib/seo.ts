@@ -42,7 +42,7 @@ export function generateMetaTags(meta: PageMeta): Record<string, string> {
   const defaultImage = `${baseUrl}/og-image.svg`;
   const brand = 'ShadowTalk AI';
   // Avoid double-branding the title if it already contains the brand name.
-  const fullTitle = meta.title.toLowerCase.includes('shadowtalk')
+  const fullTitle = meta.title.toLowerCase().includes('shadowtalk')
     ? meta.title
     : `${meta.title} | ${brand}`;
 

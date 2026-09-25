@@ -22,7 +22,7 @@ export const PRICING_TRANSPARENCY = {
     { href: "/transparency", label: "Transparency" },
     { href: "/gdpr", label: "GDPR" },
   ],
-  trustBullets: getRiskReversalBullets,
+  trustBullets: getRiskReversalBullets(),
 } as const;
 
 export function getFreeTierSummary(): string {
