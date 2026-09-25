@@ -69,6 +69,7 @@ const TrustPage = lazy(() => import("./pages/TrustPage"));
 const KnowledgeGraphPage = lazy(() => import("./pages/KnowledgeGraphPage"));
 const SecurityAuditPage = lazy(() => import("./pages/SecurityAuditPage"));
 const AgenticAIWorkspacePage = lazy(() => import("./pages/AgenticAIWorkspacePage"));
+const FounderAccessPage = lazy(() => import("./pages/FounderAccessPage"));
 
 // Production Company, Support & Legal Pages
 const ContactPage = lazy(() => import("./pages/ContactPage"));
@@ -166,6 +167,7 @@ const AnimatedRoutes = () => {
           <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />
           <Route path="/sessions" element={<Suspense fallback={<PageLoader />}><PageTransition><SessionsPage /></PageTransition></Suspense>} />
           <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
+          <Route path="/founder-access" element={<PageTransition><FounderAccessPage /></PageTransition>} />
           
           {/* Enterprise SaaS Routes */}
           <Route path="/developers" element={<PageTransition><DeveloperPortalPage /></PageTransition>} />
