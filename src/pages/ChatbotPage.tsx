@@ -1348,6 +1348,15 @@ Structure and Content Guidelines:
       ? user.email.charAt(0).toUpperCase()
       : "G";
 
+  const goToExecute = useCallback(
+    (goal: string, deliverable?: string) => {
+      const params = new URLSearchParams({ goal });
+      if (deliverable) params.set("deliverable", deliverable);
+      navigate(`/mission-control?${params.toString()}`);
+    },
+    [navigate],
+  );
+
   const handleConfirmTool = useCallback(
     (messageId: string) => {
       const msg = messages.find((m) => m.id === messageId);
@@ -1569,7 +1578,7 @@ Structure and Content Guidelines:
               onOpenCanvas={(type) => navigate("/ide")}
 
               maxChats="∞"
-              dailyChats={messageCount}
+              dailyChats={messages.length}
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
             />
