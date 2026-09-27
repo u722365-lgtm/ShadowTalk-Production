@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense, useCallback, useMemo } fro
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
+// Removed broken imports
 import { useAuth } from "@/components/AuthProvider";
 import { backend } from "@/integrations/local/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +19,8 @@ const ShareResultDialog = (props: any) => null;
 import { ChatMessages } from "@/components/chat/ChatMessages";
 import type { UserContext } from "@/components/chat/UserContextPanel";
 import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
+
+
 
 
 
@@ -45,6 +48,7 @@ import { useAutoImproveContext } from "@/contexts/AutoImproveContext";
 import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareIntelligence";
 
 
+// Removed broken imports
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { loadCustomAiConfig, saveCustomAiConfig } from "@/lib/customApiKeys";
 import { turboComplete, resolveTurboKey } from "@/lib/turbo";
