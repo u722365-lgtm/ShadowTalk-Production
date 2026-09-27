@@ -22,11 +22,8 @@ import { StealthKillSwitchProvider } from "@/contexts/StealthKillSwitchContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BootScreen from "@/components/BootScreen";
 import { shouldSkipBootScreen } from "@/lib/skipBootScreen";
-import { OfflineIndicator } from "@/components/offline/OfflineIndicator";
-
 import CommandPalette from "@/components/CommandPalette";
 import { BackToHomeButton } from "@/components/BackToHomeButton";
-import { useReferralCapture } from "./hooks/useReferralTracking";
 import PersistedAuthRedirect from "@/components/PersistedAuthRedirect";
 import { OAuthReturnHandler } from "@/components/OAuthReturnHandler";
 import { OAuthRedirectHandler } from "@/components/OAuthRedirectHandler";
@@ -46,28 +43,17 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AuthDesignGalleryPage = lazy(() => import("./pages/AuthDesignGalleryPage"));
 const AuthDesignPreviewPage = lazy(() => import("./pages/AuthDesignPreviewPage"));
 const SharedAnswerPage = lazy(() => import("./pages/SharedAnswerPage"));
-const SessionsPage = lazy(() => import("./pages/SessionsPage"));
-const PricingPage = lazy(() => import("./pages/PricingPage"));
 const DocsPage = lazy(() => import("./pages/DocsPage"));
 const ChangelogPage = lazy(() => import("./pages/ChangelogPage"));
 const PrivateAiHubPage = lazy(() => import("./pages/PrivateAiHubPage"));
-// const StrategyAgentPage = lazy(() => import("./pages/StrategyAgentPage"));
-const DeveloperPortalPage = lazy(() => import("./pages/DeveloperPortalPage"));
-const OrgAdminPage = lazy(() => import("./pages/OrgAdminPage"));
-const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
-const BillingDashboardPage = lazy(() => import("./pages/BillingDashboardPage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
 const FounderPage = lazy(() => import("./pages/FounderPage"));
 const ZainAhmedBioPage = lazy(() => import("./pages/ZainAhmedBioPage"));
 const FatimaPage = lazy(() => import("./pages/FatimaPage"));
-const AuditLogsPage = lazy(() => import("./pages/AuditLogsPage"));
 const ShadowTwinSettingsPage = lazy(() => import("./pages/ShadowTwinSettingsPage"));
 const PublicShadowTwinChat = lazy(() => import("./pages/PublicShadowTwinChat"));
 const ShadowMemoryPage = lazy(() => import("./pages/ShadowMemoryPage"));
-const PrivacyScorePage = lazy(() => import("./pages/PrivacyScorePage"));
 const TrustPage = lazy(() => import("./pages/TrustPage"));
 const KnowledgeGraphPage = lazy(() => import("./pages/KnowledgeGraphPage"));
-const SecurityAuditPage = lazy(() => import("./pages/SecurityAuditPage"));
 const AgenticAIWorkspacePage = lazy(() => import("./pages/AgenticAIWorkspacePage"));
 const FounderAccessPage = lazy(() => import("./pages/FounderAccessPage"));
 
@@ -77,7 +63,6 @@ const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
-const StatusPage = lazy(() => import("./pages/StatusPage"));
 const GDPRPage = lazy(() => import("./pages/GDPRPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
@@ -88,53 +73,48 @@ const CookieConsent = lazy(() => import("./components/CookieConsent"));
 const CustomerSupportWidget = lazy(() => import("./components/CustomerSupportWidget"));
 const ShadowMemoryTracker = lazy(() => import("./components/ShadowMemoryTracker"));
 const JourneyTracker = lazy(() => import("./components/JourneyTracker").then(m => ({ default: m.JourneyTracker })));
-const ShadowScaleEngine = lazy(() =>
-  import("./components/shadowScale/ShadowScaleEngine").then((m) => ({ default: m.ShadowScaleEngine })),
-);
 
- // Configure React Query with production-ready settings
- const queryClient = new QueryClient({
-   queryCache: new QueryCache({
-     onError: (error) => {
-       const appErr = AppError.fromUnknown(error, 'Failed to fetch data');
-       if (appErr.isOperational) {
-         import('sonner').then(({ toast }) => toast.error(appErr.message));
-       }
-     }
-   }),
-   mutationCache: new MutationCache({
-     onError: (error) => {
-       const appErr = AppError.fromUnknown(error, 'Action failed');
-       if (appErr.isOperational) {
-         import('sonner').then(({ toast }) => toast.error(appErr.message));
-       }
-     }
-   }),
-   defaultOptions: {
-     queries: {
-       staleTime: 1000 * 60 * 5, // 5 minutes
-       gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
-       retry: (failureCount, error: unknown) => {
-         // Don't retry on 4xx errors except 429
-         if (error && typeof error === 'object' && 'status' in error) {
-           const status = (error as { status: number }).status;
-           if (status >= 400 && status < 500 && status !== 429) {
-             return false;
-           }
-         }
-         return failureCount < 3;
-       },
-       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-     },
-     mutations: {
-       retry: false,
-     },
-   },
- });
- 
+  // Configure React Query with production-ready settings
+  const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error) => {
+        const appErr = AppError.fromUnknown(error, 'Failed to fetch data');
+        if (appErr.isOperational) {
+          import('sonner').then(({ toast }) => toast.error(appErr.message));
+        }
+      }
+    }),
+    mutationCache: new MutationCache({
+      onError: (error) => {
+        const appErr = AppError.fromUnknown(error, 'Action failed');
+        if (appErr.isOperational) {
+          import('sonner').then(({ toast }) => toast.error(appErr.message));
+        }
+      }
+    }),
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+        retry: (failureCount, error: unknown) => {
+          if (error && typeof error === 'object' && 'status' in error) {
+            const status = (error as { status: number }).status;
+            if (status >= 400 && status < 500 && status !== 429) {
+              return false;
+            }
+          }
+          return failureCount < 3;
+        },
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      },
+      mutations: {
+        retry: false,
+      },
+    },
+  });
+  
 const AnimatedRoutes = () => {
   const location = useLocation();
-  useReferralCapture();
   return (
     <Suspense fallback={<PageLoader />}>
       <AnimatePresence mode="wait">
@@ -152,7 +132,6 @@ const AnimatedRoutes = () => {
           
           <Route path="/auth/designs" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignGalleryPage /></PageTransition></Suspense>} />
           <Route path="/auth/preview/:designId" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignPreviewPage /></PageTransition></Suspense>} />
-          <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
           <Route path="/docs" element={<PageTransition><DocsPage /></PageTransition>} />
           <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
@@ -165,34 +144,20 @@ const AnimatedRoutes = () => {
           <Route path="/sadaf-tayyaba" element={<PageTransition><FatimaPage /></PageTransition>} />
           <Route path="/changelog" element={<PageTransition><ChangelogPage /></PageTransition>} />
           <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />
-          <Route path="/sessions" element={<Suspense fallback={<PageLoader />}><PageTransition><SessionsPage /></PageTransition></Suspense>} />
           <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
           <Route path="/founder-access" element={<PageTransition><FounderAccessPage /></PageTransition>} />
           
-          {/* Enterprise SaaS Routes */}
-          <Route path="/developers" element={<PageTransition><DeveloperPortalPage /></PageTransition>} />
-          <Route path="/admin" element={<PageTransition><OrgAdminPage /></PageTransition>} />
-          <Route path="/admin/dashboard" element={<PageTransition><AdminDashboardPage /></PageTransition>} />
-          <Route path="/billing" element={<PageTransition><BillingDashboardPage /></PageTransition>} />
-          <Route path="/audit-logs" element={<PageTransition><AuditLogsPage /></PageTransition>} />
-          <Route path="/privacy-score" element={<PageTransition><PrivacyScorePage /></PageTransition>} />
-          <Route path="/trust" element={<PageTransition><TrustPage /></PageTransition>} />
-          <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
-          <Route path="/security-audit" element={<PageTransition><SecurityAuditPage /></PageTransition>} />
-          <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
-
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
           <Route path="/help" element={<PageTransition><HelpCenterPage /></PageTransition>} />
           <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />
           <Route path="/blog" element={<PageTransition><BlogPage /></PageTransition>} />
           <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
-          <Route path="/status" element={<PageTransition><StatusPage /></PageTransition>} />
           <Route path="/gdpr" element={<PageTransition><GDPRPage /></PageTransition>} />
           <Route path="/cookies" element={<PageTransition><CookiePolicyPage /></PageTransition>} />
           <Route path="/terms" element={<PageTransition><TermsOfServicePage /></PageTransition>} />
           <Route path="/privacy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
-
+          
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
@@ -211,8 +176,6 @@ const App = () => {
     import("@/lib/shadowMode").then(({ initShadowMode }) => initShadowMode());
     import("@/lib/profilePreferences").then(({ initProfileUiPreferences }) => initProfileUiPreferences());
     
-    // Seed enterprise data if tables are empty
-
     const hasSeenBoot = sessionStorage.getItem('shadowtalk-booted');
     if (hasSeenBoot || shouldSkipBootScreen()) {
       setShowBootScreen(false);
@@ -257,31 +220,29 @@ const App = () => {
               <Toaster />
               <Sonner />
                <BrowserRouter>
-                 <OfflineIndicator />
-                 <MobileViewportFix />
-                 <NetworkTransitionOverlay />
-                 <SiteMotionProvider>
-                   <SitePageShell>
-                     <GlobalScrollReveal />
-                     <PersistedAuthRedirect />
-                     <OAuthRedirectHandler />
-                     <OAuthReturnHandler />
-                     <AnimatedRoutes />
-                     <BackToHomeButton />
-                   </SitePageShell>
-                 </SiteMotionProvider>
-                 <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
-                  {deferredChrome && (
-                    <Suspense fallback={null}>
-                      <ShadowMemoryTracker />
-                      <JourneyTracker />
-                      <AutoImproveEngine />
-                      <ShadowScaleEngine />
-                      <CookieConsent />
-                      <CustomerSupportWidget />
-                    </Suspense>
-                  )}
-               </BrowserRouter>
+                  <MobileViewportFix />
+                  <NetworkTransitionOverlay />
+                  <SiteMotionProvider>
+                    <SitePageShell>
+                      <GlobalScrollReveal />
+                      <PersistedAuthRedirect />
+                      <OAuthRedirectHandler />
+                      <OAuthReturnHandler />
+                      <AnimatedRoutes />
+                      <BackToHomeButton />
+                    </SitePageShell>
+                  </SiteMotionProvider>
+                  <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+                   {deferredChrome && (
+                     <Suspense fallback={null}>
+                       <ShadowMemoryTracker />
+                       <JourneyTracker />
+                       <AutoImproveEngine />
+                       <CookieConsent />
+                       <CustomerSupportWidget />
+                     </Suspense>
+                   )}
+                </BrowserRouter>
               </CommandPaletteContext.Provider>
               </ThemeTemplateProvider>
               </AutoImproveProvider>
