@@ -36,7 +36,7 @@ export function useGlobalChat() {
     async (messages: GlobalChatMessage[], opts: GlobalChatOptions = {}): Promise<GlobalChatResponse> => {
       setIsLoading(true);
       try {
-        const lastUser = [...messages].reverse.find((m) => m.role === "user");
+        const lastUser = [...messages].reverse().find((m) => m.role === "user");
         
         let contextPrefix = opts.systemPrompt;
         if (lastUser) {
@@ -52,7 +52,7 @@ export function useGlobalChat() {
            chatMessages.unshift({ role: "system", content: contextPrefix });
         }
 
-        const provider = await AIProviderRouter.getBestProvider;
+        const provider = await AIProviderRouter.getBestProvider();
         const { content, error } = await provider.streamChat(chatMessages, {
           signal: opts.signal,
           temperature: 0.7,

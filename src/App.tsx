@@ -67,6 +67,7 @@ const GDPRPage = lazy(() => import("./pages/GDPRPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));

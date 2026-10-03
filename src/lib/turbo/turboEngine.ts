@@ -398,7 +398,7 @@ async function cloudFallback(
       { role: 'system' as const, content: systemPrompt },
       { role: 'user' as const, content: userContent },
     ];
-    const provider = await AIProviderRouter.getBestProvider;
+    const provider = await AIProviderRouter.getBestProvider();
     const { content, error } = await provider.streamChat(
       cloudMessages,
       {

@@ -945,7 +945,7 @@ Structure and Content Guidelines:
 
       let provider;
       try {
-        provider = await AIProviderRouter.getBestProvider;
+        provider = await AIProviderRouter.getBestProvider();
       } catch (err: any) {
         if (err?.message === "offline_not_provisioned") {
           const errMsg = "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.";
