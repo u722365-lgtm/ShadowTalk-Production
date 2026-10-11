@@ -6,7 +6,39 @@ export type ToolType =
   | 'knowledge_vault'
   | 'memory_panel'
   | 'document_generator'
-  | 'presentation_builder';
+  | 'presentation_builder'
+  | 'calculator'
+  | 'web_search'
+  | 'deep_research'
+  | 'image_generator'
+  | 'image_editor'
+  | 'image_edit'
+  | 'music_generator'
+  | 'image_decoder'
+  | 'visual_reasoning'
+  | 'security_audit'
+  | 'shadow_browser'
+  | 'shadow_live'
+  | 'code_executor'
+  | 'code_canvas'
+  | 'file_manager'
+  | 'database_query'
+  | 'analytics_agent'
+  | 'api_integrator'
+  | 'workflow_automation'
+  | 'computer_mode'
+  | 'eco_actions'
+  | 'sovereign_models'
+  | 'cognitive_loop'
+  | 'workspace'
+  | 'ide'
+  | 'marketplace'
+  | 'privacy_score'
+  | 'referral'
+  | 'analytics'
+  | 'api_marketplace'
+  | 'command_palette'
+  | 'executor';
 
 export interface ToolDetectionResult {
   tool: ToolType | null;
@@ -24,6 +56,67 @@ const TOOL_PATTERNS: Array<{
   autoExecute?: boolean;
   extractParams?: (message: string) => Record<string, string>;
 }> = [
+  {
+    tool: 'calculator',
+    patterns: [
+      /^\s*(calc|calculate|compute)\s+/i,
+      /^\s*[-(]?\d[\d\s+\-*/().%^]*[)\s]*$/,
+      /\bwhat(?:'s| is)\s+(?:the\s+)?(?:result\s+of\s+)?[\d\s+\-*/().%^]+\?/i,
+    ],
+    priority: 9,
+    autoExecute: true,
+    extractParams: (msg) => ({ expression: msg.replace(/^\s*(calc|calculate|compute|what(?:'s| is) the result of)\s*/i, '').replace(/\?$/, '').trim() }),
+  },
+  {
+    tool: 'web_search',
+    patterns: [
+      /\b(search|look\s*up|find|google)\s+(the\s+)?(web|internet|online)\b/i,
+      /\bsearch\s+(?:for|about)\s+/i,
+      /\bweb\s+search\b/i,
+      /\blatest\s+(news|updates|releases)\b/i,
+    ],
+    priority: 7,
+    autoExecute: true,
+    extractParams: (msg) => ({
+      query: msg
+        .replace(/^(search|look\s*up|find|google)\s+(the\s+)?(web|internet|online)?\s*(for|about|on)?\s*/i, '')
+        .replace(/\b(web|internet|online)\s*search\b/i, '')
+        .trim() || msg,
+    }),
+  },
+  {
+    tool: 'deep_research',
+    patterns: [
+      /\b(deep\s+research|research\s+deeply|in[- ]?depth\s+(research|analysis|dive))\b/i,
+      /\b(research|investigate|analyze)\s+(competitors|market|industry|topic)\b/i,
+    ],
+    priority: 8,
+    autoExecute: true,
+    extractParams: (msg) => ({
+      query: msg
+        .replace(/^(deep\s+research|research|investigate|analyze)\s+(deeply\s+|about\s+|on\s+)?/i, '')
+        .trim() || msg,
+    }),
+  },
+  {
+    tool: 'image_generator',
+    patterns: [
+      /\b(generate|create|make|draw|design|imagine)\s+(me\s+)?(a\s+|an\s+)?(image|picture|photo|illustration|artwork|logo|icon|banner|poster)\b/i,
+      /\bshow\s+me\s+(a\s+|an\s+)?(image|picture|visual)\s+of\b/i,
+    ],
+    priority: 9,
+    autoExecute: true,
+    extractParams: (msg) => ({ prompt: msg }),
+  },
+  {
+    tool: 'music_generator',
+    patterns: [
+      /\b(generate|create|make|compose)\s+(me\s+)?(a\s+|an\s+)?(song|music|track|beat|melody)\b/i,
+    ],
+    priority: 9,
+    autoExecute: true,
+    extractParams: (msg) => ({ prompt: msg }),
+  },
   {
     tool: 'document_generator',
     patterns: [
@@ -106,6 +199,25 @@ const TOOL_PATTERNS: Array<{
   },
 ];
 
+/** Evaluate a plain arithmetic expression safely (no identifiers, no calls). */
+export function executeCalculator(expression: string): string {
+  const expr = expression.trim();
+  if (!expr) return "I couldn't find a math expression in that.";
+  const sanitized = expr.replace(/[×]/g, "*").replace(/[÷]/g, "/").replace(/\^/g, "**");
+  if (!/^[0-9+\-*/().%\s]+$/.test(sanitized)) {
+    return `I can only evaluate plain arithmetic — "${expr}" contains letters or symbols I won't execute.`;
+  }
+  try {
+    const result = Function(`"use strict"; return (${sanitized});`)();
+    if (typeof result !== "number" || !isFinite(result)) {
+      return "That expression didn't produce a finite number.";
+    }
+    return `**${expr} = ${Number.isInteger(result) ? result : Number(result.toFixed(6))}**`;
+  } catch {
+    return "I couldn't calculate that expression. Check the syntax and try again.";
+  }
+}
+
 export const useToolOrchestrator = () => {
   const detectTool = useCallback((message: string): ToolDetectionResult => {
     const normalizedMessage = message.trim().toLowerCase();
@@ -135,7 +247,6 @@ export const useToolOrchestrator = () => {
 
   return {
     detectTool,
+    executeCalculator,
   };
 };
-
-export default useToolOrchestrator;
