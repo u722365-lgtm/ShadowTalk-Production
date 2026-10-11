@@ -22,8 +22,7 @@ export function cloudAnonKey(): string {
 }
 
 export function cloudFunctionUrl(name: string): string {
-  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || "shadowtalk-ai-7a513";
-  return `https://us-central1-${projectId}.cloudfunctions.net/${name}`;
+  return `${cloudBaseUrl()}/functions/v1/${name}`;
 }
 
 export function cloudAuthHeaders(): Record<string, string> {

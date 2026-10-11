@@ -8,6 +8,7 @@ import { usePlatformMetrics } from "@/hooks/usePlatformMetrics";
 import { formatTractionDaily, formatTractionUsers } from "@/lib/formatMetrics";
 import { StealthKillSwitch } from "@/components/StealthKillSwitch";
 import { useStealthKillSwitch } from "@/hooks/useStealthKillSwitch";
+import { trackShadowTalkEvent } from "@/lib/analyticsEventTracker";
 import FreeTierLimitsStrip from "@/components/growth/FreeTierLimitsStrip";
 import ProofOverHypeBar from "@/components/growth/ProofOverHypeBar";
 
