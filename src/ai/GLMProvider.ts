@@ -103,7 +103,7 @@ export class GLMProvider implements AIProvider {
         const lines = chunk.split('\n');
         
         for (const line of lines) {
-          if (!line.trim || line.startsWith(':')) continue;
+          if (!line.trim() || line.startsWith(':')) continue;
           if (line.startsWith('data: [DONE]')) break;
           
           if (line.startsWith('data: ')) {

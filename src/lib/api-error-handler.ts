@@ -29,9 +29,8 @@ export async function detectCreditsExhausted(
 ): Promise<CreditsExhaustedError | null> {
   if (response.status !== 402) return null;
   try {
-    const clone = response.clone;
-    const data = await clone.json;
-    if (data?.needs=== true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
+    const data = await response.clone().json();
+    if (data?.needsKey === true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
       return new CreditsExhaustedError(
         typeof data.error === "string" ? data.error : data.message,
       );
@@ -60,7 +59,7 @@ export const parseAPIError = async (response: Response): Promise<AppError> => {
   let code: string | undefined;
 
   try {
-    const data = await response.json;
+    const data = await response.json();
     if (data.error) {
       message = typeof data.error === 'string' ? data.error : data.error.message || message;
       code = data.error.code;

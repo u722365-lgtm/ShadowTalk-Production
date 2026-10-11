@@ -8,9 +8,15 @@
 import { cloudAnonKey, cloudFunctionUrl } from "@/lib/cloudConfig";
 import { fbAuth } from "@/integrations/firebase/app";
 
+export type CloudChatContent =
+  | string
+  | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+
 export interface CloudChatMessage {
   role: "system" | "user" | "assistant";
-  content: string;
+  content: CloudChatContent;
+  /** Optional attached image (data URL) for vision-capable providers. */
+  image?: string;
 }
 
 export interface CloudChatOptions {
@@ -19,11 +25,21 @@ export interface CloudChatOptions {
   signal?: AbortSignal;
   /** Called with the full accumulated text on every delta. */
   onDelta?: (accumulated: string) => void;
+  /** Request a strict JSON output format when the provider supports it. */
+  structuredOutput?: boolean;
+  /** Request timeout in milliseconds (provider-dependent). */
+  timeoutMs?: number;
+  /** Maximum output tokens (provider-dependent). */
+  maxTokens?: number;
 }
 
 export interface CloudChatResult {
   content: string;
   error?: string;
+  /** Provider-reported source identifier (adapter-specific). */
+  source?: string;
+  /** Model actually used (adapter-specific). */
+  modelUsed?: string;
 }
 
 export function isCloudChatConfigured(): boolean {
