@@ -42,7 +42,7 @@ export function hasStoredKeyForProvider(
     model: '',
   },
 ): boolean {
-  if (provider === 'turbo') return isTurboAvailable;
+  if (provider === 'turbo') return isTurboAvailable();
   return true;
 }
 

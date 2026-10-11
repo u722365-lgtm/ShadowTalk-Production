@@ -118,11 +118,11 @@ export const CHAT_WELCOME_LINES = [
 export const CHAT_EMPTY_HEADLINE = "What should ShadowTalk execute for you?";
 
 export function pickBrandHook(seed?: number): string {
-  const i = seed ?? Math.floor(Math.random * BRAND_HOOKS.length);
+  const i = seed ?? Math.floor(Math.random() * BRAND_HOOKS.length);
   return BRAND_HOOKS[i % BRAND_HOOKS.length];
 }
 
 export function pickChatWelcome(seed?: number): string {
-  const i = seed ?? Math.floor(Math.random * CHAT_WELCOME_LINES.length);
+  const i = seed ?? Math.floor(Math.random() * CHAT_WELCOME_LINES.length);
   return CHAT_WELCOME_LINES[i % CHAT_WELCOME_LINES.length];
 }
