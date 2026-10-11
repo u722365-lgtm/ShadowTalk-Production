@@ -30,7 +30,7 @@ export async function detectCreditsExhausted(
   if (response.status !== 402) return null;
   try {
     const data = await response.clone().json();
-    if (data?.needsKey === true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
+    if (data?.needs === true || data?.code === "PLATFORM_CREDITS_EXHAUSTED") {
       return new CreditsExhaustedError(
         typeof data.error === "string" ? data.error : data.message,
       );
