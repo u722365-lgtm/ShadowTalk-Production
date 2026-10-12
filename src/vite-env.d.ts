@@ -60,3 +60,7 @@ type GPU = unknown;
 interface Navigator {
   gpu?: GPU;
 }
+
+declare module "virtual:pwa-register" {
+  export function registerSW(options?: Record<string, unknown>): (reload?: boolean) => Promise<void>;
+}

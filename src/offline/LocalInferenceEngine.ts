@@ -47,7 +47,7 @@ export class LocalInferenceEngine {
       }));
 
       const chunks = await this.engine.chat.completions.create({
-        messages: webLlmMessages,
+        messages: webLlmMessages as any,
         temperature: options?.temperature ?? 0.7,
         stream: true,
       });

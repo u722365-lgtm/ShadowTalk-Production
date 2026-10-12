@@ -64,8 +64,8 @@ interface ChatHeaderProps {
   onToggleSidebar: () => void;
   onSignOut: () => void;
   onOpenCanvas: (type: "document" | "code") => void;
-  aiProvider: AIProvider;
-  onProviderChange: (provider: AIProvider) => void;
+  aiProvider?: AIProvider;
+  onProviderChange?: (provider: AIProvider) => void;
   hasKeyForProvider?: (provider: AIProvider) => boolean;
   maxChats: string;
   dailyChats: number;
