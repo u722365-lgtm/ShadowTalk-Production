@@ -118,7 +118,7 @@ export function mergeChangelogWithCms(
       version: e.version,
       title: e.title,
       summary: e.description,
-      publishedAt: e.published_at?.slice(0, 10) ?? new Date.toISOString.slice(0, 10),
+      publishedAt: e.published_at?.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
       tags: (e.tags as string[]) ?? [],
       changes: [
         {
@@ -129,6 +129,6 @@ export function mergeChangelogWithCms(
     }));
 
   return [...PRODUCT_CHANGELOG, ...fromCms].sort(
-    (a, b) => new Date(b.publishedAt).getTime - new Date(a.publishedAt).getTime,
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 }

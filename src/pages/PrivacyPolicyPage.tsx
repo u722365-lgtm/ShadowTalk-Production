@@ -166,7 +166,7 @@ If you have questions, feedback, or privacy-related requests, please contact our
 ];
 
 export const PrivacyPolicyPage = () => {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const lastUpdated = "February 28, 2026";
   const [activeSection, setActiveSection] = useState<string>("section-1");
 

@@ -15,7 +15,7 @@ export const ReferralModal = ({ isOpen, onClose }: ReferralModalProps) => {
   const [copied, setCopied] = useState(false);
 
   // Generate a fake referral link for now, could be real with user UID
-  const referralLink = `https://www.shadowtalk-ai.com/?ref=${user?.uid || 'guest_invite_5k'}`;
+  const referralLink = `https://www.shadowtalk-ai.com/?ref=${((user as any)?.uid ?? (user as any)?.id) || 'guest_invite_5k'}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);

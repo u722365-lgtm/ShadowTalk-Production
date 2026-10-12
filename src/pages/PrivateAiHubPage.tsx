@@ -63,7 +63,7 @@ const compareRows: Array<{ feature: string; shadow: string; chatgpt: string; cla
 
 export default function PrivateAiHubPage() {
   const structuredData = [
-    getSoftwareApplicationSchema,
+    getSoftwareApplicationSchema(),
     getFAQSchema([...CHATBOT_FAQ]),
     getSpeakableSchema(["h1", "[data-speakable]"]),
   ];

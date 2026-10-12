@@ -30,7 +30,7 @@ const PILLARS = [
 
 const AboutInspire = () => {
   const [wordIndex, setWordIndex] = useState(0);
-  const { scrollYProgress } = useScroll;
+  const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0.15, 0.45], [80, -40]);
   const opacity = useTransform(scrollYProgress, [0.12, 0.35], [0.4, 1]);
 

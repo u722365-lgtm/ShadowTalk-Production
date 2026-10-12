@@ -40,7 +40,7 @@ const tableRowVariants = {
 const CompetitiveComparison = () => {
   const tableRef = useRef(null);
   const tableInView = useInView(tableRef, { once: true, margin: "-80px" });
-  const { hoverLift, variants, viewport } = useLandingMotion;
+  const { hoverLift, variants, viewport } = useLandingMotion();
 
   const detailedComparisons = [
     {
@@ -98,7 +98,7 @@ const CompetitiveComparison = () => {
 
   const freeFeatures = [
     { icon: Sparkles, label: "Agentic Task Runner", competitor: "Others: paid agents" },
-    { icon: MessageCircle, label: `${FREE_TIER_DAILY.messages.toLocaleString} messages/day`, competitor: "Others: strict limits" },
+    { icon: MessageCircle, label: `${FREE_TIER_DAILY.messages.toLocaleString()} messages/day`, competitor: "Others: strict limits" },
     { icon: Search, label: "5 deep research/day", competitor: "Others: severe quotas" },
     { icon: Image, label: "4 images/day", competitor: "Others: no free images" },
   ];

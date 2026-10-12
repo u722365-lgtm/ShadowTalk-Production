@@ -38,7 +38,7 @@ export async function getLocalEngine(
     };
 
     enginePromise = CreateMLCEngine(WEBGPU_MODEL, {
-      appConfig: customAppConfig,
+      appConfig: customAppConfig as any,
       initProgressCallback: (report: InitProgressReport) => {
         if (_progressCallback) _progressCallback(report);
       }

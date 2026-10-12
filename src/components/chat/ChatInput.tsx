@@ -30,8 +30,8 @@ interface ChatInputProps {
   isLoading: boolean;
   isListening: boolean;
   isSpeaking?: boolean;
-  onToggleVoice: () => void;
-  onOpenImageGenerator: () => void;
+  onToggleVoice?: () => void;
+  onOpenImageGenerator?: () => void;
   onStopGeneration: () => void;
   selectedFile: { type: "image" | "file"; data: string; name: string; mimeType: string } | null;
   onFileSelect: (file: { type: "image" | "file"; data: string; name: string; mimeType: string } | null) => void;
@@ -333,7 +333,7 @@ const ChatInputInner = ({
               mode={chatMode}
               onModeChange={(mode) => {
                 onModeChange(mode);
-                if (mode === "image") onOpenImageGenerator();
+                if (mode === "image") onOpenImageGenerator?.();
               }}
               disabled={isLoading}
             />

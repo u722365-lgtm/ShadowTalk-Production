@@ -233,9 +233,9 @@ function ChatEmptyStateInner({
                 transition={spring}
                 onClick={() => {
                   settingsHapticTick();
-                  if (studio.actionKey === "documentStudio" && onOpenDocumentStudio) {
+                  if ((studio.actionKey as string) === "documentStudio" && onOpenDocumentStudio) {
                     onOpenDocumentStudio();
-                  } else if (studio.actionKey === "imageStudio" && onOpenImageStudio) {
+                  } else if ((studio.actionKey as string) === "imageStudio" && onOpenImageStudio) {
                     onOpenImageStudio();
                   } else if (studio.actionKey === "deepResearch" && onOpenDeepResearch) {
                     onOpenDeepResearch();
