@@ -263,9 +263,9 @@ export const HelpCenterPage = () => {
       const query = searchQuery.toLowerCase().trim();
       const matchesQuery =
         !query ||
-        article.title.toLowerCase.includes(query) ||
-        article.summary.toLowerCase.includes(query) ||
-        article.tags.some((t) => t.toLowerCase.includes(query));
+        article.title.toLowerCase().includes(query) ||
+        article.summary.toLowerCase().includes(query) ||
+        article.tags.some((t) => t.toLowerCase().includes(query));
       return matchesCat && matchesQuery;
     });
   }, [searchQuery, activeCategory]);

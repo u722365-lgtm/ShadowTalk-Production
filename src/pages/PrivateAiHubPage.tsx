@@ -13,9 +13,9 @@ import { SEOHead } from "@/components/SEOHead";
 import GeoCanonicalSummaries from "@/components/seo/GeoCanonicalSummaries";
 import {
   PAGE_SEO,
-  getFAQSchema,
-  getSpeakableSchema,
-  getSoftwareApplicationSchema,
+  getFAQSchema(),
+  getSpeakableSchema(),
+  getSoftwareApplicationSchema(),
   CHATBOT_FAQ,
 } from "@/lib/seo";
 
@@ -63,7 +63,7 @@ const compareRows: Array<{ feature: string; shadow: string; chatgpt: string; cla
 
 export default function PrivateAiHubPage() {
   const structuredData = [
-    getSoftwareApplicationSchema,
+    getSoftwareApplicationSchema(),
     getFAQSchema([...CHATBOT_FAQ]),
     getSpeakableSchema(["h1", "[data-speakable]"]),
   ];

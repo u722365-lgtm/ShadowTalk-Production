@@ -163,8 +163,8 @@ export const FAQPage = () => {
       const q = searchQuery.toLowerCase().trim();
       const matchesQuery =
         !q ||
-        item.question.toLowerCase.includes(q) ||
-        item.answer.toLowerCase.includes(q);
+        item.question.toLowerCase().includes(q) ||
+        item.answer.toLowerCase().includes(q);
       return matchesCat && matchesQuery;
     });
   }, [allFaqs, activeCategory, searchQuery]);

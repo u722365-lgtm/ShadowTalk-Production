@@ -530,5 +530,5 @@ export function docSearchBlob(parts: {
     ...parts.faq.map((f) => `${f.q} ${f.a}`),
     ...parts.troubleshooting.map((t) => `${t.issue} ${t.solutions.join(" ")}`),
     ...parts.workspace.map((w) => `${w.title} ${w.items.join(" ")}`),
-  ].join(" ").toLowerCase;
+  ].join(" ").toLowerCase();
 }
