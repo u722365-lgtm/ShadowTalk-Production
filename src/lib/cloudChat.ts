@@ -7,6 +7,7 @@
 
 import { cloudAnonKey, cloudFunctionUrl } from "@/lib/cloudConfig";
 import { fbAuth } from "@/integrations/firebase/app";
+import { getByokConfig, streamByokChat } from "@/lib/byok";
 
 export type CloudChatContent =
   | string
@@ -50,8 +51,32 @@ function getFunctionsUrl(): string {
   return cloudFunctionUrl("chat");
 }
 
-/** Stream a chat completion from the Lovable Cloud AI edge function. */
+/**
+ * Stream a chat reply. Uses the user's own key (BYOK) when set to "always";
+ * otherwise uses ShadowTalk's AI and falls back to the user's key on failure.
+ */
 export async function streamCloudChat(
+  messages: CloudChatMessage[],
+  opts: CloudChatOptions = {},
+): Promise<CloudChatResult> {
+  const byok = getByokConfig();
+  if (byok?.mode === "always") return streamByokChat(byok, messages, opts);
+
+  let primary: CloudChatResult;
+  try {
+    primary = await streamBuiltInChat(messages, opts);
+  } catch (err) {
+    if ((err as Error)?.name === "AbortError" || !byok) throw err;
+    primary = { content: "", error: "Network error" };
+  }
+  if (byok && primary.error && !primary.content && !opts.signal?.aborted) {
+    const fallback = await streamByokChat(byok, messages, opts);
+    return fallback.content ? fallback : { ...fallback, error: `${primary.error} — and your own key also failed: ${fallback.error}` };
+  }
+  return primary;
+}
+
+async function streamBuiltInChat(
   messages: CloudChatMessage[],
   opts: CloudChatOptions = {},
 ): Promise<CloudChatResult> {
@@ -105,8 +130,8 @@ export async function streamCloudChat(
     } catch {
       /* keep default */
     }
-    if (resp.status === 429) message = "Rate limit reached — please try again in a moment.";
-    if (resp.status === 402) message = message || "AI credits exhausted.";
+    if (resp?.status === 429) message = "Rate limit reached — please try again in a moment.";
+    if (resp?.status === 402) message = message || "AI credits exhausted.";
     return { content: "", error: message };
   }
 

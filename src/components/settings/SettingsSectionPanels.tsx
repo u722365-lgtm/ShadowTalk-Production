@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { SettingsGeneralSection } from "@/components/settings/SettingsGeneralSection";
 import { SettingsDefaultModelsCard } from "@/components/settings/SettingsDefaultModelsCard";
+import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
 import { SettingsSectionHeader } from "@/components/settings/SettingsSectionHeader";
 import { SettingsStagger, SettingsStaggerItem } from "@/components/settings/SettingsStagger";
 import { CustomInstructionsProfileCard } from "@/components/profile/CustomInstructionsProfileCard";
@@ -101,6 +102,11 @@ export function SettingsSectionPanels({
         <SettingsStaggerItem>
           <AnimatedCard>
             <SettingsDefaultModelsCard />
+          </AnimatedCard>
+        </SettingsStaggerItem>
+        <SettingsStaggerItem>
+          <AnimatedCard>
+            <SettingsByokCard />
           </AnimatedCard>
         </SettingsStaggerItem>
         <SettingsStaggerItem>
