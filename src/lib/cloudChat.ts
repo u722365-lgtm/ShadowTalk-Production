@@ -130,8 +130,8 @@ async function streamBuiltInChat(
     } catch {
       /* keep default */
     }
-    if (resp.status === 429) message = "Rate limit reached — please try again in a moment.";
-    if (resp.status === 402) message = message || "AI credits exhausted.";
+    if (resp?.status === 429) message = "Rate limit reached — please try again in a moment.";
+    if (resp?.status === 402) message = message || "AI credits exhausted.";
     return { content: "", error: message };
   }
 
