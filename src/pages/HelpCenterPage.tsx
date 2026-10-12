@@ -252,7 +252,7 @@ const CATEGORIES = [
 ];
 
 export const HelpCenterPage = () => {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
@@ -260,7 +260,7 @@ export const HelpCenterPage = () => {
   const filteredArticles = useMemo(() => {
     return HELP_ARTICLES.filter((article) => {
       const matchesCat = activeCategory === "all" || article.category === activeCategory;
-      const query = searchQuery.toLowerCase.trim;
+      const query = searchQuery.toLowerCase().trim();
       const matchesQuery =
         !query ||
         article.title.toLowerCase.includes(query) ||
@@ -492,7 +492,7 @@ export const HelpCenterPage = () => {
               <ScrollArea className="p-6 pt-4 flex-1">
                 <div className="prose prose-invert prose-sm max-w-none space-y-4 text-foreground/90 leading-relaxed font-sans">
                   {selectedArticle.content.split("\n\n").map((block, i) => {
-                    const trimmed = block.trim;
+                    const trimmed = block.trim();
                     if (trimmed.startsWith("### ")) {
                       return <h3 key={i} className="text-lg font-bold text-foreground mt-4 mb-2">{trimmed.replace("### ", "")}</h3>;
                     }

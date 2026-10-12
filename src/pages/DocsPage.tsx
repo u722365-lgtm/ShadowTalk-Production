@@ -232,7 +232,7 @@ const DocsPage = () => {
       list.push(route);
       groups.set(group, list);
     }
-    return [...groups.entries];
+    return [...groups.entries()];
   }, [docRoutes]);
 
   const activeTab = q

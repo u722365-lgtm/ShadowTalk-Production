@@ -127,7 +127,7 @@ const CATEGORY_MAP = [
 ];
 
 export const FAQPage = () => {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [accordionValues, setAccordionValues] = useState<string[]>([]);
@@ -160,7 +160,7 @@ export const FAQPage = () => {
   const filteredFaqs = useMemo(() => {
     return allFaqs.filter((item) => {
       const matchesCat = activeCategory === "all" || item.category === activeCategory;
-      const q = searchQuery.toLowerCase.trim;
+      const q = searchQuery.toLowerCase().trim();
       const matchesQuery =
         !q ||
         item.question.toLowerCase.includes(q) ||
@@ -330,7 +330,7 @@ export const FAQPage = () => {
                     <AccordionTrigger className="text-left font-semibold text-base sm:text-lg text-foreground hover:text-primary transition-colors py-4">
                       <div className="flex items-start gap-3 pr-4">
                         <span className="text-xs font-mono text-primary/70 mt-1">
-                          {(idx + 1).toString.padStart(2, "0")}.
+                          {(idx + 1).toString().padStart(2, "0")}.
                         </span>
                         <span>{faq.question}</span>
                       </div>
