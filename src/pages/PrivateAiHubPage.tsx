@@ -13,9 +13,9 @@ import { SEOHead } from "@/components/SEOHead";
 import GeoCanonicalSummaries from "@/components/seo/GeoCanonicalSummaries";
 import {
   PAGE_SEO,
-  getFAQSchema(),
-  getSpeakableSchema(),
-  getSoftwareApplicationSchema(),
+  getFAQSchema,
+  getSpeakableSchema,
+  getSoftwareApplicationSchema,
   CHATBOT_FAQ,
 } from "@/lib/seo";
 
