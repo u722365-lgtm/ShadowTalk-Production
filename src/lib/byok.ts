@@ -5,7 +5,7 @@
  */
 import type { CloudChatMessage, CloudChatOptions, CloudChatResult } from "@/lib/cloudChat";
 
-export type ByokProvider = "openai" | "groq" | "openrouter";
+export type ByokProvider = "openai" | "groq" | "openrouter" | "gemini";
 export type ByokMode = "fallback" | "always";
 
 export interface ByokConfig {
@@ -19,6 +19,7 @@ export const BYOK_PROVIDERS: Record<ByokProvider, { label: string; url: string; 
   openai: { label: "OpenAI", url: "https://api.openai.com/v1/chat/completions", defaultModel: "gpt-4o-mini", keyHint: "sk-..." },
   groq: { label: "Groq", url: "https://api.groq.com/openai/v1/chat/completions", defaultModel: "llama-3.3-70b-versatile", keyHint: "gsk_..." },
   openrouter: { label: "OpenRouter", url: "https://openrouter.ai/api/v1/chat/completions", defaultModel: "openai/gpt-4o-mini", keyHint: "sk-or-..." },
+  gemini: { label: "Google Gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", defaultModel: "gemini-2.0-flash", keyHint: "AIza..." },
 };
 
 const STORAGE_KEY = "shadowtalk.byok.v1";
