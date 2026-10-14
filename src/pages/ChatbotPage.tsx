@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ChatMode } from "@/components/chat/ModeSelector";
 type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
