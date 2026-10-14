@@ -218,6 +218,7 @@ const ChatbotPage = () => {
   
   // Modals
   const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [showByok, setShowByok] = useState(false);
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
