@@ -90,6 +90,7 @@ const ChatHeaderInner = ({
   variant = "full",
   toolsMenuOpen,
   onToolsMenuOpenChange,
+  onOpenByok,
 }: ChatHeaderProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
