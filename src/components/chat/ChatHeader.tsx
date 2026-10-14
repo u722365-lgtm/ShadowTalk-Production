@@ -72,6 +72,7 @@ interface ChatHeaderProps {
   variant?: "full" | "minimal";
   toolsMenuOpen?: boolean;
   onToolsMenuOpenChange?: (open: boolean) => void;
+  onOpenByok?: () => void;
 }
 
 
