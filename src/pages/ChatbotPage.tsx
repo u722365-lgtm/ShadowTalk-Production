@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ChatMode } from "@/components/chat/ModeSelector";
 type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
@@ -216,6 +218,7 @@ const ChatbotPage = () => {
   
   // Modals
   const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [showByok, setShowByok] = useState(false);
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
@@ -1585,6 +1588,7 @@ Structure and Content Guidelines:
               dailyChats={messages.length}
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
+              onOpenByok={() => setShowByok(true)}
             />
           </div>
           {hasActiveChat && (
@@ -1754,6 +1758,18 @@ Structure and Content Guidelines:
             customLink={chatShareCustomLink ?? undefined}
           />
         </ChatMainPanel>
+
+        <Dialog open={showByok} onOpenChange={setShowByok}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Your own API key (BYOK)</DialogTitle>
+              <DialogDescription>
+                Use your own AI provider key when ShadowTalk's built-in AI is down or out of credits.
+              </DialogDescription>
+            </DialogHeader>
+            <SettingsByokCard />
+          </DialogContent>
+        </Dialog>
 
 
       

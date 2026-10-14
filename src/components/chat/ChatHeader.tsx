@@ -5,7 +5,7 @@ import {
   Bot, ArrowLeft, Home, LogOut, Settings, Download, Lock, Crown, Star, Zap, Menu, 
   Search, Image, Play, Eye, Wand2, Compass, FileText, Mic, AudioLines, MoreVertical, Music,
   LayoutGrid, Sparkles, MessageCircle, Briefcase, Heart, Laugh, Lightbulb,
-  Scale, Target, HelpCircle, Share2, Plus, Pin, Mail
+  Scale, Target, HelpCircle, Share2, Plus, Pin, Mail, KeyRound
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -72,6 +72,7 @@ interface ChatHeaderProps {
   variant?: "full" | "minimal";
   toolsMenuOpen?: boolean;
   onToolsMenuOpenChange?: (open: boolean) => void;
+  onOpenByok?: () => void;
 }
 
 
@@ -89,6 +90,7 @@ const ChatHeaderInner = ({
   variant = "full",
   toolsMenuOpen,
   onToolsMenuOpenChange,
+  onOpenByok,
 }: ChatHeaderProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -114,6 +116,17 @@ const ChatHeaderInner = ({
           >
             <Home className="h-3.5 w-3.5" />
             Home
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onOpenByok}
+            className="gap-1.5 rounded-full border-border/60 bg-background/70 backdrop-blur-md shadow-sm h-8 px-3 text-xs"
+            aria-label="Add your own API key"
+          >
+            <KeyRound className="h-3.5 w-3.5" />
+            BYOK
           </Button>
           {showUpgrade && (
             <Button
@@ -150,6 +163,17 @@ const ChatHeaderInner = ({
 
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onOpenByok}
+              className="gap-1.5 rounded-full border-border/60 bg-background/70 backdrop-blur-md shadow-sm h-9 px-3 text-xs"
+              aria-label="Add your own API key"
+            >
+              <KeyRound className="h-3.5 w-3.5" />
+              BYOK
+            </Button>
             {showUpgrade && (
               <Button
                 onClick={() => navigate("/pricing")}
