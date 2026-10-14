@@ -1759,6 +1759,18 @@ Structure and Content Guidelines:
           />
         </ChatMainPanel>
 
+        <Dialog open={showByok} onOpenChange={setShowByok}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Your own API key (BYOK)</DialogTitle>
+              <DialogDescription>
+                Use your own AI provider key when ShadowTalk's built-in AI is down or out of credits.
+              </DialogDescription>
+            </DialogHeader>
+            <SettingsByokCard />
+          </DialogContent>
+        </Dialog>
+
 
       
 
