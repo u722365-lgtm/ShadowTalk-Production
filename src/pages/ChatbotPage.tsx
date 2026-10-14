@@ -1588,6 +1588,7 @@ Structure and Content Guidelines:
               dailyChats={messages.length}
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
+              onOpenByok={() => setShowByok(true)}
             />
           </div>
           {hasActiveChat && (
