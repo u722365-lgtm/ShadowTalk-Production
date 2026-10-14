@@ -53,7 +53,7 @@ function friendlyError(err: any): Error {
     'auth/operation-not-allowed':
       'This sign-in method is not enabled for the project yet.',
     'auth/unauthorized-domain':
-      'This domain is not authorized for authentication. (Configured in Firebase Auth Authorized Domains).',
+      `Sign-in isn't allowed on ${typeof window !== 'undefined' ? window.location.hostname : 'this site'} yet. Add it under Firebase → Authentication → Settings → Authorized domains.`,
     'auth/popup-blocked':
       'Sign-in popup was blocked by your browser. Please allow popups for this site or try again.',
     'auth/popup-closed-by-user': 'Sign-in popup was closed before completing.',
@@ -227,9 +227,8 @@ export function createAuthAdapter() {
           };
         } catch (popupErr: any) {
           if (
-            popupErr?.code === 'auth/popup-blocked' ||
-            popupErr?.code === 'auth/cancelled-popup-request' ||
-            popupErr?.code === 'auth/popup-closed-by-user'
+            popupErr?.code === 'auth/popup-blocked' &&
+            window.self === window.top
           ) {
             await signInWithRedirect(fbAuth(), p as any);
             return { data: { provider, url: window.location.href, user: null, session: null }, error: null };
