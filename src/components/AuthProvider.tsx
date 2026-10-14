@@ -123,36 +123,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!mounted) return;
         if (cloudSession?.user) {
           hydrate(cloudSession);
-        } else if (!hasExplicitSignOut()) {
-          // Stay logged in across restarts/refreshes if user hasn't explicitly signed out
-          const local = await restoreOrCreateSession();
-          if (mounted && local?.user) {
-            applySession(local);
-          } else if (mounted) {
-            hydrate(null);
-          }
         } else {
           hydrate(null);
         }
 
         const { data } = backend.auth.onAuthStateChange((_event: string, next: any) => {
           if (!mounted) return;
-          if (next?.user) {
-            hydrate(next);
-          } else if (hasExplicitSignOut()) {
-            hydrate(null);
-          }
+          hydrate(next?.user ? next : null);
         });
         if (mounted) authSubscription = data?.subscription ?? null;
       } catch (error) {
         console.warn('[Auth] session bootstrap failed:', error);
-        if (!hasExplicitSignOut()) {
-          const local = await restoreOrCreateSession();
-          if (mounted && local?.user) {
-            applySession(local);
-            return;
-          }
-        }
         if (mounted) {
           applySession(null);
           setUserPlan('free');
