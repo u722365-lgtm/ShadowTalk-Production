@@ -5,7 +5,7 @@ import {
   Bot, ArrowLeft, Home, LogOut, Settings, Download, Lock, Crown, Star, Zap, Menu, 
   Search, Image, Play, Eye, Wand2, Compass, FileText, Mic, AudioLines, MoreVertical, Music,
   LayoutGrid, Sparkles, MessageCircle, Briefcase, Heart, Laugh, Lightbulb,
-  Scale, Target, HelpCircle, Share2, Plus, Pin, Mail
+  Scale, Target, HelpCircle, Share2, Plus, Pin, Mail, KeyRound
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
