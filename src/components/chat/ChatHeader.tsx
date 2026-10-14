@@ -163,6 +163,17 @@ const ChatHeaderInner = ({
 
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onOpenByok}
+              className="gap-1.5 rounded-full border-border/60 bg-background/70 backdrop-blur-md shadow-sm h-9 px-3 text-xs"
+              aria-label="Add your own API key"
+            >
+              <KeyRound className="h-3.5 w-3.5" />
+              BYOK
+            </Button>
             {showUpgrade && (
               <Button
                 onClick={() => navigate("/pricing")}
