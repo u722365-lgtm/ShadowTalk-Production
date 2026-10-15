@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/AuthProvider";
 import { settingsHapticTick } from "@/lib/settingsFeedback";
 import { CHAT_SIDEBAR_WIDTH_COLLAPSED, CHAT_SIDEBAR_WIDTH_EXPANDED } from "@/lib/chatSidebarNav";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -395,7 +396,7 @@ function ChatShadowSidebarInner({
                   className="min-w-0 flex-1 text-left whitespace-nowrap overflow-hidden"
                 >
                   <p className="text-[13px] font-medium text-slate-200 truncate">{formattedName}</p>
-                  <p className="text-[10px] text-cyan-400/70 truncate font-mono">Pro Plan Active</p>
+                  <p className="text-[10px] text-cyan-400/70 truncate font-mono">{userPlan === "free" ? "Free Plan" : `${userPlan.charAt(0).toUpperCase()}${userPlan.slice(1)} Plan Active`}</p>
                 </motion.div>
               </button>
             </TooltipTrigger>
