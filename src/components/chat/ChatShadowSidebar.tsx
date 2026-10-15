@@ -77,6 +77,7 @@ function ChatShadowSidebarInner({
   onOpenSettings,
 }: ChatShadowSidebarProps) {
   const navigate = useNavigate();
+  const { userPlan } = useAuth();
   const isCollapsed = forceExpanded ? false : collapsed;
   const width = isCollapsed ? CHAT_SIDEBAR_WIDTH_COLLAPSED : CHAT_SIDEBAR_WIDTH_EXPANDED;
   const [hoveredId, setHoveredId] = useState<string | null>(null);
