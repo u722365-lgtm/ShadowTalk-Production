@@ -139,7 +139,7 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 select-none ${
         isUser 
-          ? isClean ? 'bg-[#2f2f2f]' : 'bg-[#1e1f20]/60 border border-border/15'
+          ? 'bg-primary text-primary-foreground'
           : 'bg-transparent'
       }`}>
         {isUser 
@@ -189,8 +189,8 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
         <div className={`w-full transition-all duration-300 ${
           isUser 
             ? isClean
-              ? 'bg-[#2f2f2f] text-foreground rounded-[22px] rounded-br-md px-4 py-2.5 max-w-max'
-              : 'bg-[#1e1f20]/45 border border-border/10 text-foreground rounded-[28px] rounded-tr-sm px-6 py-3.5 shadow-sm max-w-max'
+              ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md px-4 py-2.5 max-w-max'
+              : 'bg-primary text-primary-foreground rounded-[28px] rounded-tr-sm px-6 py-3.5 shadow-sm max-w-max'
             : isClean
               ? 'bg-transparent border-none shadow-none px-0 py-0.5 article-response'
               : 'bg-transparent border-none shadow-none px-0 py-1 article-response'

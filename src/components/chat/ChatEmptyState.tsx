@@ -120,27 +120,17 @@ function ChatEmptyStateInner({
       animate="visible"
       className="shadowtalk-chat-empty relative py-4 sm:py-8"
     >
-      {/* Dynamic ambient bloom behind the greeting */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-[500px] w-[800px] max-w-[130vw] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px] opacity-60"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(99, 102, 241, 0.18), rgba(6, 182, 212, 0.12) 40%, rgba(168, 85, 247, 0.06) 65%, transparent 75%)",
-        }}
-      />
-
       {/* Intelligence Status Badge */}
       <motion.div
         variants={staggerItem}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-4 shadow-[0_2px_12px_rgba(0,0,0,0.25)] hover:border-white/20 transition-colors"
+        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border/60 bg-card/60 backdrop-blur-md mb-4 shadow-sm hover:border-primary/40 transition-colors"
       >
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-50" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
         </span>
-        <span className="text-[12px] font-medium tracking-wide text-slate-300">
-          ShadowTalk Studio <span className="text-white/30">·</span> Multi-Model Intelligence
+        <span className="text-[12px] font-medium tracking-wide text-muted-foreground">
+          ShadowTalk Studio <span className="text-border">·</span> Multi-Model Intelligence
         </span>
       </motion.div>
 
@@ -150,7 +140,7 @@ function ChatEmptyStateInner({
           {timeGreeting}, <span className="text-foreground font-semibold">{formattedName}</span>
         </p>
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.12] text-balance">
-          <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent drop-shadow-sm">
+          <span className="gradient-text">
             What would you like to create today?
           </span>
         </h1>
@@ -162,11 +152,6 @@ function ChatEmptyStateInner({
         className="w-full max-w-3xl mb-7 relative px-2 sm:px-0"
         style={composerDockStyle}
       >
-        {/* Subtle luminous ambient aura behind the composer */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -inset-1 rounded-[32px] bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-purple-500/20 blur-xl opacity-60 transition-opacity duration-300 group-hover:opacity-90"
-        />
         <div className="relative">
           {children}
         </div>
@@ -183,7 +168,7 @@ function ChatEmptyStateInner({
                 settingsHapticTick();
                 if (onExecuteDemo) onExecuteDemo("Research the latest developments in AI agents and summarize the key trends.");
               }}
-              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-emerald-500/50 transition-all overflow-hidden text-center"
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-card/60 hover:bg-card/90 border border-border/60 hover:border-primary/40 transition-all overflow-hidden text-center"
             >
               <Search className="h-6 w-6 text-emerald-400 mb-1" />
               <span className="text-base font-semibold text-foreground">Research</span>
@@ -196,7 +181,7 @@ function ChatEmptyStateInner({
                 settingsHapticTick();
                 if (onExecuteDemo) onExecuteDemo("Create a Python tool that analyzes a CSV and generates insights.");
               }}
-              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-amber-500/50 transition-all overflow-hidden text-center"
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-card/60 hover:bg-card/90 border border-border/60 hover:border-primary/40 transition-all overflow-hidden text-center"
             >
               <Code2 className="h-6 w-6 text-amber-400 mb-1" />
               <span className="text-base font-semibold text-foreground">Build</span>
@@ -209,7 +194,7 @@ function ChatEmptyStateInner({
                 settingsHapticTick();
                 if (onExecuteDemo) onExecuteDemo("Analyze this sample dataset and explain the most important patterns.");
               }}
-              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-900/40 hover:bg-slate-800/60 border border-white/10 hover:border-blue-500/50 transition-all overflow-hidden text-center"
+              className="group relative flex flex-col items-center gap-3 p-5 rounded-2xl bg-card/60 hover:bg-card/90 border border-border/60 hover:border-primary/40 transition-all overflow-hidden text-center"
             >
               <BarChart3 className="h-6 w-6 text-blue-400 mb-1" />
               <span className="text-base font-semibold text-foreground">Analyze</span>
@@ -247,11 +232,11 @@ function ChatEmptyStateInner({
                 }}
                 className={cn(
                   "group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl",
-                  "border border-white/[0.08] bg-slate-900/50 dark:bg-slate-950/50 backdrop-blur-xl",
-                  "hover:bg-slate-900/80 dark:hover:bg-slate-900/80 hover:border-white/20",
+                  "border border-border/60 bg-card/55 backdrop-blur-xl",
+                  "hover:bg-card/85 hover:border-primary/40",
                   "transition-all duration-200 text-left overflow-hidden",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
-                  "shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+                  "shadow-sm hover:shadow-md"
                 )}
               >
                 {/* Subtle hover gradient bloom */}
@@ -308,8 +293,8 @@ function ChatEmptyStateInner({
             }}
             className={cn(
               "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium",
-              "border border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.07] text-muted-foreground hover:text-foreground",
-              "hover:border-white/15 transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
+              "border border-border/50 bg-card/50 hover:bg-card/80 text-muted-foreground hover:text-foreground",
+              "hover:border-primary/40 transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
             )}
           >
             <Sparkles className="h-3 w-3 text-primary/70 shrink-0" />
