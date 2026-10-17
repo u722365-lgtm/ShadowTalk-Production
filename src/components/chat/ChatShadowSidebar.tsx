@@ -114,12 +114,12 @@ function ChatShadowSidebarInner({
         className={cn(
           "shrink-0 flex flex-col relative z-30 overflow-hidden select-none will-change-[width]",
           mobileDrawer
-            ? "flex h-full min-h-0 bg-[#070912]"
-            : "hidden md:flex h-full min-h-0 bg-[#070a12]/95 border-r border-white/[0.08] backdrop-blur-2xl shadow-[4px_0_24px_rgba(0,0,0,0.4)]"
+            ? "flex h-full min-h-0 bg-sidebar"
+            : "hidden md:flex h-full min-h-0 bg-sidebar/95 border-r border-sidebar-border backdrop-blur-2xl shadow-lg"
         )}
       >
         {/* Top Header: Hamburger, Brand Title & Pro Badge */}
-        <div className="flex h-[60px] shrink-0 items-center px-3.5 gap-2.5 border-b border-white/[0.04] overflow-hidden">
+        <div className="flex h-[60px] shrink-0 items-center px-3.5 gap-2.5 border-b border-sidebar-border overflow-hidden">
           {onToggleCollapse && !mobileDrawer && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -129,7 +129,7 @@ function ChatShadowSidebarInner({
                     settingsHapticTick();
                     onToggleCollapse();
                   }}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 hover:text-cyan-300 hover:bg-white/5 active:scale-95 transition-all"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-sidebar-primary hover:bg-sidebar-accent active:scale-95 transition-all"
                   aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 >
                   <Menu className="h-4.5 w-4.5" />
@@ -150,13 +150,13 @@ function ChatShadowSidebarInner({
               isCollapsed && "pointer-events-none"
             )}
           >
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400/20 via-indigo-500/20 to-purple-600/20 border border-cyan-500/30">
-              <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
             </div>
-            <span className="text-[16px] font-bold bg-gradient-to-r from-white via-cyan-100 to-indigo-200 bg-clip-text text-transparent tracking-tight">
+            <span className="text-[16px] font-bold gradient-text tracking-tight">
               ShadowTalk
             </span>
-            <span className="ml-auto text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+            <span className="ml-auto text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
               Pro
             </span>
           </motion.div>
@@ -178,19 +178,18 @@ function ChatShadowSidebarInner({
                 transition={{ duration: 0.25, ease: SIDEBAR_EASE }}
                 whileHover={{
                   scale: 1.02,
-                  boxShadow: "0 0 20px rgba(6,182,212,0.2)",
-                  borderColor: "rgba(6,182,212,0.4)",
+                  boxShadow: "var(--shadow-button)",
+                  borderColor: "hsl(var(--primary) / 0.4)",
                 }}
                 whileTap={{ scale: 0.98 }}
                 className={cn(
                   "group relative flex items-center rounded-xl overflow-hidden h-10 mx-auto",
-                  "bg-gradient-to-r from-cyan-500/15 via-indigo-500/10 to-purple-500/15",
-                  "border border-cyan-500/30 text-cyan-200 hover:text-white",
+                  "bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground",
                   isCollapsed ? "justify-center px-0" : "px-3.5 justify-between"
                 )}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <Plus className="h-4 w-4 shrink-0 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" />
+                  <Plus className="h-4 w-4 shrink-0 text-primary group-hover:rotate-90 transition-transform duration-200" />
                   <motion.span
                     animate={{
                       opacity: isCollapsed ? 0 : 1,
@@ -203,7 +202,7 @@ function ChatShadowSidebarInner({
                   </motion.span>
                 </div>
                 {!isCollapsed && (
-                  <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-black/30 border border-white/10 text-[10px] text-cyan-300/70 font-mono">
+                  <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/60 border border-border text-[10px] text-primary/70 font-mono">
                     <Command className="h-2.5 w-2.5" />K
                   </kbd>
                 )}
@@ -247,7 +246,7 @@ function ChatShadowSidebarInner({
                 className="overflow-hidden space-y-2 pt-1"
                 style={{ pointerEvents: isCollapsed ? "none" : "auto" }}
               >
-                <div className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400/50 whitespace-nowrap">
+                <div className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-sidebar-primary/60 whitespace-nowrap">
                   Recent Conversations
                 </div>
 
@@ -257,7 +256,7 @@ function ChatShadowSidebarInner({
                     if (!items?.length) return null;
                     return (
                       <div key={group} className="space-y-0.5">
-                        <div className="px-3 py-1 text-[10px] font-semibold text-slate-500/70 whitespace-nowrap">{group}</div>
+                        <div className="px-3 py-1 text-[10px] font-semibold text-muted-foreground/70 whitespace-nowrap">{group}</div>
                         {items.map((conv) => {
                           const isActive = currentConversationId === conv.id;
                           const isHovered = hoveredId === conv.id;
@@ -277,14 +276,14 @@ function ChatShadowSidebarInner({
                                 className={cn(
                                   "relative w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors duration-150 group overflow-hidden",
                                   isActive
-                                    ? "bg-cyan-500/15 text-cyan-200 border border-cyan-500/30 font-medium"
-                                    : "text-slate-400 hover:text-slate-100 hover:bg-white/[0.05]"
+                                    ? "bg-sidebar-accent text-sidebar-primary border border-sidebar-border font-medium"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
                                 )}
                               >
                                 <MessageSquare
                                   className={cn(
                                     "h-3.5 w-3.5 shrink-0 transition-colors",
-                                    isActive ? "text-cyan-400" : "text-slate-500 group-hover:text-cyan-300"
+                                    isActive ? "text-sidebar-primary" : "text-muted-foreground group-hover:text-sidebar-primary"
                                   )}
                                 />
                                 <span className="flex-1 text-[12.5px] truncate pr-4 whitespace-nowrap">{conv.title || "Untitled chat"}</span>
@@ -297,7 +296,7 @@ function ChatShadowSidebarInner({
                                 >
                                   <button
                                     type="button"
-                                    className="p-1 rounded-md hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-300 transition-colors"
+                                    className="p-1 rounded-md hover:bg-primary/15 text-muted-foreground hover:text-primary transition-colors"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       onArchive?.(conv.id);
@@ -332,7 +331,7 @@ function ChatShadowSidebarInner({
         </ScrollArea>
 
         {/* Bottom Profile & Settings Bar */}
-        <div className="shrink-0 p-2.5 flex flex-col gap-1 border-t border-white/[0.06] bg-[#070a12]/95 backdrop-blur-md overflow-hidden">
+        <div className="shrink-0 p-2.5 flex flex-col gap-1 border-t border-sidebar-border bg-sidebar/95 backdrop-blur-md overflow-hidden">
           {/* Settings Button */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -347,7 +346,7 @@ function ChatShadowSidebarInner({
                   }
                 }}
                 className={cn(
-                  "flex items-center rounded-xl text-slate-400 hover:text-cyan-300 hover:bg-white/5 active:scale-98 transition-colors h-10 overflow-hidden",
+                   "flex items-center rounded-xl text-muted-foreground hover:text-sidebar-primary hover:bg-sidebar-accent active:scale-98 transition-colors h-10 overflow-hidden",
                   isCollapsed ? "w-10 justify-center mx-auto px-0" : "w-full px-2.5 gap-2.5"
                 )}
               >
@@ -378,15 +377,15 @@ function ChatShadowSidebarInner({
                   onNavigate?.();
                 }}
                 className={cn(
-                  "flex items-center rounded-xl hover:bg-white/5 active:scale-98 transition-colors h-10 overflow-hidden",
+                  "flex items-center rounded-xl hover:bg-sidebar-accent active:scale-98 transition-colors h-10 overflow-hidden",
                   isCollapsed ? "w-10 justify-center mx-auto px-0" : "w-full px-2 gap-2.5"
                 )}
               >
                 <div className="relative shrink-0">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-indigo-600 text-[11px] font-bold text-white shadow-sm ring-1 ring-white/20">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground shadow-sm ring-1 ring-border">
                     {userInitials || "U"}
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#070a12]" />
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-success ring-2 ring-sidebar" />
                 </div>
                 <motion.div
                   animate={{
@@ -396,8 +395,8 @@ function ChatShadowSidebarInner({
                   transition={{ duration: 0.18, ease: SIDEBAR_EASE }}
                   className="min-w-0 flex-1 text-left whitespace-nowrap overflow-hidden"
                 >
-                  <p className="text-[13px] font-medium text-slate-200 truncate">{formattedName}</p>
-                  <p className="text-[10px] text-cyan-400/70 truncate font-mono">{userPlan === "free" ? "Free Plan" : `${userPlan.charAt(0).toUpperCase()}${userPlan.slice(1)} Plan Active`}</p>
+                  <p className="text-[13px] font-medium text-sidebar-foreground truncate">{formattedName}</p>
+                  <p className="text-[10px] text-sidebar-primary/70 truncate font-mono">{userPlan === "free" ? "Free Plan" : `${userPlan.charAt(0).toUpperCase()}${userPlan.slice(1)} Plan Active`}</p>
                 </motion.div>
               </button>
             </TooltipTrigger>

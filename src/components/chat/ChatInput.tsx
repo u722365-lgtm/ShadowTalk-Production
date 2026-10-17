@@ -192,7 +192,7 @@ const ChatInputInner = ({
       <div className="relative w-full">
         {voiceBanner}
         <div className={isEmptyState ? "w-full" : "w-full px-0 py-0"}>
-          <div className="shadowtalk-composer group relative flex flex-col justify-between w-full rounded-2xl sm:rounded-3xl border border-white/[0.12] bg-[#0c121e]/90 backdrop-blur-2xl transition-all duration-200 focus-within:border-indigo-500/50 focus-within:ring-2 focus-within:ring-indigo-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="shadowtalk-composer group relative flex flex-col justify-between w-full rounded-2xl sm:rounded-3xl backdrop-blur-2xl transition-all duration-200">
             {selectedFile && (
               <div className="p-3 pb-0">
                 <FileUpload
@@ -213,7 +213,7 @@ const ChatInputInner = ({
                 onChange={(e) => onMessageChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={isListening ? "Listening..." : "Message ShadowTalk, draft a document, or generate code..."}
-                className="w-full resize-none border-0 bg-transparent p-0 text-base sm:text-[15px] text-slate-100 placeholder:text-muted-foreground/50 leading-relaxed focus-visible:ring-0 focus-visible:ring-offset-0 custom-scrollbar min-h-[44px] max-h-[220px]"
+                className="w-full resize-none border-0 bg-transparent p-0 text-base sm:text-[15px] text-foreground placeholder:text-muted-foreground/50 leading-relaxed focus-visible:ring-0 focus-visible:ring-offset-0 custom-scrollbar min-h-[44px] max-h-[220px]"
                 disabled={isLoading}
                 rows={1}
                 aria-label="Chat message"
@@ -221,7 +221,7 @@ const ChatInputInner = ({
             </div>
 
             {/* Bottom Toolbar: Tools on Left, Actions on Right */}
-            <div className="flex items-center justify-between px-3 pb-3 pt-1 border-t border-white/[0.04]">
+            <div className="flex items-center justify-between px-3 pb-3 pt-1 border-t border-border/50">
               <div className="flex items-center gap-2">
                 {!selectedFile && (
                   <TooltipProvider>
@@ -243,8 +243,8 @@ const ChatInputInner = ({
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-muted-foreground/75 bg-white/[0.03] border border-white/[0.06] select-none">
-                  <Sparkles className="h-3 w-3 text-cyan-400" />
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-muted-foreground/75 bg-card/60 border border-border/50 select-none">
+                  <Sparkles className="h-3 w-3 text-primary" />
                   <span>Quantum Studio v4.2</span>
                 </span>
               </div>
@@ -269,7 +269,7 @@ const ChatInputInner = ({
                           variant="ghost"
                           size="icon"
                           className={cn(
-                            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-white/[0.08] transition-colors",
+                            "h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors",
                             isListening && "bg-primary text-primary-foreground border-primary"
                           )}
                           disabled={isLoading}
@@ -290,8 +290,7 @@ const ChatInputInner = ({
                   onClick={() => { play('send'); onSend(); }}
                   size="icon"
                   className={cn(
-                    "h-8 w-8 rounded-full border-0 text-white transition-all duration-200 cursor-pointer shadow-md",
-                    "bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-600",
+                    "shadowtalk-composer__send",
                     "hover:scale-105 active:scale-95 hover:brightness-110",
                     "disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:brightness-100"
                   )}

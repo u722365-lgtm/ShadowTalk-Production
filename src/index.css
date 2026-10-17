@@ -584,6 +584,7 @@
   /* ShadowTalk branded chat workspace — fixed viewport, no document growth */
   .shadowtalk-chat-shell {
     @apply relative text-foreground overflow-hidden;
+    isolation: isolate;
     position: fixed;
     inset: 0;
     height: 100dvh;
@@ -618,6 +619,18 @@
     background: var(--gradient-hero);
     pointer-events: none;
     z-index: 0;
+  }
+
+  .shadowtalk-chat-ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.16) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.45;
   }
 
   .shadowtalk-chat-glow {
@@ -696,11 +709,6 @@
       transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .shadowtalk-composer.group:hover:not(:focus-within) {
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .shadowtalk-chat-shell .shadowtalk-chat-glow {
       animation: none;
@@ -709,23 +717,19 @@
 
   /* ShadowTalk Composer — flagship studio card dock */
   .shadowtalk-composer {
-    @apply relative flex flex-col justify-between w-full rounded-2xl sm:rounded-3xl border border-white/[0.12] bg-[#0c121e]/90 transition-all duration-200 overflow-hidden backdrop-blur-2xl;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    @apply relative flex flex-col justify-between w-full rounded-2xl sm:rounded-3xl border border-border/80 bg-card/90 transition-all duration-200 overflow-hidden backdrop-blur-2xl;
+    box-shadow: var(--shadow-card);
     min-height: 104px;
   }
 
   .shadowtalk-composer.group:hover:not(:focus-within) {
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: var(--shadow-elevated);
   }
 
   .shadowtalk-composer:focus-within {
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow:
-      0 14px 44px rgba(0, 0, 0, 0.55),
-      0 0 0 1px rgba(34, 211, 238, 0.3),
-      0 0 28px rgba(99, 102, 241, 0.25),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+    border-color: hsl(var(--primary) / 0.7);
+    box-shadow: var(--shadow-glow);
   }
 
   .shadowtalk-composer__attach {
@@ -733,15 +737,15 @@
   }
 
   .shadowtalk-composer__send {
-    @apply h-8 w-8 shrink-0 rounded-full border-0 text-white transition-all duration-200 cursor-pointer flex items-center justify-center;
-    background: linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #a855f7 100%);
-    box-shadow: 0 2px 14px rgba(99, 102, 241, 0.45);
+    @apply h-8 w-8 shrink-0 rounded-full border-0 text-primary-foreground transition-all duration-200 cursor-pointer flex items-center justify-center;
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-button);
   }
 
   .shadowtalk-composer__send:hover:not(:disabled) {
     filter: brightness(1.12);
     transform: scale(1.05);
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.65);
+    box-shadow: var(--shadow-glow);
   }
 
   .shadowtalk-composer__send:active:not(:disabled) {
@@ -751,7 +755,7 @@
   .shadowtalk-composer__send:disabled {
     @apply opacity-25 cursor-not-allowed;
     box-shadow: none;
-    background: #2a3548;
+    background: hsl(var(--muted));
   }
 
   .shadowtalk-composer__mic {
