@@ -2,17 +2,14 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import type { User, Session } from '@/lib/backend-types';
 import { backend, isConfigured } from '@/integrations/local/client';
 import { syncProfile } from '@/lib/authProfile';
+import { resolvePlanFromCheckSubscription, type UserPlan } from '@/lib/resolveUserPlan';
 
 import {
   clearExplicitSignOut,
-  hasExplicitSignOut,
   isAnonymousUser,
   markExplicitSignOut,
-  restoreOrCreateSession,
   saveLocalUser,
 } from '@/lib/persistentAuth';
-
-type UserPlan = 'free' | 'pro' | 'premium' | 'lifetime' | 'elite' | 'enterprise';
 
 interface AuthContextType {
   user: User | null;
@@ -87,9 +84,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkSubscription = useCallback(async () => {
-    setSubscribed(false);
-    setUserPlan('free');
-    setSubscriptionEnd(null);
+    try {
+      const { data: { user } } = await backend.auth.getUser();
+      if (!user?.email) {
+        // Anonymous/guest users are always on the free plan.
+        setSubscribed(false);
+        setUserPlan('free');
+        setSubscriptionEnd(null);
+        return;
+      }
+
+      // 1) Billing source of truth: subscribers row (written by admin/server).
+      let subData: { subscribed?: boolean; plan?: string; product_id?: string; subscription_end?: string | null } | null = null;
+      try {
+        const { data } = await backend
+          .from('subscribers')
+          .select('plan, subscribed, product_id, subscription_end')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        subData = (data as any) ?? null;
+      } catch {
+        // subscribers table may not have a row yet — fall through to profile.
+      }
+
+      // 2) Fallback: server-managed plan on the profile document.
+      if (!subData) {
+        try {
+          const { data } = await backend
+            .from('profiles')
+            .select('plan, subscription_end')
+            .eq('id', user.id)
+            .maybeSingle();
+          if (data?.plan && data.plan !== 'free') {
+            subData = {
+              subscribed: true,
+              plan: data.plan,
+              subscription_end: (data as any).subscription_end ?? null,
+            };
+          }
+        } catch {
+          // Profile missing — treat as free.
+        }
+      }
+
+      const resolved = resolvePlanFromCheckSubscription(user.email, subData);
+      setUserPlan(resolved.plan);
+      setSubscribed(resolved.subscribed);
+      setSubscriptionEnd(resolved.subscriptionEnd);
+    } catch (err) {
+      console.warn('[Auth] checkSubscription failed:', err);
+      setSubscribed(false);
+      setUserPlan('free');
+      setSubscriptionEnd(null);
+    }
   }, []);
 
   useEffect(() => {

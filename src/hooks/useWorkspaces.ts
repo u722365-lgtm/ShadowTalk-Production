@@ -68,7 +68,14 @@ export function useWorkspaces(workspaceId?: string) {
       const sub = backend
         .from("workspaces")
         .onSnapshot(
-          { filter: { field: "id", op: "==", value: workspaceId } },
+          {
+            filter: {
+              and: [
+                { field: "id", op: "==", value: workspaceId },
+                { field: "user_id", op: "==", value: user.id },
+              ],
+            },
+          },
           (snapshot) => {
             if (snapshot.docs.length > 0) {
               const data = snapshot.docs[0].data;
@@ -128,7 +135,9 @@ export function useWorkspaces(workspaceId?: string) {
         const { data, error } = await backend
           .from("workspaces")
           .insert({
+            id: crypto.randomUUID(),
             owner_id: user.id,
+            user_id: user.id,
             name,
             projects: initialProjects,
             active_project_id: initialProjects[0]?.id || "default",

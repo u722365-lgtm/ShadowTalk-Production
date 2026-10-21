@@ -85,6 +85,7 @@ export function useChatConversations(
         .from("messages")
         .select("*")
         .eq("conversation_id", conversationId)
+        .eq("user_id", userId)
         .order("created_at", { ascending: true });
 
       if (error) {

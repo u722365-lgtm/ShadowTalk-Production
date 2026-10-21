@@ -369,7 +369,14 @@ export function useConversationManager({
 
       try {
         const sub = backend.from("messages").onSnapshot(
-          { filter: { field: "conversation_id", op: "==", value: conversationId } },
+          {
+            filter: {
+              and: [
+                { field: "conversation_id", op: "==", value: conversationId },
+                { field: "user_id", op: "==", value: user.id },
+              ],
+            },
+          },
           async (snapshot) => {
             const msgs = snapshot.docs.map(d => ({ ...d.data, id: d.id })) as Record<string, unknown>[];
             // Sort by created_at asc

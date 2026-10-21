@@ -77,6 +77,7 @@ export function useSessionTracking() {
         const { data: existing } = await backend
           .from("user_sessions")
           .select("id")
+          .eq("user_id", user.id)
           .eq("session_token", token)
           .maybeSingle();
 
@@ -91,6 +92,7 @@ export function useSessionTracking() {
               user_agent: navigator.userAgent,
               ip_hash,
             })
+            .eq("user_id", user.id)
             .eq("session_token", token);
         } else {
           await backend.from("user_sessions").insert({
@@ -114,6 +116,7 @@ export function useSessionTracking() {
         const { data } = await backend
           .from("user_sessions")
           .select("revoked_at")
+          .eq("user_id", user.id)
           .eq("session_token", token)
           .maybeSingle();
 
@@ -128,6 +131,7 @@ export function useSessionTracking() {
         await backend
           .from("user_sessions")
           .update({ last_seen_at: new Date().toISOString() })
+          .eq("user_id", user.id)
           .eq("session_token", token);
       } catch {
         // ignore transient errors
