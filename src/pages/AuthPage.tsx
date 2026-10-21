@@ -22,6 +22,7 @@ import {
   Bot,
   ShieldCheck,
   KeyRound,
+  Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,12 @@ import ChatbotLogo from "@/components/ChatbotLogo";
 import { isEnterpriseDeployment } from "@/hooks/useEnterpriseExperience";
 import { ENTERPRISE_TENANTS } from "@/lib/enterpriseTenants";
 import { setStoredAuthDesignChoice } from "@/lib/authDesigns";
+import { isPreviewEnvironment } from "@/lib/previewEnvironment";
+import {
+  localSignInWithPassword,
+  localSignUp,
+  localResetPassword,
+} from "@/lib/localAuth";
 
 // Rate limiter hook
 const useRateLimiter = (maxAttempts = 5, windowMs = 60000) => {
@@ -93,6 +100,11 @@ const AuthPage = () => {
   const enterpriseFlow = isEnterpriseDeployment() || searchParams.get("enterprise") === "1";
   const enterpriseTenant = ENTERPRISE_TENANTS[0];
 
+  // On Lovable preview domains, Firebase Auth rejects all requests with
+  // auth/unauthorized-domain. Fall back to local-only auth so the app is
+  // testable in the editor. Production always uses real Firebase Auth.
+  const previewMode = isPreviewEnvironment();
+
   const { checkLimit } = useRateLimiter(5, 60000);
   const strength = getPasswordStrength(password);
 
@@ -142,14 +154,24 @@ const AuthPage = () => {
     }
     setResettingPassword(true);
     try {
-      const { error } = await backend.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
-      if (error) throw error;
-      toast({
-        title: "Reset link sent",
-        description: `Check ${cleanEmail} for a password reset link. It may take a minute or two to arrive.`,
-      });
+      if (previewMode) {
+        // Local-only password reset for preview environments.
+        const result = localResetPassword(cleanEmail, "temp-preview-reset");
+        if (result.error) throw result.error;
+        toast({
+          title: "Preview reset",
+          description: `In preview mode, passwords are stored locally. Please sign up again with ${cleanEmail} or use a different email.`,
+        });
+      } else {
+        const { error } = await backend.auth.resetPasswordForEmail(cleanEmail, {
+          redirectTo: `${window.location.origin}/auth`,
+        });
+        if (error) throw error;
+        toast({
+          title: "Reset link sent",
+          description: `Check ${cleanEmail} for a password reset link. It may take a minute or two to arrive.`,
+        });
+      }
     } catch (err: any) {
       toast({
         title: "Reset failed",
@@ -230,6 +252,31 @@ const AuthPage = () => {
 
     setLoading(true);
     try {
+      if (previewMode) {
+        // Local-only auth for preview environments (Lovable preview domains
+        // aren't in Firebase's authorized domains list).
+        let result;
+        if (isLogin) {
+          result = localSignInWithPassword(cleanEmail, cleanPassword);
+        } else {
+          result = localSignUp(cleanEmail, cleanPassword);
+        }
+        if (result.error) throw result.error;
+        clearExplicitSignOut();
+        // Notify AuthProvider that the local session changed.
+        window.dispatchEvent(new Event('shadowtalk-local-auth-change'));
+        toast({
+          title: isLogin ? "Welcome back!" : "Account Created!",
+          description: isLogin
+            ? "Logged in to ShadowTalk AI (preview mode)."
+            : "Welcome to your sovereign AI fortress (preview mode).",
+        });
+        setLoading(false);
+        const returnPath = consumeReturnPath() || "/chatbot";
+        navigate(returnPath, { replace: true });
+        return;
+      }
+
       if (isLogin) {
         const { data, error } = await backend.auth.signInWithPassword({
           email: cleanEmail,
@@ -269,6 +316,14 @@ const AuthPage = () => {
   };
 
   const handleFirebaseOAuth = async (provider: "google" | "apple") => {
+    if (previewMode) {
+      toast({
+        title: "OAuth unavailable in preview",
+        description: `${provider} sign-in requires Firebase Auth, which isn't available on this preview domain. Please use email/password instead, or deploy to Firebase Hosting.`,
+        variant: "default",
+      });
+      return;
+    }
     setLoading(true);
     setOauthProvider(provider);
     try {
@@ -442,6 +497,21 @@ const AuthPage = () => {
             <span>TLS 1.3 Verified</span>
           </div>
         </div>
+
+        {/* Preview Mode Banner */}
+        {previewMode && (
+          <div className="w-full max-w-md mb-4 p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 flex items-start gap-2.5 text-xs text-amber-200">
+            <Info className="h-4 w-4 shrink-0 mt-0.5 text-amber-400" />
+            <div className="flex-1">
+              <p className="font-semibold text-amber-100">Preview Mode — Local Auth Active</p>
+              <p className="mt-0.5 text-amber-300/80 leading-relaxed">
+                Firebase Auth isn't available on this preview domain. Accounts are
+                stored locally in your browser for testing. OAuth (Google/Apple) is
+                disabled. Deploy to Firebase Hosting for full authentication.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Main Frosted Glass Monolith Card */}
         <motion.div
