@@ -88,6 +88,7 @@ const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rateLimitMsg, setRateLimitMsg] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   const enterpriseFlow = isEnterpriseDeployment() || searchParams.get("enterprise") === "1";
   const enterpriseTenant = ENTERPRISE_TENANTS[0];
@@ -119,6 +120,46 @@ const AuthPage = () => {
   }, [searchParams, toast]);
 
   const sanitizeInput = (input: string) => input.trim().slice(0, 255);
+
+  const handleForgotPassword = async () => {
+    const cleanEmail = sanitizeInput(email);
+    if (!cleanEmail) {
+      toast({
+        title: "Email required",
+        description: "Enter your email address above first, then click Forgot password.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setResettingPassword(true);
+    try {
+      const { error } = await backend.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      if (error) throw error;
+      toast({
+        title: "Reset link sent",
+        description: `Check ${cleanEmail} for a password reset link. It may take a minute or two to arrive.`,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Reset failed",
+        description: err?.message || "Could not send reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setResettingPassword(false);
+    }
+  };
 
   const playWelcomeVoice = useCallback(async (userName: string) => {
     const displayName = userName.split("@")[0];
@@ -661,10 +702,18 @@ const AuthPage = () => {
                 <div className="flex justify-end mt-2">
                   <button
                     type="button"
-                    onClick={() => toast({ title: "Password Reset", description: "Enter your email to receive a secure recovery link." })}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline transition-colors cursor-pointer font-medium"
+                    onClick={handleForgotPassword}
+                    disabled={resettingPassword}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline transition-colors cursor-pointer font-medium disabled:opacity-50 disabled:pointer-events-none flex items-center gap-1.5"
                   >
-                    Forgot password?
+                    {resettingPassword ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      "Forgot password?"
+                    )}
                   </button>
                 </div>
               )}

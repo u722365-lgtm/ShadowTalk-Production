@@ -174,8 +174,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           hydrate(null);
         }
 
-        const { data } = backend.auth.onAuthStateChange((_event: string, next: any) => {
+        // Track whether the initial session has already been hydrated so we
+        // can skip the duplicate INITIAL_SESSION callback from
+        // onAuthStateChange. Without this, every page load triggers
+        // double syncProfile + double checkSubscription calls (race conditions
+        // and unnecessary Firestore reads).
+        let initialHydrated = !!cloudSession?.user;
+
+        const { data } = backend.auth.onAuthStateChange((event: string, next: any) => {
           if (!mounted) return;
+          // Skip the INITIAL_SESSION callback if we already hydrated from
+          // getSession() — it carries the same user and would cause a
+          // duplicate hydrate() call.
+          if (event === 'INITIAL_SESSION' && initialHydrated) return;
+          initialHydrated = initialHydrated || !!next?.user;
           hydrate(next?.user ? next : null);
         });
         if (mounted) authSubscription = data?.subscription ?? null;
