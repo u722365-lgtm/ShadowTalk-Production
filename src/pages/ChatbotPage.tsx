@@ -33,7 +33,7 @@ import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
-import { generateCloudImage, isCloudImageConfigured } from "@/lib/cloudImage";
+import { generateCloudImage, isCloudImageConfigured, generateImageWithFallback } from "@/lib/cloudImage";
 import { AIProviderRouter } from "@/ai/AIProviderRouter";
 import { stringifyChatBody } from "@/lib/chatRequest";
 import { buildChatProviderPayload } from "@/lib/chatProviderBridge";
@@ -1150,7 +1150,7 @@ Structure and Content Guidelines:
           throw new Error("Image generation is not configured. Set VITE_SUPABASE_URL or use BYOK mode.");
         }
 
-        const imageUrl = await generateCloudImage(imagePrompt, {
+        const imageUrl = await generateImageWithFallback(imagePrompt, {
           onFrame: (dataUrl, isFinal) => {
             // Update the AI message with progressive preview frames
             setMessages((prev) => prev.map((m) =>

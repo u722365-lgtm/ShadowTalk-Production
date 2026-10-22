@@ -1,9 +1,12 @@
 /**
- * Lovable Cloud AI image generation — streaming client.
+ * Cloud AI image generation — multi-backend with automatic fallback.
  *
- * Calls the `generate-image` edge function, which proxies the Lovable AI
- * Gateway (`google/gemini-3-pro-image`) with `stream: true`. Preview frames
- * arrive progressively; the final frame is flagged with `isFinal`.
+ * Primary:   Supabase Edge Function (`generate-image`) → Lovable AI Gateway
+ *            (google/gemini-3-pro-image) with streaming preview frames.
+ * Fallback:  Pollinations.ai (free, no key required, works from any domain).
+ *
+ * The fallback ensures image generation works even when the Supabase Edge
+ * Function is unreachable (CORS, network, or the function isn't deployed).
  */
 
 import { flushSync } from "react-dom";
@@ -23,7 +26,8 @@ export interface GenerateImageOptions {
 }
 
 export function isCloudImageConfigured(): boolean {
-  return Boolean(cloudFunctionUrl("generate-image"));
+  // Always returns true — we have the Pollinations.ai fallback.
+  return true;
 }
 
 function getFunctionUrl(): string {
@@ -165,4 +169,86 @@ export async function generateCloudImage(
 
   if (!sawCompleted && !last) throw new Error("Image stream ended without an image");
   return finalize(last);
+}
+
+// ── Pollinations.ai fallback (free, no key, no CORS issues) ─────────────
+
+/**
+ * Generate an image via Pollinations.ai — a free, open image generation
+ * service that requires no API key and works from any domain (no CORS
+ * restrictions). Used as a fallback when the primary Supabase Edge
+ * Function is unreachable.
+ *
+ * The URL format is: https://image.pollinations.ai/prompt/<encoded-prompt>?width=1024&height=1024&nologo=true
+ * We fetch it as a blob, convert to a data URL, and return.
+ */
+async function generateViaPollinations(
+  prompt: string,
+  opts: GenerateImageOptions = {},
+): Promise<string> {
+  const encoded = encodeURIComponent(prompt.slice(0, 500));
+  const seed = Math.floor(Math.random() * 1_000_000);
+  const url = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&nologo=true&seed=${seed}`;
+
+  const res = await fetch(url, { signal: opts.signal });
+  if (!res.ok) {
+    throw new Error(`Pollinations.ai returned ${res.status}. Please try again.`);
+  }
+
+  const blob = await res.blob();
+  if (!blob.size) throw new Error("Pollinations.ai returned an empty image.");
+
+  // Convert blob to data URL.
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Failed to read image data."));
+    reader.readAsDataURL(blob);
+  });
+
+  // Emit the frame.
+  if (opts.onFrame) {
+    flushSync(() => opts.onFrame!(dataUrl, true));
+  }
+
+  // Apply watermark.
+  if (opts.watermark === false) return dataUrl;
+  return applyImageWatermark(dataUrl);
+}
+
+// ── Master function with fallback ──────────────────────────────────────
+
+/**
+ * Generate an image with automatic fallback:
+ *   1. Try the Supabase Edge Function (Lovable AI Gateway / Gemini).
+ *   2. If it fails (network, CORS, timeout), fall back to Pollinations.ai.
+ *   3. If both fail, throw a helpful error message.
+ */
+export async function generateImageWithFallback(
+  prompt: string,
+  opts: GenerateImageOptions = {},
+): Promise<string> {
+  // Try primary (Supabase Edge Function).
+  try {
+    return await generateCloudImage(prompt, opts);
+  } catch (primaryErr) {
+    const errMsg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+    console.warn("[cloudImage] Primary image generation failed, trying Pollinations.ai fallback:", errMsg);
+
+    // If the user aborted, don't fall back.
+    if (primaryErr instanceof DOMException && primaryErr.name === "AbortError") {
+      throw primaryErr;
+    }
+
+    // Try fallback (Pollinations.ai).
+    try {
+      return await generateViaPollinations(prompt, opts);
+    } catch (fallbackErr) {
+      const fbErrMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+      console.error("[cloudImage] Both primary and fallback image generation failed:", fbErrMsg);
+      throw new Error(
+        `Image generation is currently unavailable. The primary service failed (${errMsg}) and the fallback also failed (${fbErrMsg}). Please try again in a moment.`,
+      );
+    }
+  }
 }
