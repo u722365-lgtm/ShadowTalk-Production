@@ -618,6 +618,65 @@ const DocsPage = () => {
                   </Button>
                 </div>
               </DocSection>
+
+              <DocSection title="How to Get Your API Key (BYOK Setup)">
+                <p className="text-muted-foreground mb-4">
+                  ShadowTalk's Power User (BYOK) mode lets you bring your own API key for unlimited
+                  messages and direct provider access. Here's how to get a free key in 60 seconds.
+                </p>
+                <div className="grid gap-5 md:grid-cols-2">
+                  {/* OpenRouter Guide */}
+                  <Card className="card-glass overflow-hidden">
+                    <CardHeader className="relative z-10 pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <span className="text-lg">🔑</span> OpenRouter (Recommended)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-2 space-y-3 text-sm text-muted-foreground">
+                      <p>OpenRouter gives you access to GPT-4, Claude, Gemini, and 100+ models with one key. Free tier available.</p>
+                      <ol className="space-y-2 text-xs">
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">1.</span> Go to <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">openrouter.ai/keys</a></li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">2.</span> Sign up with Google or GitHub (free, no credit card)</li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">3.</span> Click <strong className="text-foreground">"Create Key"</strong></li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">4.</span> Name it "ShadowTalk" and copy the key (<code className="text-[10px] bg-muted/30 px-1 rounded">sk-or-v1-...</code>)</li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">5.</span> Paste it into ShadowTalk's onboarding or Settings → BYOK</li>
+                      </ol>
+                      <div className="mt-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300">
+                        ✅ Free models available (Gemini, Llama) — no payment required for basic use.
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Google Gemini Guide */}
+                  <Card className="card-glass overflow-hidden">
+                    <CardHeader className="relative z-10 pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <span className="text-lg">✨</span> Google Gemini API
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-2 space-y-3 text-sm text-muted-foreground">
+                      <p>Google AI Studio offers free Gemini API access (generous free tier, no credit card needed).</p>
+                      <ol className="space-y-2 text-xs">
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">1.</span> Go to <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">aistudio.google.com/apikey</a></li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">2.</span> Sign in with your Google account</li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">3.</span> Click <strong className="text-foreground">"Create API Key"</strong></li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">4.</span> Select a project (or create a new one — free)</li>
+                        <li className="flex gap-2"><span className="font-bold text-indigo-400">5.</span> Copy the key (<code className="text-[10px] bg-muted/30 px-1 rounded">AIza...</code>) and paste into ShadowTalk</li>
+                      </ol>
+                      <div className="mt-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-300">
+                        ✅ Free tier: 15 requests/min, 1,500/day — perfect for personal use.
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="mt-4 p-4 rounded-lg bg-indigo-500/5 border border-indigo-500/20 text-sm text-slate-300">
+                  <p className="font-semibold text-indigo-300 mb-1">💡 Which should I choose?</p>
+                  <p className="text-xs text-muted-foreground">OpenRouter is recommended — it gives you access to all major models (GPT-4, Claude, Gemini, Llama) with a single key and has a free tier. Gemini is great if you only need Google models and want the highest free-tier limits.</p>
+                </div>
+                <p className="text-xs text-muted-foreground mt-4">
+                  Your API key is stored <strong className="text-foreground">locally in your browser only</strong> — it never touches ShadowTalk's servers. See our <a href="/security" className="text-indigo-400 hover:underline">Security & Trust Center</a> for details.
+                </p>
+              </DocSection>
             </TabsContent>
 
             {/* Workspace */}

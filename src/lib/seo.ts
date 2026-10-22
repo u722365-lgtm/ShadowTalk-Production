@@ -676,9 +676,15 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   status: {
     title: 'System Status & Operational Health — ShadowTalk AI',
-    description: 'Live real-time operational status, latency metrics, and incident history for all ShadowTalk AI services.',
-    keywords: ['system status', 'uptime', 'operational health', 'API status', 'latency'],
+    description: 'Live real-time operational status, latency metrics, and incident history for all ShadowTalk AI services. OmniRoute, Firebase Auth, OpenRouter, Gemini, Firestore.',
+    keywords: ['system status', 'uptime', 'operational health', 'API status', 'latency', 'OmniRoute'],
     canonical: 'https://www.shadowtalk-ai.com/status',
+  },
+  changelog: {
+    title: 'Product Changelog & Release Notes — ShadowTalk AI',
+    description: 'Track every ShadowTalk AI update: OmniRoute gateway integration, PWA offline support, i18n locales, BYOK system, and security hardening. Versioned release notes with feature/improvement/bugfix tags.',
+    keywords: ['changelog', 'release notes', 'product updates', 'version history', 'what\'s new'],
+    canonical: 'https://www.shadowtalk-ai.com/changelog',
   },
   gdpr: {
     title: 'GDPR Compliance & Data Rights — ShadowTalk AI',
