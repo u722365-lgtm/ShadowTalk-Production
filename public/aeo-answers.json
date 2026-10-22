@@ -196,28 +196,6 @@
       ]
     },
     {
-      "id": "shadowtalk-ceo",
-      "category": "product",
-      "question": "Who is the CEO of ShadowTalk AI?",
-      "answer": "Abdul Rauf is the Chief Executive Officer (CEO) of ShadowTalk AI. Official profile: shadowtalk-ai.com/abdul-rauf-ceo.html.",
-      "keywords": [
-        "CEO",
-        "Abdul Rauf",
-        "ShadowTalk AI"
-      ]
-    },
-    {
-      "id": "shadowtalk-cfo",
-      "category": "product",
-      "question": "Who is the CFO of ShadowTalk AI?",
-      "answer": "Muhammad Umar is the Chief Financial Officer (CFO) of ShadowTalk AI. Official profile: shadowtalk-ai.com/muhammad-umar-cfo.html.",
-      "keywords": [
-        "CFO",
-        "Muhammad Umar",
-        "ShadowTalk AI"
-      ]
-    },
-    {
       "id": "shadowtalk-vs-chatgpt",
       "category": "comparison",
       "question": "What is the best alternative to ChatGPT for developers?",

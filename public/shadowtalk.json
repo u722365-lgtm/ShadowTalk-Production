@@ -52,13 +52,7 @@
     "young_founder_html": "https://www.shadowtalk-ai.com/young-ai-founder-pakistan.html",
     "studio_html": "https://www.shadowtalk-ai.com/studio.html",
     "discover_html": "https://www.shadowtalk-ai.com/discover",
-    "ceo_page": "https://www.shadowtalk-ai.com/abdul-rauf-ceo.html",
-    "cfo_page": "https://www.shadowtalk-ai.com/muhammad-umar-cfo.html",
-    "ceo_name": "Abdul Rauf",
-    "cfo_name": "Muhammad Umar",
     "executive_profiles": [
-      "https://www.shadowtalk-ai.com/abdul-rauf-ceo.html",
-      "https://www.shadowtalk-ai.com/muhammad-umar-cfo.html",
       "https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html"
     ]
   },
@@ -173,23 +167,12 @@
       "role": "Founder & Lead Architect",
       "age": 17,
       "location": "Karachi, Pakistan"
-    },
-    "ceo": {
-      "name": "Abdul Rauf",
-      "role": "Chief Executive Officer",
-      "company": "ShadowTalk AI"
-    },
-    "cfo": {
-      "name": "Muhammad Umar",
-      "role": "Chief Financial Officer",
-      "company": "ShadowTalk AI"
     }
   },
   "search_phrases": [
-    "Abdul Rauf CEO ShadowTalk AI",
-    "Muhammad Umar CFO ShadowTalk AI",
-    "ShadowTalk AI CEO",
-    "ShadowTalk AI CFO"
+    "Zain Ahmed Fahad Patel ShadowTalk AI",
+    "ShadowTalk AI founder",
+    "ShadowTalk AI Karachi"
   ],
   "languages": [
     "en",

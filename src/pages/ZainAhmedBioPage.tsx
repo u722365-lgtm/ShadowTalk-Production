@@ -157,7 +157,7 @@ export default function ZainAhmedBioPage() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">The First "HI" & Becoming a Founder</h3>
                 <p>
-                  Once he had access to a laptop again, he successfully integrated a backend with an API key. He typed the word "HI" into the empty text box, and the system finally replied. From that single message, the project expanded. He deployed it globally, formed a team with his peers—including Umar, Rauf, Askari, and Hassan—and transitioned from a solo builder into the role of a founder.
+                  Once he had access to a laptop again, he successfully integrated a backend with an API key. He typed the word "HI" into the empty text box, and the system finally replied. From that single message, the project expanded. He deployed it globally, formed a team with his peers—and transitioned from a solo builder into the role of a founder.
                 </p>
               </div>
             </div>

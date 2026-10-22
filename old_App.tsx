@@ -71,8 +71,6 @@ import { PushIntelligencePanel } from "@/components/chat/PushIntelligencePanel";
  const PrivateAiHubPage = lazy(() => import("./pages/PrivateAiHubPage"));
  const AboutPage = lazy(() => import("./pages/AboutPage"));
 const TeamPage = lazy(() => import("./pages/TeamPage"));
-const AbdulRaufPage = lazy(() => import("./pages/AbdulRaufPage"));
-const MuhammadUmarPage = lazy(() => import("./pages/MuhammadUmarPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const RolloutPlanPage = lazy(() => import("./pages/RolloutPlanPage"));
 const StockScenariosPage = lazy(() => import("./pages/StockScenariosPage"));
@@ -309,8 +307,6 @@ const AnimatedRoutes = () => {
           <Route path="/downloads" element={<PageTransition><DownloadsPage /></PageTransition>} />
           <Route path="/download" element={<Navigate to="/downloads" replace />} />
           <Route path="/sessions" element={<PageTransition><SessionsPage /></PageTransition>} />
-          <Route path="/abdul-rauf-ceo" element={<PageTransition><AbdulRaufPage /></PageTransition>} />
-          <Route path="/muhammad-umar-cfo" element={<PageTransition><MuhammadUmarPage /></PageTransition>} />
           <Route path="/leaderboard" element={<PageTransition><LeaderboardPage /></PageTransition>} />
           <Route path="/rollout-plan" element={<PageTransition><RolloutPlanPage /></PageTransition>} />
           <Route path="/stock-scenarios" element={<PageTransition><StockScenariosPage /></PageTransition>} />
