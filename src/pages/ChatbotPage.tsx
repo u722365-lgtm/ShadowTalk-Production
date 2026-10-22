@@ -863,12 +863,21 @@ Structure and Content Guidelines:
 
 
 
-      const routerMessages = augmented.map((m) => ({
-        role: m.role as "user" | "assistant" | "system",
-        content: typeof m.content === "string"
-          ? m.content
-          : (m.content.find((p) => p.type === "text") as { text?: string } | undefined)?.text ?? "",
-      }));
+      const routerMessages = augmented.map((m) => {
+        // Preserve multimodal content (image_url parts) instead of flattening to text.
+        if (Array.isArray(m.content)) {
+          return {
+            role: m.role as "user" | "assistant" | "system",
+            content: m.content,
+          };
+        }
+        return {
+          role: m.role as "user" | "assistant" | "system",
+          content: typeof m.content === "string"
+            ? m.content
+            : (m.content.find((p) => p.type === "text") as { text?: string } | undefined)?.text ?? "",
+        };
+      });
 
       const shadowMatchInitial = lastUser.match(/@([a-zA-Z0-9_-]+)-shadow/i);
       if (shadowMatchInitial) {
@@ -971,7 +980,8 @@ Structure and Content Guidelines:
         },
         ...trimmedRouterMessages.map((m) => ({
           role: (m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user') as CloudChatMessage['role'],
-          content: typeof m.content === 'string' ? m.content : String(m.content ?? ''),
+          // Preserve multimodal content arrays (image_url parts) — don't flatten to string.
+          content: m.content,
         })),
       ];
 
@@ -1156,11 +1166,67 @@ Structure and Content Guidelines:
       content: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
     }> = messages
       .filter((m) => m.id !== "welcome")
-      .map((m) => ({
-        role: m.type === "user" ? "user" : "assistant",
-        content: m.content,
-      }));
-    chatMessages.push({ role: "user", content: msgContent });
+      .map((m) => {
+        // Preserve multimodal content for messages that had image attachments.
+        if (m.attachment?.type === 'image' && m.attachment.data) {
+          return {
+            role: m.type === "user" ? "user" : "assistant",
+            content: [
+              { type: "text", text: m.content || "What's in this image?" },
+              { type: "image_url", image_url: { url: m.attachment.data } },
+            ],
+          };
+        }
+        // For file attachments, the text was already inlined into m.content
+        // at send time (see handleSendMessage), so just use the content string.
+        return {
+          role: m.type === "user" ? "user" : "assistant",
+          content: m.content,
+        };
+      });
+
+    // Build the current user message with multimodal content if there's an attachment.
+    let currentUserContent: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+
+    if (userMessage.attachment?.type === 'image' && userMessage.attachment.data) {
+      // Image attachment → send as multimodal content (image_url part).
+      currentUserContent = [
+        { type: "text", text: msgContent || "What's in this image?" },
+        { type: "image_url", image_url: { url: userMessage.attachment.data } },
+      ];
+    } else if (userMessage.attachment?.type === 'file' && userMessage.attachment.data) {
+      // File attachment (text/code/pdf) → decode base64 and inline the text content
+      // so the AI can actually read and analyze it.
+      let fileText = "";
+      try {
+        const dataUrl = userMessage.attachment.data;
+        const base64Index = dataUrl.indexOf(',');
+        if (base64Index > 0) {
+          const base64 = dataUrl.substring(base64Index + 1);
+          // Decode base64 to text (works for text/code/markdown files).
+          fileText = atob(base64);
+        } else {
+          // Desktop bridge returns raw text content (not a data URL).
+          fileText = dataUrl;
+        }
+      } catch {
+        // Binary files (PDFs, images misclassified, etc.) can't be decoded as text.
+        fileText = `[Binary file: ${userMessage.attachment.name} (${userMessage.attachment.mimeType}) — content not extractable as text]`;
+      }
+
+      // Truncate very large files to avoid token explosion (max ~12K chars ≈ 3K tokens).
+      const maxFileChars = 12000;
+      const truncated = fileText.length > maxFileChars
+        ? fileText.substring(0, maxFileChars) + "\n\n[... file truncated ...]"
+        : fileText;
+
+      const fileContext = `[Attached file: ${userMessage.attachment.name}]\n--- FILE CONTENT START ---\n${truncated}\n--- FILE CONTENT END ---\n\n${msgContent || "Please analyze this file."}`;
+      currentUserContent = fileContext;
+    } else {
+      currentUserContent = msgContent;
+    }
+
+    chatMessages.push({ role: "user", content: currentUserContent });
 
 
     void captureChatSend(msgContent, chatMode, personality, Boolean(userMessage.attachment));

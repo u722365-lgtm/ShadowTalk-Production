@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { User, Copy, RefreshCw, Volume2, VolumeX, Lock, Edit2, ExternalLink, Compass, Sparkles, Share2, MoreHorizontal } from 'lucide-react';
+import { User, Copy, RefreshCw, Volume2, VolumeX, Lock, Edit2, ExternalLink, Compass, Sparkles, Share2, MoreHorizontal, FileText, Paperclip } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -159,11 +159,25 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
         )}
         {/* Image attachment */}
         {message.attachment?.type === 'image' && (
-          <img 
-            src={message.attachment.data} 
-            alt={message.attachment.name} 
-            className="max-w-[200px] sm:max-w-md rounded-2xl border border-border/10 shadow-lg mb-2" 
+          <img
+            src={message.attachment.data}
+            alt={message.attachment.name}
+            className="max-w-[200px] sm:max-w-md rounded-2xl border border-border/10 shadow-lg mb-2"
           />
+        )}
+
+        {/* File attachment (non-image) */}
+        {message.attachment?.type === 'file' && (
+          <div className="flex items-center gap-3 p-3 rounded-xl border border-border/20 bg-muted/20 mb-2 max-w-md">
+            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{message.attachment.name}</p>
+              <p className="text-[11px] text-muted-foreground">{message.attachment.mimeType || 'File'}</p>
+            </div>
+            <Paperclip className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          </div>
         )}
 
         {/* AI Generated Image */}
