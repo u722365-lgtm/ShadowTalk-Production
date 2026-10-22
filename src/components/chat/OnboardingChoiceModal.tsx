@@ -167,7 +167,15 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-[#030712] border-white/10 rounded-2xl">
+      <DialogContent
+        className="max-w-3xl p-0 overflow-hidden bg-[#030712] border-white/10 rounded-2xl [&>button]:hidden"
+        // Hide the default Radix close (×) button — the user MUST choose a
+        // cohort before the modal can close. The × button appeared non-functional
+        // because the useEffect in ChatbotPage immediately reopens the modal
+        // when hasCompletedOnboarding is still false.
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className="px-8 pt-8 pb-4 text-center">
           <div className="flex justify-center mb-3">
