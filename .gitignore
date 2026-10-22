@@ -73,3 +73,5 @@ public/models/
 Llama-*/
 public/models/
 .venv/
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
