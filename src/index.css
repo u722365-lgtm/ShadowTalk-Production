@@ -36,25 +36,25 @@
     --glass-blur: 20px;
     --glass-shine: linear-gradient(135deg, hsl(0 0% 100% / 0.08) 0%, transparent 50%, hsl(0 0% 100% / 0.02) 100%);
 
-    /* ===== iOS Glassmorphism Tokens ===== */
-    --ios-blur-heavy: 40px;
-    --ios-blur-medium: 24px;
-    --ios-blur-light: 12px;
-    --ios-glass-bg: 240 10% 10% / 0.55;
-    --ios-glass-bg-light: 240 10% 14% / 0.45;
-    --ios-glass-border: 0 0% 100% / 0.08;
-    --ios-glass-border-hover: 0 0% 100% / 0.15;
-    --ios-glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.37), 0 0 0 0.5px hsl(0 0% 100% / 0.05) inset;
-    --ios-glass-shadow-elevated: 0 24px 80px hsl(0 0% 0% / 0.5), 0 0 0 0.5px hsl(0 0% 100% / 0.08) inset;
+    /* ===== iOS Glassmorphism Tokens — HEAVY / DRAMATIC ===== */
+    --ios-blur-heavy: 60px;
+    --ios-blur-medium: 40px;
+    --ios-blur-light: 20px;
+    --ios-glass-bg: 240 10% 12% / 0.35;
+    --ios-glass-bg-light: 240 10% 16% / 0.30;
+    --ios-glass-border: 0 0% 100% / 0.12;
+    --ios-glass-border-hover: 0 0% 100% / 0.25;
+    --ios-glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.37), 0 0 0 1px hsl(0 0% 100% / 0.06) inset;
+    --ios-glass-shadow-elevated: 0 24px 80px hsl(0 0% 0% / 0.5), 0 0 0 1px hsl(0 0% 100% / 0.10) inset;
     --ios-radius-sm: 12px;
     --ios-radius: 20px;
     --ios-radius-lg: 28px;
     --ios-radius-pill: 9999px;
-    --ios-accent: 99 102 241; /* indigo-500 */
-    --ios-accent-hover: 129 140 248; /* indigo-400 */
+    --ios-accent: 99 102 241;
+    --ios-accent-hover: 129 140 248;
     --ios-accent-bg: 99 102 241 / 0.12;
-    --ios-success: 52 199 89; /* iOS green */
-    --ios-blue: 0 122 255; /* iOS blue */
+    --ios-success: 52 199 89;
+    --ios-blue: 0 122 255;
     
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
     --gradient-hero: radial-gradient(ellipse 80% 60% at 50% 0%, hsl(var(--primary) / 0.12), hsl(var(--secondary) / 0.08), transparent);
@@ -144,41 +144,41 @@
     border-radius: inherit;
   }
 
-  /* ===== iOS Glassmorphism System ===== */
+  /* ===== iOS Glassmorphism System — HEAVY / DRAMATIC ===== */
   /* Frosted glass panel — the core building block */
   .ios-glass {
     background: hsl(var(--ios-glass-bg));
-    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    border: 0.5px solid hsl(var(--ios-glass-border));
+    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    border: 1px solid hsl(var(--ios-glass-border));
     box-shadow: var(--ios-glass-shadow);
     will-change: backdrop-filter;
   }
 
   /* Frosted glass nav bar — sticky top, Safari-style */
   .ios-glass-nav {
-    background: hsl(240 10% 8% / 0.72);
-    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    border-bottom: 0.5px solid hsl(0 0% 100% / 0.06);
+    background: hsl(240 10% 8% / 0.45);
+    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    border-bottom: 1px solid hsl(0 0% 100% / 0.08);
     will-change: backdrop-filter;
   }
 
   /* Frosted glass sidebar */
   .ios-glass-sidebar {
-    background: hsl(240 10% 6% / 0.68);
-    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    border-right: 0.5px solid hsl(0 0% 100% / 0.06);
+    background: hsl(240 10% 6% / 0.40);
+    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    border-right: 1px solid hsl(0 0% 100% / 0.08);
     will-change: backdrop-filter;
   }
 
   /* Glass card — translucent panel that floats over background */
   .ios-glass-card {
     background: hsl(var(--ios-glass-bg-light));
-    backdrop-filter: blur(var(--ios-blur-medium)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-medium)) saturate(160%);
-    border: 0.5px solid hsl(var(--ios-glass-border));
+    backdrop-filter: blur(var(--ios-blur-medium)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-medium)) saturate(180%);
+    border: 1px solid hsl(var(--ios-glass-border));
     border-radius: var(--ios-radius);
     box-shadow: var(--ios-glass-shadow);
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
@@ -189,54 +189,54 @@
     box-shadow: var(--ios-glass-shadow-elevated);
   }
 
-  /* Glass message bubble — AI (translucent white) */
+  /* Glass message bubble — AI (translucent dark glass) */
   .ios-glass-bubble-ai {
-    background: hsl(240 10% 14% / 0.5);
-    backdrop-filter: blur(var(--ios-blur-light)) saturate(140%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(140%);
-    border: 0.5px solid hsl(0 0% 100% / 0.06);
+    background: hsl(240 10% 12% / 0.35);
+    backdrop-filter: blur(var(--ios-blur-light)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(160%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
     border-radius: var(--ios-radius) var(--ios-radius) var(--ios-radius-sm) var(--ios-radius);
     will-change: backdrop-filter;
   }
 
   /* Glass message bubble — User (translucent indigo) */
   .ios-glass-bubble-user {
-    background: hsl(var(--ios-accent) / 0.18);
-    backdrop-filter: blur(var(--ios-blur-light)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(160%);
-    border: 0.5px solid hsl(var(--ios-accent) / 0.2);
+    background: hsl(99 102 241 / 0.25);
+    backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
+    border: 1px solid hsl(99 102 241 / 0.30);
     border-radius: var(--ios-radius) var(--ios-radius) var(--ios-radius-sm) var(--ios-radius);
     will-change: backdrop-filter;
   }
 
   /* Glass input/composer bar */
   .ios-glass-input {
-    background: hsl(240 10% 10% / 0.6);
-    backdrop-filter: blur(var(--ios-blur-medium)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-medium)) saturate(180%);
-    border: 0.5px solid hsl(0 0% 100% / 0.08);
+    background: hsl(240 10% 8% / 0.35);
+    backdrop-filter: blur(var(--ios-blur-medium)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-medium)) saturate(200%);
+    border: 1px solid hsl(0 0% 100% / 0.10);
     border-radius: var(--ios-radius-lg);
     box-shadow: var(--ios-glass-shadow);
     transition: border-color 0.2s;
     will-change: backdrop-filter;
   }
   .ios-glass-input:focus-within {
-    border-color: hsl(var(--ios-accent) / 0.3);
+    border-color: hsl(99 102 241 / 0.40);
   }
 
   /* Glass modal backdrop */
   .ios-glass-modal-backdrop {
-    background: hsl(240 10% 3% / 0.6);
-    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(180%);
+    background: hsl(240 10% 3% / 0.50);
+    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
   }
 
   /* Glass modal content */
   .ios-glass-modal {
-    background: hsl(240 10% 8% / 0.85);
-    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(200%);
-    border: 0.5px solid hsl(0 0% 100% / 0.1);
+    background: hsl(240 10% 8% / 0.65);
+    backdrop-filter: blur(var(--ios-blur-heavy)) saturate(220%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-heavy)) saturate(220%);
+    border: 1px solid hsl(0 0% 100% / 0.12);
     border-radius: var(--ios-radius-lg);
     box-shadow: var(--ios-glass-shadow-elevated);
     will-change: backdrop-filter;
@@ -244,17 +244,17 @@
 
   /* Glass button — pill-shaped, subtle */
   .ios-glass-button {
-    background: hsl(var(--ios-glass-bg-light));
-    backdrop-filter: blur(var(--ios-blur-light)) saturate(150%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(150%);
-    border: 0.5px solid hsl(0 0% 100% / 0.1);
+    background: hsl(0 0% 100% / 0.06);
+    backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
+    border: 1px solid hsl(0 0% 100% / 0.12);
     border-radius: var(--ios-radius-pill);
     transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
     will-change: backdrop-filter;
   }
   .ios-glass-button:hover {
-    background: hsl(0 0% 100% / 0.08);
-    border-color: hsl(0 0% 100% / 0.15);
+    background: hsl(0 0% 100% / 0.12);
+    border-color: hsl(0 0% 100% / 0.20);
   }
   .ios-glass-button:active {
     transform: scale(0.97);
@@ -262,19 +262,19 @@
 
   /* Glass accent button — indigo pill */
   .ios-glass-button-accent {
-    background: hsl(var(--ios-accent) / 0.2);
-    backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(180%);
-    border: 0.5px solid hsl(var(--ios-accent) / 0.3);
+    background: hsl(99 102 241 / 0.30);
+    backdrop-filter: blur(var(--ios-blur-light)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--ios-blur-light)) saturate(200%);
+    border: 1px solid hsl(99 102 241 / 0.40);
     border-radius: var(--ios-radius-pill);
-    box-shadow: 0 4px 24px hsl(var(--ios-accent) / 0.25);
+    box-shadow: 0 4px 24px hsl(99 102 241 / 0.30);
     transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
     will-change: backdrop-filter;
   }
   .ios-glass-button-accent:hover {
-    background: hsl(var(--ios-accent-hover) / 0.25);
-    border-color: hsl(var(--ios-accent) / 0.4);
-    box-shadow: 0 6px 32px hsl(var(--ios-accent) / 0.35);
+    background: hsl(129 140 248 / 0.35);
+    border-color: hsl(99 102 241 / 0.50);
+    box-shadow: 0 6px 32px hsl(99 102 241 / 0.40);
   }
   .ios-glass-button-accent:active {
     transform: scale(0.97);
@@ -283,9 +283,9 @@
   /* Vibrant gradient background that shows through glass */
   .ios-vibrant-bg {
     background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, hsl(var(--ios-accent) / 0.08), transparent 70%),
-      radial-gradient(ellipse 50% 50% at 80% 20%, hsl(270 90% 62% / 0.06), transparent 70%),
-      radial-gradient(ellipse 70% 50% at 50% 90%, hsl(315 90% 58% / 0.05), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 10%, hsl(99 102 241 / 0.15), transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 20%, hsl(270 90% 62% / 0.12), transparent 70%),
+      radial-gradient(ellipse 70% 50% at 50% 90%, hsl(315 90% 58% / 0.10), transparent 70%),
       hsl(240 12% 3%);
   }
 
@@ -813,30 +813,31 @@
     opacity: 0.45;
   }
 
-  /* Vibrant animated orbs — these give the glass something colorful to blur */
+  /* Vibrant animated orbs — BRIGHT and COLORFUL for dramatic glass blur */
   .shadowtalk-chat-ambient::before,
   .shadowtalk-chat-ambient::after {
     content: '';
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
+    filter: blur(60px);
     pointer-events: none;
   }
   .shadowtalk-chat-ambient::before {
-    width: 500px;
-    height: 500px;
-    top: -100px;
-    left: -50px;
-    background: radial-gradient(circle, hsl(var(--ios-accent) / 0.35), transparent 70%);
+    width: 600px;
+    height: 600px;
+    top: -150px;
+    left: -100px;
+    background: radial-gradient(circle, hsl(99 102 241 / 0.45), transparent 70%);
+    opacity: 0.7;
     animation: ios-orb-float-1 20s ease-in-out infinite;
   }
   .shadowtalk-chat-ambient::after {
-    width: 600px;
-    height: 600px;
-    bottom: -150px;
-    right: -100px;
-    background: radial-gradient(circle, hsl(270 90% 62% / 0.25), transparent 70%);
+    width: 700px;
+    height: 700px;
+    bottom: -200px;
+    right: -150px;
+    background: radial-gradient(circle, hsl(270 90% 62% / 0.40), transparent 70%);
+    opacity: 0.65;
     animation: ios-orb-float-2 25s ease-in-out infinite;
   }
 
