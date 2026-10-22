@@ -20,7 +20,7 @@ interface FeatureComparison {
 
 const FEATURE_COMPARISONS: FeatureComparison[] = [
   {
-    feature: '100% Offline AI',
+    feature: 'Optional Offline Mode',
     shadowtalk: 'yes',
     gemini: 'no',
     advantage: 'shadowtalk',
@@ -187,7 +187,7 @@ export const GeminiBeaterIndicator: React.FC = () => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-purple-500/10 border border-purple-500/20"
               >
                 <Shield className="w-4 h-4 text-purple-500" />
-                <span className="text-xs font-medium text-purple-400">Zero Data Collection</span>
+                <span className="text-xs font-medium text-purple-400">Minimal Telemetry</span>
               </motion.div>
               
               <motion.div
@@ -303,7 +303,7 @@ export const GeminiBeaterIndicator: React.FC = () => {
                 <span className="text-muted-foreground"> delivers Gemini's power with </span>
                 <span className="font-semibold text-green-500">zero data collection</span>
                 <span className="text-muted-foreground"> and </span>
-                <span className="font-semibold text-purple-500">100% offline capability</span>
+                <span className="font-semibold text-purple-500">optional offline capability</span>
               </p>
             </div>
           </motion.div>

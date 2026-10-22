@@ -19,7 +19,7 @@
  // Grok advantages vs our advantages
  const GROK_COMPARISON = {
    grok: ['Twitter/X data', 'Fast responses', 'Fun personality'],
-   shadowtalk: ['100% Offline AI', 'Multi-Model Consensus', 'Zero-Knowledge Privacy', 'Document Intelligence', 'Custom Agents', 'Local-First Data']
+   shadowtalk: ['Optional Offline Mode', 'Multi-Model Consensus', 'Zero-Knowledge Privacy', 'Document Intelligence', 'Custom Agents', 'Local-First Data']
  };
  
  export const GrokBeaterIndicator: React.FC<GrokBeaterIndicatorProps> = ({

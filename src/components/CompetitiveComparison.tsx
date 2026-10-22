@@ -91,7 +91,7 @@ const CompetitiveComparison = () => {
     },
     {
       feature: "Offline Option",
-      shadowtalk: { label: "Opt-in Gemma via WebGPU", icon: Wifi, advantage: true },
+      shadowtalk: { label: "Opt-in Llama via WebGPU", icon: Wifi, advantage: true },
       competitors: { label: "Requires internet", icon: WifiOff },
     },
   ];

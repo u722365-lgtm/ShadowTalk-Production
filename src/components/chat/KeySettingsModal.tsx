@@ -203,7 +203,7 @@ export const KeySettingsModal: React.FC<KeySettingsModalProps> = ({ open, onOpen
             )}
           >
             <Zap className="h-4 w-4 mr-1.5" />
-            Use Instant Start — OmniRoute (100 msgs/day free)
+            Use Instant Start — OmniRoute (50 msgs/day free)
           </Button>
 
           {/* Reset onboarding */}

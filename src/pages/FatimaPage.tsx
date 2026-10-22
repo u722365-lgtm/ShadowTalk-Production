@@ -48,7 +48,7 @@ import { toast } from "sonner";
 const FATIMA_FAQS = [
   {
     q: "Who is Fatima in relation to ShadowTalk AI?",
-    a: "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer of the platform, co-building its client-side state machine, local memory ledger, and 120fps UI design system alongside founder Zain Ahmed.",
+    a: "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer of the platform, co-building its client-side state machine, local memory ledger, and high-performance UI design system alongside founder Zain Ahmed.",
   },
   {
     q: "What systems did Fatima build on ShadowTalk?",
@@ -78,7 +78,7 @@ const FATIMA_ARCHITECTURAL_PILLARS = [
   },
   {
     icon: Sparkles,
-    title: "120fps Subtree Optimization",
+    title: "High-Performance Subtree Optimization",
     description:
       "Engineered the component tree isolation, lazy-loaded dialog splitting, and hardware-composited styling that slashes bundle size and delivers silky smooth performance on any device.",
     tag: "Performance Engineering",
@@ -225,7 +225,7 @@ const FatimaPage = () => {
                 <p>
                   While founder Zain Ahmed drove the sovereign runtime and multi-model agentic loops, Fatima crafted the
                   bedrock of ShadowTalk&apos;s client experience: architecting the zero-cloud IndexedDB memory ledger,
-                  sub-millisecond message hydration, and 120fps UI state architecture. Together from Karachi, they proved
+                  sub-millisecond message hydration, and high-performance UI state architecture. Together from Karachi, they proved
                   that sovereign, world-class AI can be conceived, coded, and deployed anywhere on Earth.
                 </p>
               </div>
@@ -442,7 +442,7 @@ const FatimaPage = () => {
                 <h3 className="text-xl font-bold mb-1">Fatima</h3>
                 <p className="text-xs text-muted-foreground mb-3">Second Developer · Systems Architect</p>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  Sculpted client-side state resilience, the Shadow Memory ledger, 120fps UI performance, and user privacy pipelines.
+                  Sculpted client-side state resilience, the Shadow Memory ledger, high-performance UI, and user privacy pipelines.
                 </p>
                 <span className="text-xs font-semibold text-accent flex items-center gap-1">
                   <CheckCircle2 className="h-3.5 w-3.5" /> Current Profile

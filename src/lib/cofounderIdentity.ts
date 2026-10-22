@@ -26,7 +26,7 @@ export const COFOUNDER_CANONICAL = {
     url: "https://www.shadowtalk-ai.com",
   },
   description:
-    "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer behind the platform, architecting the client-side memory ledger, high-performance 120fps UI state, WebGPU local pipelines, and secure end-to-end user experiences from Karachi, Pakistan.",
+    "Fatima is the Co-Founder and Lead Systems Architect of ShadowTalk AI. She is the second developer behind the platform, architecting the client-side memory ledger, high-performance UI state, WebGPU local pipelines, and secure end-to-end user experiences from Karachi, Pakistan.",
   location: {
     city: "Karachi",
     region: "Sindh",
@@ -43,7 +43,7 @@ export const COFOUNDER_CANONICAL = {
   knowsAbout: [
     "Systems Architecture",
     "Client-Side State & IndexedDB",
-    "UI/UX Engineering & 120fps Optimization",
+    "UI/UX Engineering & High-Performance Optimization",
     "Local-First AI Software",
     "WebGPU & On-Device Pipelines",
     "Cryptographic Memory Ledgers",
@@ -57,7 +57,7 @@ export const COFOUNDER_STORY_CHAPTERS = [
     number: "01",
     title: "The Second Keyboard in the Room",
     body: [
-      "Every major software breakthrough needs two opposing forces: one that dreams up the impossible horizon, and one that architects the foundation so solidly that the dream actually runs at 120 frames per second.",
+      "Every major software breakthrough needs two opposing forces: one that dreams up the impossible horizon, and one that architects the foundation so solidly that the dream actually runs on high-refresh displays.",
       "In Karachi, while Zain was pushing the boundaries of autonomous agentic loops and sovereign runtime models, Fatima stepped in as the second core developer of ShadowTalk AI. Where others saw just another chat window, Fatima saw a living, breathing client-side operating system.",
     ],
     pullQuote: "Building sovereign software means you don't cut corners on the frontend. The interface IS the trust.",
@@ -77,7 +77,7 @@ export const COFOUNDER_STORY_CHAPTERS = [
   {
     id: "fluidity",
     number: "03",
-    title: "The 120fps Obsession",
+    title: "The High-Performance Obsession",
     body: [
       "Most AI products feel clunky, laggy, and bloated by heavy tracking scripts and monolithic JavaScript bundles. Fatima made speed non-negotiable.",
       "She co-engineered the lazy chunking architecture, sub-millisecond DOM message streaming, and hardware-accelerated micro-animations that make ShadowTalk feel lightning-fast. Under her guidance, the core chatbot bundle was slashed by hundreds of kilobytes while unlocking instantaneous response times.",

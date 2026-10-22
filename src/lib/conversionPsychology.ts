@@ -75,7 +75,7 @@ export function getSocialProofLine(creatorCount?: number | null): string {
 export function getRiskReversalBullets(): string[] {
   return [
     "Cancel anytime — no lock-in",
-    "30-day money-back guarantee",
+    "14-day money-back guarantee",
     "Instant activation after payment",
     "Keep your chats & settings",
   ];

@@ -79,7 +79,7 @@ const PricingAddonsSection = () => {
         <div className="flex items-center gap-3">
           <Gift className="h-8 w-8 text-primary shrink-0" />
           <div className="text-left">
-            <p className="font-semibold text-sm">Earn 20% on every referral</p>
+            <p className="font-semibold text-sm">Earn 20–40% on every referral</p>
             <p className="text-xs text-muted-foreground">Share ShadowTalk — get paid when friends upgrade.</p>
           </div>
         </div>

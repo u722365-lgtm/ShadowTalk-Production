@@ -74,8 +74,8 @@ export const LANDING_COPY = {
 
 /** Real traction — sync with productClaims COMMUNITY_METRICS */
 export const BRAND_TRACTION = {
-  usersLabel: "1.5K+ creators",
-  dailyLabel: "104+ daily active",
+  usersLabel: "Loading…",
+  dailyLabel: "Loading…",
 } as const;
 
 export const BRAND_PILLARS = [

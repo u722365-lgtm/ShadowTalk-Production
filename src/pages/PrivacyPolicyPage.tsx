@@ -64,7 +64,7 @@ We collect information in the following categories:
 - IP addresses, connection latency, crash logs, and API response timings necessary for load balancing and abuse mitigation.
 
 ### D. Client-Side Keys & Vault Data
-- ****: API keys you supply for external providers (e.g., Groq, OpenAI, Anthropic) are saved in your browser's local sandbox storage and never transmitted to our backend databases.
+- ****: API keys you supply for external providers (e.g., Groq, OpenAI, OpenRouter, Google Gemini) are saved in your browser's local sandbox storage and never transmitted to our backend databases.
 - **Private Vault Records**: Private credentials and secrets stored in the on-device vault are encrypted client-side using AES-GCM-256 before persistence.
     `,
   },
@@ -102,6 +102,10 @@ To deliver high-speed multi-model AI capabilities, we partner with verified sub-
 | :--- | :--- | :--- |
 | **Groq, Inc.** | Ultra-low latency LPU cloud inference | United States |
 | **OpenAI, LLC** | Multimodal analysis & frontier reasoning | United States |
+| **OpenRouter (openrouter.ai)** | Multi-model gateway routing (BYOK & shared pool) | United States |
+| **Google Gemini (generativelanguage.googleapis.com)** | Multimodal & long-context inference (BYOK) | United States |
+| **Zhipu AI / GLM (open.bigmodel.cn)** | GLM family reasoning & code models | Global Cloud |
+| **Lovable AI Gateway (ai.gateway.lovable.dev)** | Load-balanced OmniRoute gateway for default chat | Global Cloud |
 | **DeepSeek AI** | Code intelligence & math reasoning | Global Cloud |
 | **Firebase / Google Cloud** | Web application hosting & edge delivery | Global CDN |
 | **Supabase / PostgreSQL** | Relational user authentication & database | US East / West |

@@ -128,7 +128,7 @@ const FounderSpotlightSection = () => {
                   ShadowTalk AI
                 </Link>
                 . As the platform's second developer, she co-architected the client-side memory ledger,
-                high-performance 120fps UI state machine, WebGPU local pipelines, and zero-cloud privacy architecture. {COFOUNDER_CITATION}
+                high-performance UI state machine, WebGPU local pipelines, and zero-cloud privacy architecture. {COFOUNDER_CITATION}
               </p>
             </div>
 

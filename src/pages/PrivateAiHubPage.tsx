@@ -28,7 +28,7 @@ const pillars = [
   {
     icon: WifiOff,
     title: "Runs on your device",
-    body: "A compact on-device model auto-installs in the background. Once cached, standard chat routes locally and never leaves your machine.",
+    body: "Opt in to install a compact on-device model (~800MB). Once installed, you can switch to local inference in Settings. Standard chat uses cloud AI providers.",
   },
   {
     icon: Shield,
@@ -48,7 +48,7 @@ const pillars = [
   {
     icon: KeyRound,
     title: "",
-    body: "Prefer to route through your own OpenAI, Anthropic, or Google endpoint? is a first-class option.",
+    body: "Prefer to route through your own OpenRouter, OpenAI, or Google Gemini endpoint? is a first-class option.",
   },
 ];
 

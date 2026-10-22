@@ -6,7 +6,7 @@
  *                 Unlimited messages, direct provider connection.
  *  - 'NON_TECH' : Instant Start mode — uses the shared platform key
  *                 (VITE_OPENROUTER_SHARED_KEY or backend /api/ai-proxy).
- *                 Hard-capped at 100 messages/day (UTC reset).
+ *                 Hard-capped at 50 messages/day (UTC reset).
  *
  * All AI features (Chat, Doc Gen, Image Gen, Vision, Doc Analysis) route
  * through executeAIRequest() which reads this context to decide auth.
@@ -80,7 +80,7 @@ const COHORT_KEY = 'shadowtalk_ai_cohort';
 const API_KEY_STORAGE = 'shadowtalk_ai_api_key';
 const ONBOARDED_KEY = 'shadowtalk_ai_onboarded';
 const DAILY_USAGE_KEY = 'shadowtalk_daily_usage';
-const MAX_DAILY_LIMIT = 100;
+const MAX_DAILY_LIMIT = 50;
 
 const AIKeyContext = createContext<AIKeyContextValue | undefined>(undefined);
 

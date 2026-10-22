@@ -67,7 +67,7 @@ const CLAUDE_BEATER_FEATURES: Feature[] = [
   },
   {
     id: 'offline',
-    name: '100% Offline AI',
+    name: 'Optional Offline Mode',
     description: "Works without internet using local models - Claude can't do this",
     icon: Cloud,
     claudeStatus: 'none',

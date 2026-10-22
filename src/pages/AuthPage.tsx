@@ -349,7 +349,7 @@ const AuthPage = () => {
               </span>
             </h1>
             <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-              Multi-model autonomous reasoning, native agentic tools, and 100% on-device WebGPU privacy designed for builders who demand sovereignty.
+              Multi-model autonomous reasoning, native agentic tools, and optional on-device WebGPU privacy designed for builders who demand sovereignty.
             </p>
           </div>
 
@@ -382,7 +382,7 @@ const AuthPage = () => {
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-xs sm:text-sm font-semibold text-white">Zero-Telemetry WebGPU Vault</h3>
                   <span className="text-[10px] font-mono text-purple-400 bg-purple-950/50 px-2 py-0.5 rounded border border-purple-500/20 shrink-0">
-                    100% Local
+                    Optional Local
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -398,7 +398,7 @@ const AuthPage = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xs sm:text-sm font-semibold text-white">120fps Real-Time Workspaces</h3>
+                  <h3 className="text-xs sm:text-sm font-semibold text-white">High-Performance Real-Time Workspaces</h3>
                   <span className="text-[10px] font-mono text-pink-400 bg-pink-950/50 px-2 py-0.5 rounded border border-pink-500/20 shrink-0">
                     Ultra-Fast
                   </span>

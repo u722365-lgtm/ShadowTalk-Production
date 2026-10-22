@@ -4,7 +4,7 @@
  * Appears on /chatbot when AIKeyContext.hasCompletedOnboarding is false.
  * Presents two cards:
  *
- *  1. "Instant Start" (NON_TECH) — 100 msgs/day, zero setup, shared pool.
+ *  1. "Instant Start" (NON_TECH) — 50 msgs/day, zero setup, shared pool.
  *  2. "Power User" (TECH / BYOK) — unlimited, user's own API key.
  *
  * Design: dark-mode glassmorphism matching ShadowTalk's aesthetic.
@@ -158,7 +158,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
     setNonTechCohort();
     toast({
       title: 'Welcome to ShadowTalk!',
-      description: 'You\'re all set — 100 free messages per day.',
+      description: 'You\'re all set — 50 free messages per day.',
     });
     // The modal will close automatically via the useEffect in ChatbotPage.
     // Also call onOpenChange(false) as a backup.
@@ -218,13 +218,13 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
 
             <h3 className="text-base font-bold text-white">Instant Free Access</h3>
             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Zero setup required. Powered by ShadowTalk's load-balanced OmniRoute AI Gateway.
+              Zero setup required. Powered by ShadowTalk's OmniRoute gateway. Prompts are sent to AI providers via encrypted TLS.
             </p>
 
             {/* Badges */}
             <div className="mt-4 space-y-2">
               {[
-                { icon: InfinityIcon, text: '100 Messages / Day' },
+                { icon: InfinityIcon, text: '50 Messages / Day' },
                 { icon: ShieldCheck, text: 'Auto-Fallback Protection' },
                 { icon: CheckCircle2, text: 'All Features Unlocked (Docs, Images, Chat)' },
               ].map(({ icon: Icon, text }) => (
@@ -272,7 +272,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
 
             <h3 className="text-base font-bold text-white">Bring Your Own Key (BYOK)</h3>
             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Use your own OpenRouter, OpenAI, or Gemini API key for total privacy and unlimited usage.
+              Use your own OpenRouter, OpenAI, or Gemini API key for direct provider access and unlimited usage.
             </p>
 
             {/* Badges */}

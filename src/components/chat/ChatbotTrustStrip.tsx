@@ -46,10 +46,10 @@ const HIGHLIGHTS = BRAND_PILLARS.slice(0, 3);
 export function ChatbotTrustStrip() {
   const metrics = usePlatformMetrics();
   const usersLabel = metrics.isLoading
-    ? "1.5K+ creators"
+    ? "…"
     : formatTractionUsers(metrics.totalUsers);
   const dailyLabel = metrics.isLoading
-    ? "100+ daily active"
+    ? "…"
     : formatTractionDaily(metrics.dailyActiveUsers);
 
   return (

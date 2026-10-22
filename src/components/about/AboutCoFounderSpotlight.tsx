@@ -71,7 +71,7 @@ export const AboutCoFounderSpotlight = () => {
               </h2>
 
               <p className="text-muted-foreground leading-relaxed mb-6 text-base md:text-lg">
-                The second developer of ShadowTalk AI. Where Zain pushed the frontier of autonomous agentic models, Fatima engineered the client-side state machine, sub-millisecond 120fps UI fluidity, and zero-cloud cryptographic memory ledger.
+                The second developer of ShadowTalk AI. Where Zain pushed the frontier of autonomous agentic models, Fatima engineered the client-side state machine, high-performance UI fluidity, and zero-cloud cryptographic memory ledger.
               </p>
 
               <div className="grid sm:grid-cols-2 gap-3.5 mb-8">

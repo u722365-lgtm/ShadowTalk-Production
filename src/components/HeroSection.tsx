@@ -70,7 +70,7 @@ const HeroSection = () => {
               <span className="text-muted-foreground"> Unlimited plans from </span>
               <span className="font-semibold text-foreground">$5</span>
               <span className="text-muted-foreground">/mo</span>
-              <span className="text-muted-foreground"> · activate within 2h · 30-day guarantee · cancel anytime.</span>
+              <span className="text-muted-foreground"> · activate within 2h · 14-day guarantee · cancel anytime.</span>
             </div>
           </div>
 

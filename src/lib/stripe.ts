@@ -106,6 +106,6 @@ export const PLAN_DETAILS = {
       "24/7 phone support",
       "⚡ Fastest models + highest priority",
     ],
-    comparison: "75% cheaper than ChatGPT Pro ($200)!",
+    comparison: "90% cheaper than ChatGPT Pro ($200)!",
   },
 } as const;

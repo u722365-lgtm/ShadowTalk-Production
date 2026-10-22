@@ -117,11 +117,11 @@ export const AgenticAIWorkspacePage = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>E2EE Chat</CardTitle>
+                <CardTitle>Optional E2EE Chat</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  End-to-end encrypted multi-model conversations with business memory and zero server-side retention of prompts.
+                  Encrypted chat mode keeps prompts private. Standard chat sends prompts to AI providers via TLS.
                 </p>
               </CardContent>
             </Card>
@@ -139,11 +139,11 @@ export const AgenticAIWorkspacePage = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Local-First AI</CardTitle>
+                <CardTitle>Optional On-Device AI</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  On-device inference via WebLLM/WebGPU. Conversations stay on your device. No cloud required for basic chat.
+                  Opt in to on-device inference via WebLLM/WebGPU. Requires model download. Standard chat uses cloud AI providers.
                 </p>
               </CardContent>
             </Card>

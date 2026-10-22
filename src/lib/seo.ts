@@ -309,7 +309,7 @@ export const CHATBOT_FAQ = [
   {
     question: "Is ShadowTalk private?",
     answer:
-      "Yes. ShadowTalk auto-downloads a compact on-device model (SmolLM/Gemma via WebLLM) in the background. Once installed, standard chat routes locally and never touches the cloud, keeping conversations on your device.",
+      "Yes. ShadowTalk users can opt in to download an on-device model (Llama-3.2-1B, ~800MB) via WebLLM. Once installed, local inference keeps chats on-device. Standard chat requires internet and sends prompts to AI providers via TLS.",
   },
   {
     question: "What languages does ShadowTalk AI support?",
@@ -411,7 +411,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "local-ai",
     question: "Does ShadowTalk work offline?",
     answer:
-      "Yes. Once the local WebLLM model is cached, ShadowTalk can run completely offline. Personal chats never touch the cloud, and all conversations stay encrypted on your device.",
+      "Yes. Once the on-device model is installed, ShadowTalk can run offline. Local chats stay on your device. Standard chat requires internet and sends prompts to AI providers via TLS.",
   },
 ] as const;
 
@@ -487,7 +487,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   pricing: {
     title: 'Pricing — Free to Start, Cancel Anytime',
-    description: 'ShadowTalk pricing: Free tier with stated daily limits. Pro $5/mo, Premium $15/mo, Elite $20/mo. Cancel anytime, 30-day money-back, data handling disclosed upfront.',
+    description: 'ShadowTalk pricing: Free tier with stated daily limits. Pro $5/mo, Premium $15/mo, Elite $20/mo. Cancel anytime, 14-day money-back, data handling disclosed upfront.',
     keywords: ['AI pricing', 'chatbot subscription', 'AI plans', 'Pro AI $5'],
     canonical: 'https://www.shadowtalk-ai.com/pricing',
   },

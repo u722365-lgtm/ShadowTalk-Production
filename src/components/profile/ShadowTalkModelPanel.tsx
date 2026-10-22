@@ -103,7 +103,7 @@ export function ShadowTalkModelPanel() {
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
           Select <strong>ShadowTalk Model</strong> in chat to use learned context. Inference uses
-          your local Gemma/SmolLM when available, with cloud fallback. Embeddings and clusters stay
+          your local Llama model when available, with cloud fallback. Embeddings and clusters stay
           on this device.
         </p>
       </CardContent>

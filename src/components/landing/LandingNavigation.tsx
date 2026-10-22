@@ -276,7 +276,7 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
                             className="block text-neutral-300 hover:text-white transition-colors"
                           >
                             <p className="font-medium text-white">Private AI & Vault</p>
-                            <p className="text-xs text-neutral-500 mt-0.5">100% on-device WebGPU models</p>
+                            <p className="text-xs text-neutral-500 mt-0.5">Optional on-device WebGPU models</p>
                           </Link>
 
                           <Link
@@ -345,7 +345,7 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
                                 Co-Founder & Systems Architect
                               </span>
                             </div>
-                            <p className="text-xs text-neutral-500 mt-0.5 pl-6">120fps UI state machine & zero-leak telemetry</p>
+                            <p className="text-xs text-neutral-500 mt-0.5 pl-6">High-performance UI state machine & zero-leak telemetry</p>
                           </Link>
 
                           <div className="flex items-center gap-4 pt-1 text-xs text-neutral-400">
@@ -393,10 +393,10 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
                           >
                             <p className="font-medium text-white">Membership Plans & Pricing</p>
                             <p className="text-xs text-neutral-500 mt-0.5">
-                              Free Starter ($0) &bull; Pro Sovereign ($19/mo) &bull; Lifetime Tier
+                              Free ($0) &bull; Pro ($5/mo)
                             </p>
                             <p className="text-[11px] text-emerald-400 font-mono mt-1">
-                              No credit card required for Starter
+                              No credit card required for Free
                             </p>
                           </Link>
                         </motion.div>

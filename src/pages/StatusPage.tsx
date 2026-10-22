@@ -241,7 +241,7 @@ const StatusPage = () => {
       <SEOHead
         meta={{
           title: "System Status — ShadowTalk AI",
-          description: "Real-time operational status of ShadowTalk AI infrastructure: OmniRoute proxy, Firebase Auth, OpenRouter, Gemini API, and Firestore. 99.98% uptime.",
+          description: "Real-time operational status of ShadowTalk AI infrastructure: OmniRoute proxy, Firebase Auth, OpenRouter, Gemini API, and Firestore. Live system health.",
           canonical: "https://www.shadowtalk-ai.com/status",
           keywords: ["ShadowTalk status", "AI system health", "OmniRoute uptime", "operational status"],
           ogType: "website",
@@ -430,9 +430,7 @@ const StatusPage = () => {
         {/* ── Footer note ── */}
         <div className="mt-12 text-center">
           <p className="text-xs text-slate-600">
-            Status data is collected from real health checks. For real-time incident updates, follow{" "}
-            <a href="https://www.shadowtalk-ai.com/status" className="text-indigo-400 hover:underline">this page</a>
-            {" "}or contact{" "}
+            Status indicators reflect the current architecture. For real-time incidents, contact{" "}
             <a href="mailto:shadowtalk@shadowtalk-ai.com" className="text-indigo-400 hover:underline">shadowtalk@shadowtalk-ai.com</a>.
           </p>
           <Button

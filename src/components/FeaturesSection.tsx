@@ -103,7 +103,7 @@ const FeaturesSection = () => {
       icon: Wifi,
       title: "Optional On-Device AI",
       href: "/profile?tab=preferences",
-      description: "Opt in to download Gemma and run offline via WebGPU on Chrome/Edge — your choice, not a requirement.",
+      description: "Opt in to download Llama and run offline via WebGPU on Chrome/Edge — your choice, not a requirement.",
       gradient: "from-primary/10 to-secondary/5",
       iconColor: "text-primary",
       span: "",

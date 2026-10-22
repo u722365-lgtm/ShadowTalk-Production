@@ -68,11 +68,10 @@ const TransparencyDashboard = () => {
           <span className="text-sm text-muted-foreground font-medium">Data Transparency Report</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-          We <span className="gradient-text">Can't</span> See Your Data
+          Your <span className="gradient-text">Data</span> Stays Yours
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Not "we won't" — we <strong className="text-foreground">mathematically cannot</strong>. 
-          Here's the cryptographic proof.
+          Encrypted vault and optional on-device mode keep sensitive work local.
         </p>
       </motion.div>
 

@@ -269,11 +269,10 @@ const TrustPage = ({ embedded = false }: { embedded?: boolean }) => {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
-            Privacy Proof Center
+            Your Data Stays Yours
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Every claim is verifiable. Open your browser's DevTools and confirm each proof yourself. 
-            We don't ask for trust — we provide <span className="text-primary font-semibold">cryptographic evidence</span>.
+            Encrypted vault and optional on-device mode keep sensitive work truly local. Cloud chat sends prompts to AI providers via encrypted TLS.
           </p>
 
           {/* Live integrity hash */}
@@ -508,7 +507,7 @@ const TrustPage = ({ embedded = false }: { embedded?: boolean }) => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <DataFlowNode icon={Eye} label="Browsing History" type="none" delay={0.5} />
                   <DataFlowNode icon={Globe} label="IP-based Tracking" type="none" delay={0.55} />
-                  <DataFlowNode icon={Server} label="Conversation Logs" type="none" delay={0.6} />
+                  <DataFlowNode icon={Server} label="Conversation Logs — Not persisted by ShadowTalk (prompts transit via encrypted TLS to AI providers)" type="none" delay={0.6} />
                   <DataFlowNode icon={Cpu} label="Telemetry Data" type="none" delay={0.65} />
                 </div>
               </div>

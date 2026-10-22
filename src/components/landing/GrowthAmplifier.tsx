@@ -26,7 +26,7 @@ import {
  */
 
 const SITE = "https://www.shadowtalk-ai.com";
-const SHARE_TEXT = "ShadowTalk AI runs an offline model on-device so my chats stay private — free, no login required.";
+const SHARE_TEXT = "ShadowTalk AI offers optional on-device mode for private AI — free, no login required.";
 
 const reviewPlatforms = [
   {

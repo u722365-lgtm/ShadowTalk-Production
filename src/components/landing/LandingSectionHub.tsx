@@ -450,7 +450,7 @@ export const LandingSectionHub = ({
                         Second Developer of ShadowTalk AI · Core Systems & UI State
                       </p>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        Architect of the 120fps client-side state machine, encrypted memory ledger, and zero-leak privacy controls.
+                        Architect of the high-performance client-side state machine, encrypted memory ledger, and zero-leak privacy controls.
                       </p>
                     </div>
                     <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/10">
@@ -509,7 +509,7 @@ export const LandingSectionHub = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="p-4 rounded-2xl bg-slate-950/60 border border-white/10 flex flex-col justify-between">
                     <div>
                       <span className="text-xs font-mono text-slate-400">Free Tier</span>
@@ -531,9 +531,9 @@ export const LandingSectionHub = ({
                       POPULAR
                     </span>
                     <div>
-                      <span className="text-xs font-mono text-emerald-400">Pro Sovereign</span>
+                      <span className="text-xs font-mono text-emerald-400">Pro</span>
                       <p className="text-2xl font-bold text-white mt-1">
-                        $19<span className="text-xs text-slate-400 font-normal">/mo</span>
+                        $5<span className="text-xs text-slate-400 font-normal">/mo</span>
                       </p>
                       <p className="text-xs text-slate-400 mt-2">
                         Unlimited reasoning, high-depth research, multi-agent workspaces, WebGPU priority.
@@ -544,24 +544,6 @@ export const LandingSectionHub = ({
                       className="mt-4 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold text-center block transition-colors"
                     >
                       View Pro Details
-                    </Link>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-950/60 border border-purple-500/30 flex flex-col justify-between">
-                    <div>
-                      <span className="text-xs font-mono text-purple-400">Founder Access</span>
-                      <p className="text-2xl font-bold text-white mt-1">
-                        $199<span className="text-xs text-slate-400 font-normal"> lifetime</span>
-                      </p>
-                      <p className="text-xs text-slate-400 mt-2">
-                        One-time payment. Lifetime updates, private founder Slack access, custom builds.
-                      </p>
-                    </div>
-                    <Link
-                      to="/pricing#founder-access"
-                      className="mt-4 w-full py-2 rounded-xl bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-500/40 text-xs font-semibold text-center block transition-colors"
-                    >
-                      Founder Access
                     </Link>
                   </div>
                 </div>

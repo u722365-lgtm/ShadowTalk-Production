@@ -50,7 +50,7 @@ export default function StickyTryCTA() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold leading-tight">Try ShadowTalk free — no login required</p>
-              <p className="text-xs text-muted-foreground truncate">On-device model, private by default.</p>
+              <p className="text-xs text-muted-foreground truncate">Optional on-device mode for private AI.</p>
             </div>
             <Button
               size="sm"

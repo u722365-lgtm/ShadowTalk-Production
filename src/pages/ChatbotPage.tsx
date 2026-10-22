@@ -823,7 +823,7 @@ const ChatbotPage = () => {
         researchQuery?: string;
       },
     ): Promise<string | undefined> => {
-      // ── Hybrid API Key system: enforce 100/day limit for NON_TECH users ──
+      // ── Hybrid API Key system: enforce 50/day limit for NON_TECH users ──
       if (!checkAndIncrement()) {
         setShowLimitReached(true);
         toast({
@@ -1981,7 +1981,7 @@ Structure and Content Guidelines:
           onOpenChange={setShowOnboarding}
         />
 
-        {/* Daily limit reached — shown when NON_TECH users hit the 100/day cap. */}
+        {/* Daily limit reached — shown when NON_TECH users hit the 50/day cap. */}
         <LimitReachedModal
           open={showLimitReached}
           onOpenChange={setShowLimitReached}
