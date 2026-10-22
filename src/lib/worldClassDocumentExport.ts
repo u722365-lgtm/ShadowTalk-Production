@@ -428,7 +428,7 @@ export function extractDocumentMetadata(markdown: string, options: WorldClassExp
     readTime,
     readingTimeMin: readTime,
     author: options.author || "ShadowTalk AI Document Specialist",
-    classification: options.classification || "Executive Brief",
+    classification: (options.classification || "Executive Brief").toUpperCase(),
     version: options.version || "1.0.0",
     generatedDate: options.date || new Date().toISOString().split("T")[0],
     organization: options.organization || "Enterprise Client",

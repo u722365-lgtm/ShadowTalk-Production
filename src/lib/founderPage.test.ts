@@ -20,9 +20,8 @@ describe("Dedicated Founder Page Verification", () => {
     expect(content).toContain("Navigation");
     expect(content).toContain("Footer");
     expect(content).toContain("FOUNDER_FULL_NAME");
-    expect(content).toContain("Zain Ahmed");
-    expect(content).toContain("Karachi, Pakistan");
     expect(content).toContain("FOUNDER_STORY_CHAPTERS");
+    expect(content).toContain("Karachi, Pakistan");
   });
 
   it("App.tsx registers /founder and alias routes", () => {

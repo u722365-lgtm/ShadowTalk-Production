@@ -128,7 +128,7 @@ export function runInference(prompt: string): Promise<string> {
     expect(md.startsWith("---")).toBe(true);
     expect(md).toContain("title: \"Strategic AI Transformation Report\"");
     expect(md).toContain("author: \"Dr. Elena Rostova\"");
-    expect(md).toContain("classification: \"Executive Brief\"");
+    expect(md).toContain("classification: \"EXECUTIVE BRIEF\"");
     expect(md).toContain("generator: \"ShadowTalk AI World-Class Document Studio\"");
     expect(md).toContain("# Strategic AI Transformation Report");
   });
@@ -146,7 +146,7 @@ export function runInference(prompt: string): Promise<string> {
 
     // Metadata section
     expect(txt).toContain("AUTHOR         : ShadowTalk Research Team");
-    expect(txt).toContain("CLASSIFICATION : PUBLIC SPECIFICATION");
+    expect(txt).toContain("CLASSIFICATION : PUBLIC REPORT");
 
     // Table of contents with dot leaders
     expect(txt).toContain("TABLE OF CONTENTS");

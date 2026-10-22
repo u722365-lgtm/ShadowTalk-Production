@@ -68,6 +68,7 @@ const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
@@ -136,6 +137,7 @@ const AnimatedRoutes = () => {
           <Route path="/docs" element={<PageTransition><DocsPage /></PageTransition>} />
           <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
+          <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
           <Route path="/founder" element={<PageTransition><FounderPage /></PageTransition>} />
           <Route path="/zain-ahmed" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
           <Route path="/zain-ahmed-biography" element={<Navigate to="/zain-ahmed" replace />} />

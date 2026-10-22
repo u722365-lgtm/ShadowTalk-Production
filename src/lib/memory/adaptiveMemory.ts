@@ -6,7 +6,9 @@
  * - Forget low-signal noise: pleasantries, filler, one-off errors.
  * - Expose compact recall packets for prompts/UI.
  * - Stay local-first by default; never require cloud storage.
- * - Backed by IndexedDB (idb) for scalability.
+ * - Backed by IndexedDB (idb) when available; falls back to localStorage
+ *   so the memory system still works in environments without IndexedDB
+ *   (test runners, private browsing, old browsers).
  */
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
@@ -35,9 +37,23 @@ const DB_NAME = 'shadowtalk_memory_db';
 const DB_VERSION = 1;
 
 let dbPromise: Promise<IDBPDatabase<MemoryDB>> | null = null;
+let useLocalStorageFallback = false;
 
-function getDB() {
-  if (!dbPromise) {
+/** Detect whether IndexedDB is available in the current environment. */
+function isIndexedDBAvailable(): boolean {
+  try {
+    return typeof indexedDB !== 'undefined' && indexedDB !== null;
+  } catch {
+    return false;
+  }
+}
+
+function getDB(): Promise<IDBPDatabase<MemoryDB>> {
+  if (!dbPromise && !useLocalStorageFallback) {
+    if (!isIndexedDBAvailable()) {
+      useLocalStorageFallback = true;
+      return Promise.reject(new Error('IndexedDB unavailable'));
+    }
     dbPromise = openDB<MemoryDB>(DB_NAME, DB_VERSION, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('facts')) {
@@ -46,9 +62,88 @@ function getDB() {
           store.createIndex('by-lastUsedAt', 'lastUsedAt');
         }
       },
+    }).catch((err) => {
+      // If IndexedDB fails to open (e.g. private browsing, test env),
+      // permanently switch to the localStorage fallback.
+      console.warn('[AdaptiveMemory] IndexedDB unavailable, using localStorage fallback:', err?.message || err);
+      useLocalStorageFallback = true;
+      dbPromise = null;
+      throw err;
     });
   }
-  return dbPromise;
+  return dbPromise!;
+}
+
+// ── localStorage fallback helpers ──────────────────────────────────────
+
+function readLocalFacts(): MemoryFact[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalFacts(facts: MemoryFact[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(facts));
+  } catch {
+    // storage full or unavailable — best-effort
+  }
+}
+
+/** Get all facts from whichever storage backend is active. */
+async function getAllFacts(): Promise<MemoryFact[]> {
+  if (useLocalStorageFallback) {
+    return readLocalFacts();
+  }
+  const db = await getDB();
+  return db.getAll('facts');
+}
+
+/** Put a fact into whichever storage backend is active. */
+async function putFact(fact: MemoryFact): Promise<void> {
+  if (useLocalStorageFallback) {
+    const facts = readLocalFacts();
+    const idx = facts.findIndex((f) => f.id === fact.id);
+    if (idx >= 0) facts[idx] = fact;
+    else facts.push(fact);
+    writeLocalFacts(facts);
+    return;
+  }
+  const db = await getDB();
+  await db.put('facts', fact);
+}
+
+/** Delete a fact by ID from whichever storage backend is active. */
+async function deleteFact(id: string): Promise<void> {
+  if (useLocalStorageFallback) {
+    const facts = readLocalFacts().filter((f) => f.id !== id);
+    writeLocalFacts(facts);
+    return;
+  }
+  const db = await getDB();
+  await db.delete('facts', id);
+}
+
+/** Count all facts in whichever storage backend is active. */
+async function countFacts(): Promise<number> {
+  if (useLocalStorageFallback) {
+    return readLocalFacts().length;
+  }
+  const db = await getDB();
+  return db.count('facts');
+}
+
+/** Clear all facts from whichever storage backend is active. */
+async function clearFacts(): Promise<void> {
+  if (useLocalStorageFallback) {
+    writeLocalFacts([]);
+    return;
+  }
+  const db = await getDB();
+  await db.clear('facts');
 }
 
 function hashContent(content: string): string {
@@ -114,28 +209,39 @@ export class AdaptiveMemory {
 
   async init() {
     if (this.initialized) return;
-    const db = await getDB();
-    
-    // Migrate from localStorage if needed
+
+    // Try IndexedDB; if it fails, the fallback is already set inside getDB().
     try {
-      if (typeof localStorage !== 'undefined') {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            const tx = db.transaction('facts', 'readwrite');
-            for (const item of parsed) {
-              if (item && typeof item.content === 'string' && item.content.trim().length > 0) {
-                await tx.store.put(item);
+      await getDB();
+    } catch {
+      // useLocalStorageFallback is now true — init still succeeds.
+    }
+
+    // Migrate from localStorage to IndexedDB if we're NOT already in
+    // fallback mode (i.e., IndexedDB just became available and there's
+    // old data in localStorage).
+    if (!useLocalStorageFallback) {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const db = await getDB();
+              const tx = db.transaction('facts', 'readwrite');
+              for (const item of parsed) {
+                if (item && typeof item.content === 'string' && item.content.trim().length > 0) {
+                  await tx.store.put(item);
+                }
               }
+              await tx.done;
             }
-            await tx.done;
+            localStorage.removeItem(STORAGE_KEY);
           }
-          localStorage.removeItem(STORAGE_KEY);
         }
+      } catch (e) {
+        console.warn('Memory migration failed', e);
       }
-    } catch (e) {
-      console.warn('Memory migration failed', e);
     }
     
     this.initialized = true;
@@ -150,24 +256,20 @@ export class AdaptiveMemory {
 
     const added: MemoryFact[] = [];
     const now = Date.now();
-    const db = await getDB();
 
     for (const sentence of sentences) {
       const confidence = scoreContent(sentence);
       if (confidence < this.options.minConfidence!) continue;
 
       const lower = sentence.toLowerCase();
-      
-      const tx = db.transaction('facts', 'readwrite');
-      const allFacts = await tx.store.getAll();
-      
+      const allFacts = await getAllFacts();
       const existing = allFacts.find((f) => f.content.toLowerCase() === lower);
 
       if (existing) {
         existing.confidence = clampScore(existing.confidence + 0.05);
         existing.useCount += 1;
         existing.lastUsedAt = now;
-        await tx.store.put(existing);
+        await putFact(existing);
         added.push(existing);
         continue;
       }
@@ -183,9 +285,8 @@ export class AdaptiveMemory {
         source,
       };
 
-      await tx.store.put(fact);
+      await putFact(fact);
       added.push(fact);
-      await tx.done;
     }
 
     await this.prune();
@@ -194,8 +295,7 @@ export class AdaptiveMemory {
 
   async recall(query: string, limit = 12): Promise<MemoryFact[]> {
     await this.init();
-    const db = await getDB();
-    const allFacts = await db.getAll('facts');
+    const allFacts = await getAllFacts();
     const q = query.toLowerCase();
     
     const scored = allFacts.map((fact) => {
@@ -217,49 +317,36 @@ export class AdaptiveMemory {
 
   async getRecent(limit = 20): Promise<MemoryFact[]> {
     await this.init();
-    const db = await getDB();
-    const index = db.transaction('facts').store.index('by-lastUsedAt');
-    let cursor = await index.openCursor(null, 'prev');
-    const results: MemoryFact[] = [];
-    
-    while (cursor && results.length < limit) {
-      results.push(cursor.value);
-      cursor = await cursor.continue();
-    }
-    
-    return results;
+    const allFacts = await getAllFacts();
+    return allFacts
+      .sort((a, b) => b.lastUsedAt - a.lastUsedAt)
+      .slice(0, limit);
   }
 
   async getTopFacts(limit = 40): Promise<MemoryFact[]> {
     await this.init();
-    const db = await getDB();
-    const allFacts = await db.getAll('facts');
+    const allFacts = await getAllFacts();
     return allFacts
       .sort((a, b) => b.useCount - a.useCount || b.confidence - a.confidence)
       .slice(0, limit);
   }
 
   async clear(): Promise<void> {
-    const db = await getDB();
-    const tx = db.transaction('facts', 'readwrite');
-    await tx.store.clear();
-    await tx.done;
+    await this.init();
+    await clearFacts();
   }
 
   private async prune(): Promise<void> {
-    const db = await getDB();
-    const count = await db.count('facts');
+    const count = await countFacts();
     if (count <= this.options.maxFacts!) return;
     
-    const allFacts = await db.getAll('facts');
+    const allFacts = await getAllFacts();
     allFacts.sort((a, b) => b.confidence - a.confidence || b.useCount - a.useCount);
     
-    const toDelete = allFacts.slice(this.options.maxFacts);
-    const tx = db.transaction('facts', 'readwrite');
+    const toDelete = allFacts.slice(this.options.maxFacts!);
     for (const f of toDelete) {
-      await tx.store.delete(f.id);
+      await deleteFact(f.id);
     }
-    await tx.done;
   }
 }
 

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 
 const WhatIsShadowTalk = lazy(() => import("@/components/landing/WhatIsShadowTalk"));
 const FounderSpotlightSection = lazy(() => import("@/components/founder/FounderSpotlightSection"));
+const PricingSection = lazy(() => import("@/components/PricingSection"));
 const LandingContactSectionComp = lazy(() => import("@/components/landing/LandingContactSection"));
 const Footer = lazy(() => import("@/components/Footer"));
 
@@ -103,6 +104,13 @@ const Index = () => {
                     </Suspense>
                   </div>
                 )}
+                {activeSection === "pricing" && (
+                  <div id="pricing" className="relative">
+                    <Suspense fallback={<div className="py-12 text-center text-xs text-slate-500">Loading pricing...</div>}>
+                      <PricingSection />
+                    </Suspense>
+                  </div>
+                )}
                 {activeSection === "contact" && (
                   <div id="contact" className="relative">
                     <LandingContactSection />
@@ -119,6 +127,11 @@ const Index = () => {
                 <div id="founders" className="relative">
                   <Suspense fallback={<div className="py-12 text-center text-xs text-slate-500">Loading founders...</div>}>
                     <FounderSpotlightSection />
+                  </Suspense>
+                </div>
+                <div id="pricing" className="relative">
+                  <Suspense fallback={<div className="py-12 text-center text-xs text-slate-500">Loading pricing...</div>}>
+                    <PricingSection />
                   </Suspense>
                 </div>
                 <div id="contact" className="relative">

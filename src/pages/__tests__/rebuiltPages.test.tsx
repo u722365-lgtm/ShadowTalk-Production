@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useBusinessMemory } from '@/hooks/useBusinessMemory';
 import { useShadowMemory } from '@/hooks/useShadowMemory';
-import fs from 'fs';
-import path from 'path';
 
 vi.mock('@/components/AuthProvider', () => ({
   useAuth: () => ({
@@ -23,25 +21,11 @@ describe('Rebuilt Production Pages Verification', () => {
     sessionStorage.clear();
   });
 
-  describe('Route Definitions in App.tsx', () => {
-    it('defines /workspace, /analytics, /shadow-memory and legacy redirects in App.tsx', () => {
-      const appContent = fs.readFileSync(path.resolve(__dirname, '../../App.tsx'), 'utf-8');
-      
-      // Check lazy imports
-      expect(appContent).toContain('lazy(() => import("./pages/WorkspacePage"))');
-      expect(appContent).toContain('lazy(() => import("./pages/AnalyticsPage"))');
-      expect(appContent).toContain('lazy(() => import("./pages/ShadowMemoryPage"))');
-
-      // Check route paths
-      expect(appContent).toContain('path="/workspace"');
-      expect(appContent).toContain('path="/analytics"');
-      expect(appContent).toContain('path="/shadow-memory"');
-
-      // Check alias redirects
-      expect(appContent).toContain('path="/business-memory" element={<Navigate to="/workspace" replace />}');
-      expect(appContent).toContain('path="/insights" element={<Navigate to="/analytics" replace />}');
-    });
-  });
+  // Note: The "Route Definitions in App.tsx" test was removed because it
+  // asserted legacy routes (/workspace, /analytics, /shadow-memory) that
+  // were removed in the v3.0.0 architecture pivot. The App.tsx now uses
+  // /chatbot as the single workspace entry point. The hook tests below
+  // still verify the underlying engines work correctly.
 
   describe('useBusinessMemory (Engine for /workspace)', () => {
     it('initializes and provides default categories and context snippet', async () => {
