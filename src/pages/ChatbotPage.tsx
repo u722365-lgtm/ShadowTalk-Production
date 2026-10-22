@@ -838,12 +838,17 @@ const ChatbotPage = () => {
         augmented = [{ role: "system", content: userMemoryContext }, ...augmented];
       }
 
-      const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
-      const isDocRequest =
-        docTypeMatch ||
-        /\b(write|create|draft|generate|compose)\s+(a\s+|an\s+)?(document|report|proposal|whitepaper|business\s+plan|contract|essay|memo|sop|article|resume)\b/i.test(lastUser);
+      // Only inject the publication-quality document directive when the user
+      // EXPLICITLY asks to create/write/generate a document. Previously this
+      // triggered on any mention of "report", "email", "article", etc. —
+      // which meant casual questions like "What is an email?" or "How do I
+      // write a report?" would force the AI into formal document mode.
+      const docRequestRegex = /\b(write|create|draft|generate|compose|make|build|produce)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:professional\s+|formal\s+|detailed\s+)?(document|report|proposal|whitepaper|business\s+plan|contract|essay|memo|sop|article|resume|cv|email|e-mail|letter|blog|press\s+release|case\s+study|thesis|dissertation|research\s+paper|book|chapter|story|novel)\b/i;
+      const isDocRequest = docRequestRegex.test(lastUser);
 
       if (isDocRequest) {
+        // Re-run the type inference only after we've confirmed it's a doc request.
+        const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
         const inferredType = docTypeMatch || "report";
         const docDirective = `[PUBLICATION-QUALITY DOCUMENT STANDARDS]
 You are generating a world-class, publication-grade ${inferredType}.
