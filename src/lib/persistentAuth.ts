@@ -63,7 +63,7 @@ export function isAnonymousUser(session: Session | null): boolean {
 }
 
 /** Build a local Session object from stored user data. */
-function buildLocalSession(email: string, id?: string): Session {
+export function buildLocalSession(email: string, id?: string): Session {
   const userId = id || `local-${email.split('@')[0]}-${Date.now().toString(36)}`;
   return {
     access_token: 'local-token',
