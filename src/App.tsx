@@ -159,6 +159,10 @@ const AnimatedRoutes = () => {
           <Route path="/downloads" element={<PageTransition><DownloadPage /></PageTransition>} />
           <Route path="/google-seo" element={<Navigate to="/google-seo-hub.html" replace />} />
           <Route path="/press" element={<Navigate to="/press-kit.html" replace />} />
+          <Route path="/ide" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/missioncontrol" element={<Navigate to="/agentic-ai-workspace" replace />} />
+          <Route path="/workspace" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/marketplace" element={<Navigate to="/chatbot" replace />} />
           
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
