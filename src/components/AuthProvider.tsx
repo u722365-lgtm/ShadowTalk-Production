@@ -10,8 +10,6 @@ import {
   markExplicitSignOut,
   saveLocalUser,
 } from '@/lib/persistentAuth';
-import { isPreviewEnvironment } from '@/lib/previewEnvironment';
-import { localGetSession, localSignOut } from '@/lib/localAuth';
 
 interface AuthContextType {
   user: User | null;
@@ -87,15 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkSubscription = useCallback(async () => {
     try {
-      // In preview mode, all local users are on the free plan — no Firestore
-      // billing data exists for local-only sessions.
-      if (isPreviewEnvironment()) {
-        setSubscribed(false);
-        setUserPlan('free');
-        setSubscriptionEnd(null);
-        return;
-      }
-
       const { data: { user } } = await backend.auth.getUser();
       if (!user?.email) {
         // Anonymous/guest users are always on the free plan.
@@ -176,23 +165,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const bootstrap = async () => {
       try {
-        // On Lovable preview domains, Firebase Auth can't be used (domain not
-        // authorized). Use the local-only session store instead.
-        if (isPreviewEnvironment()) {
-          const localSession = localGetSession();
-          if (mounted) hydrate(localSession);
-          // No onAuthStateChange to subscribe to — local sessions don't change
-          // unless the user signs in/out, which calls hydrate() directly via
-          // the AuthPage handlers + a custom event.
-          if (mounted) {
-            const onLocalAuthChange = () => hydrate(localGetSession());
-            window.addEventListener('shadowtalk-local-auth-change', onLocalAuthChange);
-            (window as any).__shadowtalkLocalAuthListener = onLocalAuthChange;
-          }
-          return;
-        }
-
-        // Cloud auth is the single source of truth.
+        // Cloud auth (Firebase) is the single source of truth.
+        // No preview bypass — Firebase Auth works on any domain that's
+        // added to Firebase Console → Authentication → Settings → Authorized domains.
         const { data: { session: cloudSession } } = await backend.auth.getSession();
         if (!mounted) return;
         if (cloudSession?.user) {
@@ -239,12 +214,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       mounted = false;
       authSubscription?.unsubscribe();
-      // Clean up the local auth event listener if it was registered.
-      const listener = (window as any).__shadowtalkLocalAuthListener;
-      if (listener) {
-        window.removeEventListener('shadowtalk-local-auth-change', listener);
-        delete (window as any).__shadowtalkLocalAuthListener;
-      }
     };
   }, [applySession, checkSubscription]);
 
@@ -254,12 +223,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('shadowtalk-local-user');
     }
     try {
-      if (isPreviewEnvironment()) {
-        // Local-only sign out for preview environments.
-        localSignOut();
-      } else {
-        await backend.auth.signOut();
-      }
+      await backend.auth.signOut();
     } catch (err) {
       console.warn('[Auth] signOut error:', err);
     }
