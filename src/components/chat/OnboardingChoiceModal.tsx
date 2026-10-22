@@ -139,6 +139,12 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
         title: 'Welcome to ShadowTalk!',
         description: 'BYOK mode activated — unlimited messages unlocked.',
       });
+      // Clear the input for security.
+      setApiKeyInput('');
+      setKeyError(null);
+      // The modal will close automatically via the useEffect in ChatbotPage
+      // that watches hasCompletedOnboarding. We also call onOpenChange(false)
+      // as a backup to ensure immediate close.
       onOpenChange(false);
     } catch {
       setKeyError('Could not save your key. Please try again.');
@@ -154,6 +160,8 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
       title: 'Welcome to ShadowTalk!',
       description: 'You\'re all set — 100 free messages per day.',
     });
+    // The modal will close automatically via the useEffect in ChatbotPage.
+    // Also call onOpenChange(false) as a backup.
     onOpenChange(false);
   }, [setNonTechCohort, toast, onOpenChange]);
 

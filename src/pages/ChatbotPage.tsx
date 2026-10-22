@@ -240,15 +240,15 @@ const ChatbotPage = () => {
   const { checkAndIncrement, isLimited } = useDailyUsage();
 
   // Sync the onboarding modal visibility with the context's onboarding flag.
-  // When hasCompletedOnboarding becomes false (user hasn't onboarded), show the modal.
-  // When it becomes true (user picked a cohort), hide the modal.
+  // The modal shows when the user hasn't completed onboarding AND hasn't picked
+  // a cohort. It hides as soon as either condition is met.
   useEffect(() => {
-    if (!hasCompletedOnboarding) {
+    if (!hasCompletedOnboarding && !userCohort) {
       setShowOnboarding(true);
     } else {
       setShowOnboarding(false);
     }
-  }, [hasCompletedOnboarding]);
+  }, [hasCompletedOnboarding, userCohort]);
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
