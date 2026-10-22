@@ -151,7 +151,7 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
       </div>
 
       {/* Content */}
-      <div className={`flex flex-col gap-2 ${isUser ? 'items-end' : 'items-start'} max-w-[85%] sm:max-w-[80%]`} style={{ width: '100%' }}>
+      <div className={`flex flex-col gap-2 ${isUser ? 'items-end max-w-[85%] sm:max-w-[75%]' : 'items-start w-full'} `} style={{ width: isUser ? undefined : '100%' }}>
         {!isUser && message.isShadowTwin && (
           <div className="text-xs font-semibold text-purple-400/80 flex items-center gap-1.5 ml-1">
             {message.shadowTwinName || "Shadow Twin"}

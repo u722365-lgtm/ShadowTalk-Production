@@ -114,7 +114,7 @@ export const ChatMessagesInner: React.FC<ChatMessagesProps> = ({
 
       <div
         className={`mx-auto px-3 xs:px-4 sm:px-6 py-4 xs:py-6 sm:py-10 w-full min-w-0 ${
-          isGemini ? 'max-w-[720px] space-y-5 sm:space-y-8' : 'max-w-4xl space-y-6 sm:space-y-12'
+          isGemini ? 'max-w-[800px] space-y-5 sm:space-y-8' : 'max-w-5xl space-y-6 sm:space-y-12'
         }`}
       >
         {/* Suggested prompts */}
