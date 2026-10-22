@@ -216,21 +216,178 @@ async function generateViaPollinations(
   return applyImageWatermark(dataUrl);
 }
 
-// ── Master function with fallback ──────────────────────────────────────
+// ── BYOK image generation via OpenRouter ────────────────────────────────
 
 /**
- * Generate an image with automatic fallback:
- *   1. Try the Supabase Edge Function (Lovable AI Gateway / Gemini).
- *   2. If it fails (network, CORS, timeout), fall back to Pollinations.ai.
- *   3. If both fail, throw a helpful error message.
+ * Generate an image using the user's own OpenRouter API key.
+ *
+ * OpenRouter supports image generation via models like:
+ *  - google/gemini-2.0-flash-exp:free (free, supports image generation + vision)
+ *  - stabilityai/stable-diffusion-xl (paid)
+ *  - openai/dall-e-3 (paid)
+ *
+ * This function uses the OpenRouter chat/completions endpoint with a
+ * vision-capable model, asking it to generate an image from the prompt.
+ * For free-tier users, we use gemini-2.0-flash-exp which can generate
+ * images via the `modalities: ["image", "text"]` parameter.
+ *
+ * The response is a base64-encoded image returned as a data URL.
  */
-export async function generateImageWithFallback(
+async function generateViaOpenRouter(
+  apiKey: string,
   prompt: string,
   opts: GenerateImageOptions = {},
 ): Promise<string> {
-  // Try primary (Supabase Edge Function).
+  // Use gemini-2.0-flash-exp:free by default (free, supports image generation).
+  // Users can override via opts.model.
+  const model = opts.model || "google/gemini-2.0-flash-exp:free";
+
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer": typeof window !== "undefined" ? window.location.origin : "https://shadowtalk-ai.com",
+      "X-Title": "ShadowTalk AI",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "user",
+          content: `Generate an image: ${prompt}`,
+        },
+      ],
+      // @ts-expect-error — OpenRouter supports modalities for image generation
+      modalities: ["image", "text"],
+      response_format: { type: "image_url" },
+    }),
+    signal: opts.signal,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    let message = `OpenRouter image generation failed (${res.status})`;
+    try {
+      const errJson = JSON.parse(errText);
+      message = errJson?.error?.message || message;
+    } catch { /* keep status message */ }
+    throw new Error(message);
+  }
+
+  const json = await res.json();
+
+  // OpenRouter returns image generation results in different formats depending
+  // on the model. Try multiple paths to find the image data.
+  const choice = json?.choices?.[0];
+  const message = choice?.message;
+
+  // Path 1: message.images array (some models return images directly)
+  if (message?.images && Array.isArray(message.images) && message.images.length > 0) {
+    const imgUrl = message.images[0]?.url || message.images[0];
+    if (typeof imgUrl === "string" && imgUrl.startsWith("data:image")) {
+      if (opts.onFrame) flushSync(() => opts.onFrame(imgUrl, true));
+      return opts.watermark === false ? imgUrl : applyImageWatermark(imgUrl);
+    }
+    // If it's a URL (not data URL), fetch and convert.
+    if (typeof imgUrl === "string" && imgUrl.startsWith("http")) {
+      return fetchImageAsDataUrl(imgUrl, opts);
+    }
+  }
+
+  // Path 2: message.content with image_url part (multimodal response)
+  if (Array.isArray(message?.content)) {
+    for (const part of message.content) {
+      if (part?.type === "image_url" && part?.image_url?.url) {
+        const url = part.image_url.url;
+        if (url.startsWith("data:image")) {
+          if (opts.onFrame) flushSync(() => opts.onFrame(url, true));
+          return opts.watermark === false ? url : applyImageWatermark(url);
+        }
+        if (url.startsWith("http")) {
+          return fetchImageAsDataUrl(url, opts);
+        }
+      }
+    }
+  }
+
+  // Path 3: message.content as string containing a URL
+  if (typeof message?.content === "string") {
+    const urlMatch = message.content.match(/(https?:\/\/[^\s)]+\.(?:png|jpg|jpeg|webp|gif))/i);
+    if (urlMatch) {
+      return fetchImageAsDataUrl(urlMatch[1], opts);
+    }
+  }
+
+  // Path 4: data field (some models return b64_json directly)
+  if (json?.data?.[0]?.b64_json) {
+    const dataUrl = `data:image/png;base64,${json.data[0].b64_json}`;
+    if (opts.onFrame) flushSync(() => opts.onFrame(dataUrl, true));
+    return opts.watermark === false ? dataUrl : applyImageWatermark(dataUrl);
+  }
+
+  throw new Error(
+    "OpenRouter returned a response but no image was found. The model may not support image generation. " +
+    "Try a different model or use the default image service."
+  );
+}
+
+/** Fetch an image URL and convert to a data URL. */
+async function fetchImageAsDataUrl(url: string, opts: GenerateImageOptions = {}): Promise<string> {
+  const res = await fetch(url, { signal: opts.signal });
+  if (!res.ok) throw new Error(`Failed to download generated image (${res.status})`);
+  const blob = await res.blob();
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Failed to read image data."));
+    reader.readAsDataURL(blob);
+  });
+  if (opts.onFrame) flushSync(() => opts.onFrame(dataUrl, true));
+  return opts.watermark === false ? dataUrl : applyImageWatermark(dataUrl);
+}
+
+// ── Master function with fallback ──────────────────────────────────────
+
+export interface GenerateImageParams extends GenerateImageOptions {
+  /** User's BYOK API key (OpenRouter). If provided, used as primary. */
+  userApiKey?: string;
+}
+
+/**
+ * Generate an image with BYOK-aware routing and automatic fallback:
+ *
+ *   1. If userApiKey is provided (TECH/BYOK mode):
+ *      → Try OpenRouter image generation with the user's key.
+ *      → If that fails, fall back to Supabase Edge Function.
+ *      → If that fails, fall back to Pollinations.ai.
+ *
+ *   2. If no userApiKey (NON_TECH mode):
+ *      → Try Supabase Edge Function (Lovable AI Gateway / Gemini).
+ *      → If that fails, fall back to Pollinations.ai.
+ *
+ *   3. If all fail: throw a helpful error message.
+ */
+export async function generateImageWithFallback(
+  prompt: string,
+  opts: GenerateImageParams = {},
+): Promise<string> {
+  const { userApiKey, ...imageOpts } = opts;
+
+  // ── Path 1: BYOK (OpenRouter) — primary for TECH users ──
+  if (userApiKey) {
+    try {
+      return await generateViaOpenRouter(userApiKey, prompt, imageOpts);
+    } catch (byokErr) {
+      const errMsg = byokErr instanceof Error ? byokErr.message : String(byokErr);
+      console.warn("[cloudImage] BYOK image generation failed, trying cloud fallback:", errMsg);
+      // Don't rethrow — fall through to cloud fallback.
+    }
+  }
+
+  // ── Path 2: Supabase Edge Function — primary for NON_TECH users ──
   try {
-    return await generateCloudImage(prompt, opts);
+    return await generateCloudImage(prompt, imageOpts);
   } catch (primaryErr) {
     const errMsg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
     console.warn("[cloudImage] Primary image generation failed, trying Pollinations.ai fallback:", errMsg);
@@ -240,14 +397,16 @@ export async function generateImageWithFallback(
       throw primaryErr;
     }
 
-    // Try fallback (Pollinations.ai).
+    // ── Path 3: Pollinations.ai — last resort ──
     try {
-      return await generateViaPollinations(prompt, opts);
+      return await generateViaPollinations(prompt, imageOpts);
     } catch (fallbackErr) {
       const fbErrMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
-      console.error("[cloudImage] Both primary and fallback image generation failed:", fbErrMsg);
+      console.error("[cloudImage] All image generation methods failed:", fbErrMsg);
       throw new Error(
-        `Image generation is currently unavailable. The primary service failed (${errMsg}) and the fallback also failed (${fbErrMsg}). Please try again in a moment.`,
+        `Image generation is currently unavailable. BYOK failed (${errMsg ? errMsg.slice(0, 100) : 'error'}), ` +
+        `cloud service failed, and the free fallback also failed (${fbErrMsg.slice(0, 100)}). ` +
+        `Please try again in a moment.`
       );
     }
   }

@@ -234,6 +234,7 @@ const ChatbotPage = () => {
   const {
     hasCompletedOnboarding,
     userCohort,
+    userApiKey,
     maxDailyLimit,
   } = useAIKeyContext();
   const { checkAndIncrement, isLimited } = useDailyUsage();
@@ -1163,6 +1164,7 @@ Structure and Content Guidelines:
         }
 
         const imageUrl = await generateImageWithFallback(imagePrompt, {
+          userApiKey: userCohort === 'TECH' ? userApiKey : undefined,
           onFrame: (dataUrl, isFinal) => {
             // Update the AI message with progressive preview frames
             setMessages((prev) => prev.map((m) =>
