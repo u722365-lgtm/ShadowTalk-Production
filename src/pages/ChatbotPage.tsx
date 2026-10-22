@@ -228,6 +228,7 @@ const ChatbotPage = () => {
   const [showByok, setShowByok] = useState(false);
   const [showKeySettings, setShowKeySettings] = useState(false);
   const [showLimitReached, setShowLimitReached] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Hybrid API Key system — cohort + daily usage.
   const {
@@ -236,6 +237,17 @@ const ChatbotPage = () => {
     maxDailyLimit,
   } = useAIKeyContext();
   const { checkAndIncrement, isLimited } = useDailyUsage();
+
+  // Sync the onboarding modal visibility with the context's onboarding flag.
+  // When hasCompletedOnboarding becomes false (user hasn't onboarded), show the modal.
+  // When it becomes true (user picked a cohort), hide the modal.
+  useEffect(() => {
+    if (!hasCompletedOnboarding) {
+      setShowOnboarding(true);
+    } else {
+      setShowOnboarding(false);
+    }
+  }, [hasCompletedOnboarding]);
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
@@ -1954,11 +1966,8 @@ Structure and Content Guidelines:
 
         {/* One-time onboarding choice — appears when user hasn't picked a cohort yet. */}
         <OnboardingChoiceModal
-          open={!hasCompletedOnboarding}
-          onOpenChange={(open) => {
-            // Can't dismiss the onboarding modal without choosing — it re-appears.
-            if (!open && !hasCompletedOnboarding) return;
-          }}
+          open={showOnboarding}
+          onOpenChange={setShowOnboarding}
         />
 
         {/* Daily limit reached — shown when NON_TECH users hit the 100/day cap. */}
