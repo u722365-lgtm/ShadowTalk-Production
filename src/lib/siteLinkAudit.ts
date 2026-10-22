@@ -17,7 +17,6 @@ export const CRITICAL_NAV_LINKS = [
 export const LEGACY_REDIRECT_PATHS = [
   "/zain-ahmed-biography",
   // Static marketing pages served as HTML by Firebase Hosting catch-all.
-  // These are valid links — they resolve to pre-rendered HTML files in /public.
   "/anonymous-ai",
   "/ai-strategy-consultant",
   "/ai-business-planner",
@@ -42,21 +41,6 @@ export const LEGACY_REDIRECT_PATHS = [
   "/how-to-ai-strategy-planner-free",
   "/how-to-private-ai-chat",
   "/how-to-shadowtalk-vs-chatgpt-strategy",
-  // Legacy app paths now served by SPA catch-all (Firebase Hosting rewrite).
-  "/marketplace",
-  "/api",
-  "/templates",
-  "/downloads",
-  "/computer",
-  "/privacy-score",
-  "/developers",
-  "/billing",
-  "/status",
-  "/careers",
-  "/missioncontrol",
-  "/ide",
-  "/workspace",
-  "/docs/geos",
 ] as const;
 
 export function extractAppRoutePaths(appSource: string): string[] {

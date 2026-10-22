@@ -71,6 +71,7 @@ const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const StatusPage = lazy(() => import("./pages/StatusPage"));
+const DownloadPage = lazy(() => import("./pages/DownloadPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
@@ -153,6 +154,11 @@ const AnimatedRoutes = () => {
           <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />
           <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
           <Route path="/founder-access" element={<PageTransition><FounderAccessPage /></PageTransition>} />
+          <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
+          <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
+          <Route path="/downloads" element={<PageTransition><DownloadPage /></PageTransition>} />
+          <Route path="/google-seo" element={<Navigate to="/google-seo-hub.html" replace />} />
+          <Route path="/press" element={<Navigate to="/press-kit.html" replace />} />
           
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />

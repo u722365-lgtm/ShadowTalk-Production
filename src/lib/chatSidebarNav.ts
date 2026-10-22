@@ -30,7 +30,6 @@ export const CHAT_SIDEBAR_NAV: ChatSidebarNavItem[] = [
   { label: "Shadow Twin", icon: Brain, to: "/shadow-twin", section: "explore" },
   { label: "Knowledge Graph", icon: Network, to: "/knowledge-graph", section: "explore" },
   { label: "Private AI Hub", icon: Lock, to: "/private-ai", section: "explore" },
-  { label: "Developer API", icon: Code2, to: "/developers", section: "explore" },
   { label: "Pricing & Plans", icon: Sparkles, to: "/pricing", section: "explore" },
   { label: "Docs & Guides", icon: BookOpen, to: "/docs", section: "explore" },
   { label: "Founder Story", icon: User, to: "/founder", section: "explore" },
