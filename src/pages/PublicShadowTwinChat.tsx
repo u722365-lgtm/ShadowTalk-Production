@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { PageTransition } from '@/components/PageTransition';
 import { AIProviderRouter } from '@/ai/AIProviderRouter';
+import { buildShadowTalkPersonaBlock } from '@/lib/shadowTalkPersona';
 
 interface Message {
   id: string;
@@ -54,7 +55,7 @@ export default function PublicShadowTwinChat() {
       const chatMessages = messages.map(m => ({ role: m.role as 'user' | 'assistant' | 'system', content: m.content }));
       chatMessages.push({ role: 'user', content: userMessage.content });
 
-      const systemPrompt = `You are acting as the Shadow Twin for ${username}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI. Keep your answers concise.`;
+      const systemPrompt = `${buildShadowTalkPersonaBlock()}\n\n## Current Role\nYou are acting as the Shadow Twin for ${username}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI. Keep your answers concise.\n\nNote: You are still ShadowTalk AI under the hood — if asked about the platform, pricing, or founder, answer accurately using the knowledge above.`;
 
       const augmented = [
         { role: 'system' as const, content: systemPrompt },

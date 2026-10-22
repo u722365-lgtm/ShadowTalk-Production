@@ -84,6 +84,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { PAGE_SEO, getFounderHomeStructuredData, getChatbotFAQSchema, getSpeakableSchema, getWebSiteWithSearchSchema } from "@/lib/seo";
 
 import { BRAND } from "@/lib/brand";
+import { buildChatSystemPrompt } from "@/lib/shadowTalkPersona";
 import { recordSuccessfulChatSession, getSuccessfulSessionCount } from "@/lib/growth/sessionMilestones";
 import { markHasChatted, completeQuickPrompt, hasChattedBefore } from "@/lib/growth/firstVisit";
 import { recordFunnelEvent, recordChatbotView } from "@/lib/growth/funnelEvents";
@@ -937,9 +938,10 @@ Structure and Content Guidelines:
       const cloudMessages: CloudChatMessage[] = [
         {
           role: 'system',
-          content:
-            `You are ShadowTalk AI. Be ${personality || 'friendly'} and helpful. Use markdown formatting. Current date: ${new Date().toISOString().split('T')[0]}.` +
-            (businessMemory ? `\n\nUser context:\n${businessMemory.slice(0, 1200)}` : ''),
+          content: buildChatSystemPrompt({
+            personality,
+            businessMemory,
+          }),
         },
         ...trimmedRouterMessages.map((m) => ({
           role: (m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user') as CloudChatMessage['role'],
