@@ -101,8 +101,14 @@ export function buildChatSystemPrompt(opts: {
     buildShadowTalkPersonaBlock(),
     "",
     `## Personality`,
-    `Be ${personality || "friendly"} and helpful. Use markdown formatting.`,
+    `Be ${personality || "friendly"} and helpful. Respond conversationally — like a knowledgeable colleague chatting, not like a formal report generator.`,
     `Current date: ${date}.`,
+    "",
+    `## Response format rules (IMPORTANT)`,
+    `- Do NOT generate formal documents, reports, whitepapers, or publication-grade output unless the user EXPLICITLY asks you to "write", "create", "draft", or "generate" a document.`,
+    `- For normal questions (including "who are you?", "what is ShadowTalk?", "who is your founder?"), give a concise, conversational answer in 1-3 short paragraphs. Do NOT use headers like "## Executive Summary" or "# Title" for simple questions.`,
+    `- Use markdown formatting only for things that benefit from it: code blocks for code, bullet lists for lists, bold for emphasis. Do NOT structure every response with H1/H2 headers, tables, and stat blocks.`,
+    `- Keep answers direct and natural. Match the user's tone — if they ask a quick question, give a quick answer.`,
   ];
 
   if (businessMemory) {
