@@ -33,6 +33,7 @@ import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
+import { generateCloudImage, isCloudImageConfigured } from "@/lib/cloudImage";
 import { AIProviderRouter } from "@/ai/AIProviderRouter";
 import { stringifyChatBody } from "@/lib/chatRequest";
 import { buildChatProviderPayload } from "@/lib/chatProviderBridge";
@@ -1113,6 +1114,83 @@ Structure and Content Guidelines:
     const msgContent = (overrideText ?? message).trim();
     if ((!msgContent && !selectedFile) || isLoading) return;
 
+    // ── Command interception: /image <prompt> ──
+    // Routes to the image generation system instead of sending to the text AI.
+    const imageCommandMatch = msgContent.match(/^\/image\s+(.+)/i);
+    if (imageCommandMatch) {
+      const imagePrompt = imageCommandMatch[1].trim();
+      if (!imagePrompt) {
+        toast({ title: "Image command", description: "Please provide a prompt after /image. Example: /image a red dragon flying over mountains", variant: "destructive" });
+        return;
+      }
+
+      // Add user message to chat
+      const userMsg: Message = {
+        id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'img-user-' + Date.now()),
+        type: "user",
+        content: msgContent,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, userMsg]);
+      if (!overrideText) setMessage("");
+      setIsLoading(true);
+
+      // Add a placeholder AI message that will be updated with the image
+      const aiMsgId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'img-ai-' + Date.now());
+      setMessages((prev) => [...prev, {
+        id: aiMsgId,
+        type: "ai",
+        content: "Generating image...",
+        timestamp: new Date(),
+      }]);
+
+      try {
+        // Check if cloud image generation is configured
+        if (!isCloudImageConfigured()) {
+          throw new Error("Image generation is not configured. Set VITE_SUPABASE_URL or use BYOK mode.");
+        }
+
+        const imageUrl = await generateCloudImage(imagePrompt, {
+          onFrame: (dataUrl, isFinal) => {
+            // Update the AI message with progressive preview frames
+            setMessages((prev) => prev.map((m) =>
+              m.id === aiMsgId
+                ? { ...m, content: isFinal ? `Here's your generated image for: **${imagePrompt}**` : "Generating image...", imageUrl: dataUrl }
+                : m
+            ));
+          },
+        });
+
+        // Final update with the completed image
+        setMessages((prev) => prev.map((m) =>
+          m.id === aiMsgId
+            ? { ...m, content: `Here's your generated image for: **${imagePrompt}**`, imageUrl }
+            : m
+        ));
+
+        // Persist to conversation if user is logged in
+        if (user) {
+          const conversationId = await resolveConversationId().catch(() => null);
+          if (conversationId) {
+            void saveMessage(msgContent, "user", conversationId).catch(() => {});
+            void saveMessage(`Generated image for: ${imagePrompt}`, "assistant", conversationId).catch(() => {});
+          }
+        }
+
+        markHasChatted();
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : "Image generation failed. Please try again.";
+        setMessages((prev) => prev.map((m) =>
+          m.id === aiMsgId
+            ? { ...m, content: `I couldn't generate that image. ${errMsg}`, imageUrl: undefined }
+            : m
+        ));
+        toast({ title: "Image generation failed", description: errMsg, variant: "destructive" });
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
 
 
     if (chatMode === "swarm") {
