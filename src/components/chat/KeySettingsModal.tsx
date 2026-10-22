@@ -124,7 +124,7 @@ export const KeySettingsModal: React.FC<KeySettingsModalProps> = ({ open, onOpen
               ) : userCohort === 'NON_TECH' ? (
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-950/50 px-2 py-0.5 rounded-full border border-amber-500/20">
                   <Zap className="h-3 w-3" />
-                  Free · {remainingMessages}/{maxDailyLimit} left
+                  OmniRoute · {remainingMessages}/{maxDailyLimit} left
                 </span>
               ) : (
                 <span className="text-[11px] font-semibold text-slate-500">Not set</span>
@@ -203,7 +203,7 @@ export const KeySettingsModal: React.FC<KeySettingsModalProps> = ({ open, onOpen
             )}
           >
             <Zap className="h-4 w-4 mr-1.5" />
-            Use Instant Start (100 msgs/day free)
+            Use Instant Start — OmniRoute (100 msgs/day free)
           </Button>
 
           {/* Reset onboarding */}

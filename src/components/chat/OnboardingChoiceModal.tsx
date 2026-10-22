@@ -202,15 +202,15 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
 
             <h3 className="text-base font-bold text-white">Instant Free Access</h3>
             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              No setup required. Pre-configured OpenRouter access gets you chatting immediately.
+              Zero setup required. Powered by ShadowTalk's load-balanced OmniRoute AI Gateway.
             </p>
 
             {/* Badges */}
             <div className="mt-4 space-y-2">
               {[
                 { icon: InfinityIcon, text: '100 Messages / Day' },
-                { icon: CheckCircle2, text: 'All Features (Docs, Images, Chat)' },
-                { icon: ShieldCheck, text: 'Zero Setup Required' },
+                { icon: ShieldCheck, text: 'Auto-Fallback Protection' },
+                { icon: CheckCircle2, text: 'All Features Unlocked (Docs, Images, Chat)' },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-2 text-xs text-slate-300">
                   <Icon className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
@@ -256,7 +256,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
 
             <h3 className="text-base font-bold text-white">Bring Your Own Key (BYOK)</h3>
             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-              Use your own OpenRouter or OpenAI API key for full control and unlimited messages.
+              Use your own OpenRouter, OpenAI, or Gemini API key for total privacy and unlimited usage.
             </p>
 
             {/* Badges */}

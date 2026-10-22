@@ -83,7 +83,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({ open, onOp
             You've hit your {maxDailyLimit} free messages for today!
           </DialogTitle>
           <DialogDescription className="text-sm text-slate-400 mt-2 leading-relaxed">
-            Switch to BYOK mode by adding your free OpenRouter API key for unlimited access.
+            You've reached your 100 free daily messages! Switch to BYOK mode by adding your own OpenRouter or OpenAI API key for unlimited access.
           </DialogDescription>
         </DialogHeader>
 

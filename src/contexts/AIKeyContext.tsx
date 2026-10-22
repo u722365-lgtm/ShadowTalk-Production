@@ -210,7 +210,9 @@ export const AIKeyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     localStorage.removeItem(API_KEY_STORAGE);
     localStorage.setItem(ONBOARDED_KEY, '1');
 
-    // Clear any existing BYOK config so it doesn't interfere with the shared key.
+    // Clear any existing BYOK config so it doesn't interfere with the
+    // OmniRoute gateway routing. NON_TECH requests go through
+    // VITE_OMNIROUTE_ENDPOINT (handled in executeAIRequest.ts).
     clearByokConfig();
 
     setUserCohort('NON_TECH');

@@ -2,31 +2,34 @@
  * executeAIRequest — Centralized AI request wrapper for ShadowTalk AI.
  *
  * ALL AI features (Chatbot, Document Generation, Image Generation, Vision
- * Analysis, Document Analysis) MUST route through this function. It reads
- * the AIKeyContext to decide which key/endpoint to use:
+ * Analysis, Code IDE) MUST route through this function. It reads the
+ * AIKeyContext to decide which key/endpoint to use:
  *
  *  - TECH cohort:     Uses the user's own API key (BYOK) directly in the
  *                     Authorization header. Direct provider connection,
  *                     unlimited messages.
- *  - NON_TECH cohort: Routes through the shared platform key via env var
- *                     VITE_OPENROUTER_SHARED_KEY, or falls back to the
- *                     backend proxy at /api/ai-proxy if configured.
- *                     Subject to the 100/day cap enforced by useDailyUsage.
+ *  - NON_TECH cohort: Routes through the OmniRoute AI Gateway (configured
+ *                     via VITE_OMNIROUTE_ENDPOINT). OmniRoute provides
+ *                     load-balanced access across Gemini, Groq, and Mistral
+ *                     with token compression and automatic 429 circuit-
+ *                     breaker key rotation. Uses the OmniRoute model
+ *                     identifier `auto/fast` (or `auto/cheap` if configured).
+ *                     Falls back to streamCloudChat if OmniRoute is not
+ *                     configured. Subject to the 100/day cap enforced by
+ *                     useDailyUsage.
  *
  * Error handling:
  *  - BYOK key invalid/exhausted (401/402/429): throws AIKeyError with
  *    code 'BYOK_KEY_FAILED' so the UI can prompt for a new key.
- *  - Shared pool rate-limited (429): throws AIKeyError with code
- *    'SHARED_RATE_LIMITED' so the UI can show the upgrade modal.
+ *  - OmniRoute pool exhausted (all upstream keys rate-limited): throws
+ *    AIKeyError with code 'SHARED_RATE_LIMITED' so the UI can show the
+ *    upgrade modal.
  *  - Network errors: throws AIKeyError with code 'NETWORK_ERROR'.
  *
- * This wrapper handles CHAT requests (OpenAI-compatible /chat/completions).
- * For image generation and vision, use executeAIRequest's `endpoint` option.
- *
  * Backward compatibility:
- *  This is a NEW entry point — existing code paths (streamCloudChat, turboComplete,
- *  AIProviderRouter) continue to work unchanged. New features should adopt this
- *  wrapper for unified cohort-aware routing.
+ *  This is a NEW entry point — existing code paths (streamCloudChat,
+ *  turboComplete, AIProviderRouter) continue to work unchanged. New
+ *  features should adopt this wrapper for unified cohort-aware routing.
  */
 
 import type { CloudChatMessage, CloudChatOptions, CloudChatResult } from '@/lib/cloudChat';
@@ -67,14 +70,45 @@ export class AIKeyError extends Error {
   }
 }
 
-// ── Shared key resolution ──────────────────────────────────────────────
+// ── OmniRoute gateway config (NON_TECH) ────────────────────────────────
 
 /**
- * Resolve the shared platform key for NON_TECH users.
- * Priority:
- *  1. VITE_OPENROUTER_SHARED_KEY env var (client-side, prefixed with VITE_).
- *  2. (Future) backend /api/ai-proxy endpoint — if env var is absent, the
- *     request is routed through the backend which injects the key server-side.
+ * OmniRoute gateway configuration for NON_TECH users.
+ *
+ * Env vars (all optional — if absent, NON_TECH falls back to streamCloudChat):
+ *  - VITE_OMNIROUTE_ENDPOINT: The OmniRoute /v1/chat/completions URL.
+ *    e.g. "https://your-omniroute-instance/v1/chat/completions"
+ *  - VITE_OMNIROUTE_API_KEY:  Bearer token for the OmniRoute instance.
+ *  - VITE_OMNIROUTE_MODEL:    OmniRoute model identifier. Defaults to
+ *    "auto/fast" (load-balanced across Gemini/Groq/Mistral with token
+ *    compression). Use "auto/cheap" for the lowest-cost routing.
+ */
+interface OmniRouteConfig {
+  endpoint: string;
+  apiKey: string | null;
+  model: string;
+}
+
+function getOmniRouteConfig(): OmniRouteConfig | null {
+  const env = (import.meta as any).env ?? {};
+  const endpoint = env.VITE_OMNIROUTE_ENDPOINT;
+  if (typeof endpoint !== 'string' || endpoint.trim().length === 0) {
+    return null;
+  }
+  return {
+    endpoint: endpoint.trim(),
+    apiKey: typeof env.VITE_OMNIROUTE_API_KEY === 'string' ? env.VITE_OMNIROUTE_API_KEY.trim() : null,
+    model: (typeof env.VITE_OMNIROUTE_MODEL === 'string' && env.VITE_OMNIROUTE_MODEL.trim().length > 0)
+      ? env.VITE_OMNIROUTE_MODEL.trim()
+      : 'auto/fast',
+  };
+}
+
+// ── Legacy shared key resolution (fallback) ─────────────────────────────
+
+/**
+ * Legacy: Resolve the shared OpenRouter key for NON_TECH users.
+ * Only used as a fallback when OmniRoute is not configured.
  */
 function getSharedKey(): string | null {
   const env = (import.meta as any).env ?? {};
@@ -83,16 +117,6 @@ function getSharedKey(): string | null {
     return key.trim();
   }
   return null;
-}
-
-/**
- * Whether a backend AI proxy is configured. When true, NON_TECH requests
- * go to /api/ai-proxy instead of calling OpenRouter directly from the browser.
- * This is the recommended production setup (key stays server-side).
- */
-function hasBackendProxy(): boolean {
-  const env = (import.meta as any).env ?? {};
-  return env.VITE_AI_PROXY_URL != null || env.VITE_USE_AI_PROXY === 'true';
 }
 
 // ── BYOK (TECH) execution ──────────────────────────────────────────────
@@ -150,45 +174,195 @@ async function executeByokRequest(
   }
 }
 
+// ── OmniRoute gateway execution (NON_TECH primary) ─────────────────────
+
+/**
+ * Execute a chat request via the OmniRoute AI Gateway.
+ *
+ * OmniRoute provides:
+ *  - Load balancing across Gemini, Groq, and Mistral upstream providers.
+ *  - Token compression to reduce cost and latency.
+ *  - Automatic 429 circuit-breaker key rotation (if one upstream key is
+ *    rate-limited, OmniRoute transparently rotates to the next).
+ *  - OpenAI-compatible /v1/chat/completions API (SSE streaming supported).
+ *
+ * The model identifier is `auto/fast` by default (or `auto/cheap` if
+ * VITE_OMNIROUTE_MODEL is set). These tell OmniRoute to pick the best
+ * upstream model automatically.
+ *
+ * If OmniRoute returns a 429 or pool-exhausted error, we throw
+ * AIKeyError('SHARED_RATE_LIMITED') so the UI can prompt the user to
+ * switch to BYOK.
+ */
+async function executeOmniRouteRequest(
+  config: OmniRouteConfig,
+  messages: CloudChatMessage[],
+  options?: CloudChatOptions,
+): Promise<CloudChatResult> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (config.apiKey) {
+    headers['Authorization'] = `Bearer ${config.apiKey}`;
+  }
+
+  const body: Record<string, any> = {
+    model: options?.model || config.model,
+    messages: messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    stream: true,
+    temperature: options?.temperature ?? 0.7,
+  };
+  if (options?.maxTokens) {
+    body.max_tokens = options.maxTokens;
+  }
+
+  try {
+    const response = await fetch(config.endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal: options?.signal,
+    });
+
+    // ── Error handling ──
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '');
+      const status = response.status;
+      const lowerErr = errorText.toLowerCase();
+
+      // 429 or pool-exhausted → prompt BYOK upgrade.
+      if (status === 429 || lowerErr.includes('rate') || lowerErr.includes('circuit') || lowerErr.includes('pool')) {
+        throw new AIKeyError(
+          'SHARED_RATE_LIMITED',
+          'The OmniRoute gateway is currently at capacity (all upstream providers rate-limited). Please try again in a moment, or switch to BYOK mode for unlimited access.',
+          status,
+        );
+      }
+      // 402 / payment → credits exhausted.
+      if (status === 402 || lowerErr.includes('credit') || lowerErr.includes('payment') || lowerErr.includes('exhausted')) {
+        throw new AIKeyError(
+          'SHARED_RATE_LIMITED',
+          'The OmniRoute gateway credits are exhausted. Switch to BYOK mode with your own key for unlimited access.',
+          status,
+        );
+      }
+      // 401 / auth → OmniRoute key misconfigured.
+      if (status === 401 || lowerErr.includes('unauthorized') || lowerErr.includes('invalid')) {
+        throw new AIKeyError(
+          'SHARED_KEY_MISSING',
+          'The OmniRoute gateway rejected the request (authentication error). Please contact support or switch to BYOK mode.',
+          status,
+        );
+      }
+      // Other errors.
+      throw new AIKeyError(
+        'NETWORK_ERROR',
+        `OmniRoute gateway error (${status}): ${errorText.slice(0, 200) || 'unknown error'}`,
+        status,
+      );
+    }
+
+    // ── Stream the SSE response ──
+    // OmniRoute speaks OpenAI-compatible SSE: data: {choices:[{delta:{content}}]}\n\n
+    // terminated by data: [DONE]\n\n.
+    if (!response.body) {
+      // Non-streaming fallback.
+      const json = await response.json().catch(() => ({}));
+      const content = json?.choices?.[0]?.message?.content ?? '';
+      return {
+        content,
+        source: 'omniroute',
+        modelUsed: body.model,
+      };
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let accumulated = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process complete SSE lines.
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // keep incomplete line in buffer
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data:')) continue;
+
+          const data = trimmed.slice(5).trim();
+          if (data === '[DONE]') continue;
+
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed?.choices?.[0]?.delta?.content;
+            if (typeof delta === 'string' && delta.length > 0) {
+              accumulated += delta;
+              // Call onDelta with the accumulated text (matching CloudChatOptions contract).
+              if (options?.onDelta) {
+                options.onDelta(accumulated);
+              }
+            }
+          } catch {
+            // Skip malformed JSON lines (keep-alive comments, etc.).
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    return {
+      content: accumulated,
+      source: 'omniroute',
+      modelUsed: body.model,
+    };
+  } catch (err) {
+    // Re-throw AIKeyError as-is.
+    if (err instanceof AIKeyError) throw err;
+
+    // Abort signals should propagate.
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw err;
+    }
+
+    // Network errors (fetch failed, CORS, DNS, etc.).
+    throw new AIKeyError(
+      'NETWORK_ERROR',
+      `Could not reach the OmniRoute gateway: ${(err as Error)?.message || 'network error'}`,
+    );
+  }
+}
+
 // ── Shared pool (NON_TECH) execution ───────────────────────────────────
 
 async function executeSharedRequest(
   messages: CloudChatMessage[],
   options?: CloudChatOptions,
 ): Promise<CloudChatResult> {
-  const sharedKey = getSharedKey();
-  const useProxy = hasBackendProxy();
-
-  // If no shared key and no proxy configured, fall back to the existing
-  // streamCloudChat (which uses the Supabase edge function / Lovable gateway).
-  // This ensures the app works out-of-the-box without additional env setup.
-  if (!sharedKey && !useProxy) {
-    try {
-      const result = await streamCloudChat(messages, options);
-      if (result.error && !result.content) {
-        const err = result.error.toLowerCase();
-        if (err.includes('429') || err.includes('rate')) {
-          throw new AIKeyError('SHARED_RATE_LIMITED', 'The shared AI pool is busy right now. Try again in a moment, or switch to BYOK mode for unlimited access.');
-        }
-        if (err.includes('402') || err.includes('credits') || err.includes('exhausted')) {
-          throw new AIKeyError('SHARED_RATE_LIMITED', 'The shared AI pool credits are exhausted. Switch to BYOK mode with your own key for unlimited access.');
-        }
-      }
-      return result;
-    } catch (err) {
-      if (err instanceof AIKeyError) throw err;
-      throw new AIKeyError('NETWORK_ERROR', `Shared AI request failed: ${(err as Error)?.message || 'network error'}`);
-    }
+  // ── Primary: OmniRoute gateway ──
+  const omniRoute = getOmniRouteConfig();
+  if (omniRoute) {
+    return executeOmniRouteRequest(omniRoute, messages, options);
   }
 
-  // If a shared OpenRouter key is configured, use it directly.
+  // ── Fallback 1: Legacy shared OpenRouter key ──
+  const sharedKey = getSharedKey();
   if (sharedKey) {
     try {
       const result = await streamByokChat(
         {
           provider: 'openrouter',
           apiKey: sharedKey,
-          model: 'openai/gpt-4o-mini', // cost-effective default for shared pool
+          model: 'openai/gpt-4o-mini',
           mode: 'always',
         },
         messages,
@@ -212,8 +386,24 @@ async function executeSharedRequest(
     }
   }
 
-  // Future: backend proxy path (key stays server-side).
-  throw new AIKeyError('SHARED_KEY_MISSING', 'No shared AI key configured. Set VITE_OPENROUTER_SHARED_KEY or enable the backend proxy.');
+  // ── Fallback 2: streamCloudChat (Supabase edge function / Lovable gateway) ──
+  // This ensures the app works out-of-the-box even without OmniRoute or shared key env vars.
+  try {
+    const result = await streamCloudChat(messages, options);
+    if (result.error && !result.content) {
+      const err = result.error.toLowerCase();
+      if (err.includes('429') || err.includes('rate')) {
+        throw new AIKeyError('SHARED_RATE_LIMITED', 'The shared AI pool is busy right now. Try again in a moment, or switch to BYOK mode for unlimited access.');
+      }
+      if (err.includes('402') || err.includes('credits') || err.includes('exhausted')) {
+        throw new AIKeyError('SHARED_RATE_LIMITED', 'The shared AI pool credits are exhausted. Switch to BYOK mode with your own key for unlimited access.');
+      }
+    }
+    return result;
+  } catch (err) {
+    if (err instanceof AIKeyError) throw err;
+    throw new AIKeyError('NETWORK_ERROR', `Shared AI request failed: ${(err as Error)?.message || 'network error'}`);
+  }
 }
 
 // ── Master execution function ──────────────────────────────────────────
