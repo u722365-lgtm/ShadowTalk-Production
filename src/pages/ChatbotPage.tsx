@@ -1127,11 +1127,20 @@ Structure and Content Guidelines:
     const msgContent = (overrideText ?? message).trim();
     if ((!msgContent && !selectedFile) || isLoading) return;
 
-    // ── Command interception: /image <prompt> ──
+    // ── Command interception: /image <prompt> OR natural language image requests ──
     // Routes to the image generation system instead of sending to the text AI.
+    // Matches:
+    //   /image <prompt>                    — explicit slash command
+    //   generate an image of <prompt>      — natural language
+    //   generate a image of <prompt>       — natural language (common typo)
+    //   create an image of <prompt>        — natural language
+    //   draw <prompt>                      — natural language
+    //   make an image of <prompt>          — natural language
     const imageCommandMatch = msgContent.match(/^\/image\s+(.+)/i);
-    if (imageCommandMatch) {
-      const imagePrompt = imageCommandMatch[1].trim();
+    const nlImageMatch = !imageCommandMatch && msgContent.match(/^(?:please\s+)?(?:generate|create|draw|make)\s+(?:me\s+)?(?:a\s+|an\s+)?image\s+(?:of\s+|showing\s+|with\s+)?(.+)/i);
+
+    if (imageCommandMatch || nlImageMatch) {
+      const imagePrompt = (imageCommandMatch?.[1] || nlImageMatch?.[1] || "").trim();
       if (!imagePrompt) {
         toast({ title: "Image command", description: "Please provide a prompt after /image. Example: /image a red dragon flying over mountains", variant: "destructive" });
         return;
