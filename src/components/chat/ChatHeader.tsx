@@ -109,7 +109,7 @@ const ChatHeaderInner = ({
   if (variant === "minimal") {
     return (
       <>
-        <div className="flex md:hidden items-center justify-between px-3 py-1.5 shrink-0 safe-top">
+        <div className="ios-glass-nav flex md:hidden items-center justify-between px-3 py-1.5 shrink-0 safe-top">
           <Button
             type="button"
             variant="outline"
@@ -167,7 +167,7 @@ const ChatHeaderInner = ({
             </Button>
           )}
         </div>
-        <div className="hidden md:flex items-center justify-between px-4 py-3 md:px-8 bg-transparent relative z-20 shrink-0 safe-top">
+        <div className="ios-glass-nav hidden md:flex items-center justify-between px-4 py-3 md:px-8 bg-transparent relative z-20 shrink-0 safe-top">
           <div className="flex items-center gap-2">
             <Button
               type="button"

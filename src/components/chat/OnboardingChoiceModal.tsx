@@ -168,7 +168,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-3xl p-0 overflow-hidden bg-[#030712] border-white/10 rounded-2xl [&>button]:hidden"
+        className="max-w-3xl p-0 overflow-hidden ios-glass-modal border-white/10 rounded-3xl [&>button]:hidden"
         // Hide the default Radix close (×) button — the user MUST choose a
         // cohort before the modal can close. The × button appeared non-functional
         // because the useEffect in ChatbotPage immediately reopens the modal
@@ -199,7 +199,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
             onMouseLeave={() => setActiveCard(null)}
             className={cn(
               'relative rounded-2xl border p-5 transition-all cursor-pointer group',
-              'bg-[#0f172a] hover:border-indigo-500/50',
+              'ios-glass-card hover:border-indigo-500/50',
               activeCard === 'instant' ? 'border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.15)]' : 'border-white/10',
             )}
             onClick={handleInstantStart}
@@ -241,7 +241,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
                 e.stopPropagation();
                 handleInstantStart();
               }}
-              className="w-full mt-5 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-sm font-semibold shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+              className="w-full mt-5 h-10 rounded-xl ios-glass-button-accent bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-sm font-semibold shadow-[0_0_20px_rgba(99,102,241,0.3)]"
             >
               <Zap className="h-4 w-4 mr-1.5" />
               Start Chatting Free
@@ -254,7 +254,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
             onMouseLeave={() => setActiveCard(null)}
             className={cn(
               'relative rounded-2xl border p-5 transition-all',
-              'bg-[#0f172a] hover:border-indigo-500/50',
+              'ios-glass-card hover:border-indigo-500/50',
               activeCard === 'power' ? 'border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.15)]' : 'border-white/10',
             )}
           >
@@ -346,7 +346,7 @@ export const OnboardingChoiceModal: React.FC<OnboardingChoiceModalProps> = ({
                   size="sm"
                   onClick={handleSaveByok}
                   disabled={saving || !apiKeyInput.trim()}
-                  className="flex-1 h-8 text-xs bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold"
+                  className="flex-1 h-8 text-xs ios-glass-button-accent bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold"
                 >
                   {saving ? (
                     <>

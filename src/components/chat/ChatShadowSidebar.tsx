@@ -112,7 +112,7 @@ function ChatShadowSidebarInner({
         animate={{ width }}
         transition={{ duration: 0.28, ease: SIDEBAR_EASE }}
         className={cn(
-          "shrink-0 flex flex-col relative z-30 overflow-hidden select-none will-change-[width]",
+          "ios-glass-sidebar shrink-0 flex flex-col relative z-30 overflow-hidden select-none will-change-[width]",
           mobileDrawer
             ? "flex h-full min-h-0 bg-sidebar"
             : "hidden md:flex h-full min-h-0 bg-sidebar/95 border-r border-sidebar-border backdrop-blur-2xl shadow-lg"
@@ -276,7 +276,7 @@ function ChatShadowSidebarInner({
                                 className={cn(
                                   "relative w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors duration-150 group overflow-hidden",
                                   isActive
-                                    ? "bg-sidebar-accent text-sidebar-primary border border-sidebar-border font-medium"
+                                    ? "ios-glass-card bg-sidebar-accent text-sidebar-primary border border-sidebar-border font-medium"
                                     : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
                                 )}
                               >
@@ -331,7 +331,7 @@ function ChatShadowSidebarInner({
         </ScrollArea>
 
         {/* Bottom Profile & Settings Bar */}
-        <div className="shrink-0 p-2.5 flex flex-col gap-1 border-t border-sidebar-border bg-sidebar/95 backdrop-blur-md overflow-hidden">
+        <div className="ios-glass-card shrink-0 p-2.5 flex flex-col gap-1 border-t border-sidebar-border bg-sidebar/95 backdrop-blur-md overflow-hidden">
           {/* Settings Button */}
           <Tooltip>
             <TooltipTrigger asChild>

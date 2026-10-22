@@ -100,7 +100,7 @@ export const KeySettingsModal: React.FC<KeySettingsModalProps> = ({ open, onOpen
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 overflow-hidden bg-[#030712] border-white/10 rounded-2xl">
+      <DialogContent className="max-w-lg p-0 overflow-hidden ios-glass-modal border-white/10 rounded-3xl">
         <DialogHeader className="px-6 pt-6 pb-3">
           <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
             <KeyRound className="h-5 w-5 text-indigo-400" />
@@ -113,7 +113,7 @@ export const KeySettingsModal: React.FC<KeySettingsModalProps> = ({ open, onOpen
 
         <div className="px-6 pb-6 space-y-5">
           {/* Current status */}
-          <div className="rounded-xl border border-white/10 bg-[#0f172a] p-4">
+          <div className="rounded-xl ios-glass-card p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">Current Mode</span>
               {userCohort === 'TECH' ? (

@@ -72,7 +72,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({ open, onOp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden bg-[#030712] border-white/10 rounded-2xl">
+      <DialogContent className="max-w-md p-0 overflow-hidden ios-glass-modal border-white/10 rounded-3xl">
         <DialogHeader className="px-6 pt-6 pb-3 text-center">
           <div className="flex justify-center mb-3">
             <div className="h-12 w-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
@@ -127,7 +127,7 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({ open, onOp
             type="button"
             onClick={handleSave}
             disabled={saving || !apiKeyInput.trim()}
-            className="w-full h-10 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-sm font-semibold rounded-lg"
+            className="w-full h-10 ios-glass-button-accent bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-sm font-semibold rounded-lg"
           >
             {saving ? (
               <>

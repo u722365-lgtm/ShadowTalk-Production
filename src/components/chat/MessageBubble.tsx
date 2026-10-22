@@ -204,10 +204,10 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
           isUser 
             ? isClean
               ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md px-4 py-2.5 max-w-max'
-              : 'bg-primary text-primary-foreground rounded-[28px] rounded-tr-sm px-6 py-3.5 shadow-sm max-w-max'
+              : 'ios-glass-bubble-user bg-primary/80 text-primary-foreground rounded-[28px] rounded-tr-sm px-6 py-3.5 shadow-sm max-w-max'
             : isClean
               ? 'bg-transparent border-none shadow-none px-0 py-0.5 article-response'
-              : 'bg-transparent border-none shadow-none px-0 py-1 article-response'
+              : 'ios-glass-bubble-ai bg-transparent border border-white/[0.06] shadow-none px-5 py-3 article-response'
         }`}>
           {isUser ? (
             <p className="text-[15.5px] leading-relaxed whitespace-pre-wrap break-words font-normal tracking-wide">{typeof message.content === 'string' ? message.content : String(message.content || '')}</p>
