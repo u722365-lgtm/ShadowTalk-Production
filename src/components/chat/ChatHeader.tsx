@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { 
-  Bot, ArrowLeft, Home, LogOut, Settings, Download, Lock, Crown, Star, Zap, Menu, 
+import {
+  Bot, ArrowLeft, Home, LogOut, Settings, Download, Lock, Crown, Star, Zap, Menu,
   Search, Image, Play, Eye, Wand2, Compass, FileText, Mic, AudioLines, MoreVertical, Music,
   LayoutGrid, Sparkles, MessageCircle, Briefcase, Heart, Laugh, Lightbulb,
   Scale, Target, HelpCircle, Share2, Plus, Pin, Mail, KeyRound
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/AuthProvider";
+import { useAIKeyContext } from "@/contexts/AIKeyContext";
 
 import {
   Select,
@@ -73,6 +74,7 @@ interface ChatHeaderProps {
   toolsMenuOpen?: boolean;
   onToolsMenuOpenChange?: (open: boolean) => void;
   onOpenByok?: () => void;
+  onOpenKeySettings?: () => void;
 }
 
 
@@ -91,10 +93,12 @@ const ChatHeaderInner = ({
   toolsMenuOpen,
   onToolsMenuOpenChange,
   onOpenByok,
+  onOpenKeySettings,
 }: ChatHeaderProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { userCohort, remainingMessages, maxDailyLimit } = useAIKeyContext();
   
   const userInitials = user?.email ? user.email.charAt(0).toUpperCase() : "G";
   const showUpgrade =
@@ -117,6 +121,31 @@ const ChatHeaderInner = ({
             <Home className="h-3.5 w-3.5" />
             Home
           </Button>
+          {/* Cohort badge — mobile */}
+          {userCohort && onOpenKeySettings && (
+            <button
+              type="button"
+              onClick={onOpenKeySettings}
+              className={
+                "gap-1 rounded-full border backdrop-blur-md shadow-sm h-8 px-2.5 text-[11px] font-semibold flex items-center transition-colors " +
+                (userCohort === 'TECH'
+                  ? "border-indigo-500/30 bg-indigo-950/40 text-indigo-300 hover:bg-indigo-900/50"
+                  : "border-amber-500/30 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50")
+              }
+              aria-label="API key settings"
+            >
+              {userCohort === 'TECH' ? (
+                <>
+                  <Zap className="h-3 w-3" />
+                  <span>BYOK</span>
+                </>
+              ) : (
+                <>
+                  <span>{remainingMessages}/{maxDailyLimit}</span>
+                </>
+              )}
+            </button>
+          )}
           <Button
             type="button"
             variant="outline"
@@ -163,6 +192,32 @@ const ChatHeaderInner = ({
 
           </div>
           <div className="flex items-center gap-2">
+            {/* Cohort badge — desktop */}
+            {userCohort && onOpenKeySettings && (
+              <button
+                type="button"
+                onClick={onOpenKeySettings}
+                className={
+                  "gap-1.5 rounded-full border backdrop-blur-md shadow-sm h-9 px-3 text-xs font-semibold flex items-center transition-colors " +
+                  (userCohort === 'TECH'
+                    ? "border-indigo-500/30 bg-indigo-950/40 text-indigo-300 hover:bg-indigo-900/50"
+                    : "border-amber-500/30 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50")
+                }
+                aria-label="API key settings"
+              >
+                {userCohort === 'TECH' ? (
+                  <>
+                    <Zap className="h-3.5 w-3.5" />
+                    <span>BYOK Mode (Unlimited)</span>
+                    <span className="text-indigo-500">⚡</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Free Tier ({remainingMessages} / {maxDailyLimit} msgs left)</span>
+                  </>
+                )}
+              </button>
+            )}
             <Button
               type="button"
               variant="outline"

@@ -18,6 +18,7 @@ import { SecurityProvider } from "@/components/SecurityProvider";
 import { ShadowMemoryProvider } from "@/contexts/ShadowMemoryContext";
 import { AutoImproveProvider } from "@/contexts/AutoImproveContext";
 import { ThemeTemplateProvider } from "@/contexts/ThemeTemplateContext";
+import { AIKeyProvider } from "@/contexts/AIKeyContext";
 import { StealthKillSwitchProvider } from "@/contexts/StealthKillSwitchContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BootScreen from "@/components/BootScreen";
@@ -216,6 +217,7 @@ const App = () => {
               <ShadowMemoryProvider>
               <AutoImproveProvider>
               <ThemeTemplateProvider>
+              <AIKeyProvider>
               <CommandPaletteContext.Provider value={{ open: () => setCmdOpen(true) }}>
               {showBootScreen && !hasBooted && (
                 <BootScreen onComplete={handleBootComplete} />
@@ -247,6 +249,7 @@ const App = () => {
                    )}
                 </BrowserRouter>
               </CommandPaletteContext.Provider>
+              </AIKeyProvider>
               </ThemeTemplateProvider>
               </AutoImproveProvider>
               </ShadowMemoryProvider>

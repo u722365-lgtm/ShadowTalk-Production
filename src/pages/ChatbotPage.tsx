@@ -15,6 +15,11 @@ import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { OnboardingChoiceModal } from "@/components/chat/OnboardingChoiceModal";
+import { LimitReachedModal } from "@/components/chat/LimitReachedModal";
+import { KeySettingsModal } from "@/components/chat/KeySettingsModal";
+import { useAIKeyContext } from "@/contexts/AIKeyContext";
+import { useDailyUsage } from "@/hooks/useDailyUsage";
 const AdBanner = (props: any) => null;
 const ShareWinBanner = (props: any) => null;
 const ShareResultDialog = (props: any) => null;
@@ -220,6 +225,16 @@ const ChatbotPage = () => {
   // Modals
   const [showImageGenerator, setShowImageGenerator] = useState(false);
   const [showByok, setShowByok] = useState(false);
+  const [showKeySettings, setShowKeySettings] = useState(false);
+  const [showLimitReached, setShowLimitReached] = useState(false);
+
+  // Hybrid API Key system — cohort + daily usage.
+  const {
+    hasCompletedOnboarding,
+    userCohort,
+    maxDailyLimit,
+  } = useAIKeyContext();
+  const { checkAndIncrement, isLimited } = useDailyUsage();
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
@@ -794,6 +809,17 @@ const ChatbotPage = () => {
         researchQuery?: string;
       },
     ): Promise<string | undefined> => {
+      // ── Hybrid API Key system: enforce 100/day limit for NON_TECH users ──
+      if (!checkAndIncrement()) {
+        setShowLimitReached(true);
+        toast({
+          title: "Daily limit reached",
+          description: `You've used all ${maxDailyLimit} free messages for today. Switch to BYOK mode for unlimited access.`,
+          variant: "destructive",
+        });
+        return undefined;
+      }
+
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -989,7 +1015,7 @@ Structure and Content Guidelines:
       }
       return assistantContent || undefined;
     },
-    [aiConfig, keys, chatMode, personality, user, getChatDefaults, getMemoryContext],
+    [aiConfig, keys, chatMode, personality, user, getChatDefaults, getMemoryContext, checkAndIncrement, maxDailyLimit, toast],
   );
 
   const handleStopGeneration = () => {
@@ -1592,6 +1618,7 @@ Structure and Content Guidelines:
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
               onOpenByok={() => setShowByok(true)}
+              onOpenKeySettings={() => setShowKeySettings(true)}
             />
           </div>
           {hasActiveChat && (
@@ -1773,6 +1800,29 @@ Structure and Content Guidelines:
             <SettingsByokCard />
           </DialogContent>
         </Dialog>
+
+        {/* ── Hybrid API Key System Modals ── */}
+
+        {/* One-time onboarding choice — appears when user hasn't picked a cohort yet. */}
+        <OnboardingChoiceModal
+          open={!hasCompletedOnboarding}
+          onOpenChange={(open) => {
+            // Can't dismiss the onboarding modal without choosing — it re-appears.
+            if (!open && !hasCompletedOnboarding) return;
+          }}
+        />
+
+        {/* Daily limit reached — shown when NON_TECH users hit the 100/day cap. */}
+        <LimitReachedModal
+          open={showLimitReached}
+          onOpenChange={setShowLimitReached}
+        />
+
+        {/* Key settings — switch cohorts, update keys, reset onboarding. */}
+        <KeySettingsModal
+          open={showKeySettings}
+          onOpenChange={setShowKeySettings}
+        />
 
 
       
