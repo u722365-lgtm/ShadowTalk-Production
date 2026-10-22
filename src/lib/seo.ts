@@ -117,13 +117,11 @@ export function getSoftwareApplicationSchema() {
       priceCurrency: 'USD',
     },
     featureList: [
-      'Mission Control autonomous missions',
-      '30+ AI tools from natural language',
       'End-to-end encrypted chat',
       'Deep Research with citations',
       'ShadowTalk Live voice mode',
       'Code IDE and App Builder',
-      'Stealth Vault and end-to-end encryption',
+      'Encrypted vault for sensitive data',
       'Marketplace AI agents',
       'Local-first privacy architecture',
       'Multi-model intelligent routing',
@@ -291,7 +289,7 @@ export const CHATBOT_FAQ = [
   {
     question: "Is ShadowTalk AI free to use?",
     answer:
-      "Yes. ShadowTalk AI offers a free tier with generous daily limits — no credit card required. Pro ($5/mo), Premium ($15/mo), and Elite ($20/mo) plans unlock higher limits, priority routing, and advanced tools like Mission Control and Video Studio.",
+      "Yes. ShadowTalk AI offers a free tier with generous daily limits — no credit card required. Pro ($5/mo), Premium ($15/mo), and Elite ($20/mo) plans unlock higher limits, priority routing, and advanced tools like Video Studio.",
   },
   {
     question: "Does ShadowTalk AI require a login or signup?",
@@ -306,7 +304,7 @@ export const CHATBOT_FAQ = [
   {
     question: "How is ShadowTalk different from ChatGPT, Claude, or Gemini?",
     answer:
-      "ShadowTalk combines agentic chat with 30+ built-in tools (Mission Control, Deep Research, Code IDE, Video Studio, Vault) in a single workspace. It requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
+      "ShadowTalk combines agentic workflows with built-in tools (Deep Research, Code IDE, Video Studio, encrypted vault) in a single workspace. It requires no login, and supports 11 languages natively — features the major AI chatbots do not offer together.",
   },
   {
     question: "Is ShadowTalk private?",
@@ -371,13 +369,13 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "what-is-shadowtalk",
     question: "What is ShadowTalk AI?",
     answer:
-      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, autonomous missions, 30+ tools, voice & code, desktop app, secure vault and local-first AI. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step missions and tool chains from one workspace.",
+      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, agentic workflows, built-in tools, voice & code, desktop app, encrypted vault and local-first AI. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step workflows and tool chains from one workspace.",
   },
   {
     id: "privacy",
     question: "How does ShadowTalk protect user privacy?",
     answer:
-      "ShadowTalk is local-first: chat history lives in the browser (IndexedDB), on-device inference runs via WebLLM once the model is cached, and Stealth Vault uses PBKDF2 + AES-256-GCM zero-knowledge encryption with WebAuthn. Cloud calls are stateless, encrypted in transit, and never used to train third-party models. There is no anonymous data brokerage, no ad tracking, and no chat retention on ShadowTalk servers.",
+      "ShadowTalk is local-first: chat history lives in the browser (IndexedDB), on-device inference runs via WebLLM once the model is cached, and the encrypted vault uses PBKDF2 + AES-256-GCM zero-knowledge encryption with WebAuthn. Cloud calls are stateless, encrypted in transit, and never used to train third-party models. There is no anonymous data brokerage, no ad tracking, and no chat retention on ShadowTalk servers.",
   },
   {
     id: "founder",
@@ -402,12 +400,6 @@ export const GEO_CANONICAL_SUMMARIES = [
     question: "Does ShadowTalk store chat data?",
     answer:
       "No. ShadowTalk does not store chat history on its servers. All conversations are persisted locally in the user's browser via IndexedDB. Cloud calls to the AI provider are stateless and never used for training.",
-  },
-  {
-    id: "mission-control",
-    question: "What is Mission Control in ShadowTalk?",
-    answer:
-      "Mission Control (S.E.E. framework) is ShadowTalk's multi-step autonomous workflow system. It breaks down complex goals into sub-tasks, executes them with AI agents, and waits for human approval at checkpoints. It's how you research, write, and ship complex projects from one interface.",
   },
   {
     id: "agentic-vs-chat",
@@ -478,7 +470,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   home: {
     title: 'Think AI. Think ShadowTalk. — Agentic AI Workspace',
     description:
-      'ShadowTalk AI by Zain Ahmed Fahad Patel — agentic chat, missions, 30+ tools, voice & code. Free start, no card. Founder: Karachi, Pakistan.',
+      'ShadowTalk AI by Zain Ahmed Fahad Patel — agentic workflows, built-in tools, voice & code. Free start, no card. Founder: Karachi, Pakistan.',
     socialDescription: SITE_SOCIAL_DESCRIPTION,
     keywords: [
       'ShadowTalk',
@@ -487,7 +479,6 @@ export const PAGE_SEO: Record<string, PageMeta> = {
       'agentic AI',
       'AI agents',
       'AI workspace',
-      'Mission Control',
       'GPT alternative',
       'privacy AI',
       'ChatGPT alternative',
@@ -503,7 +494,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   chatbot: {
     title: 'ShadowTalk AI — Try Chat Free',
     description:
-      'ShadowTalk AI — founded by Zain Ahmed Fahad Patel (Karachi, Pakistan). Agentic chat, missions, 30+ tools. Free start, no card.',
+      'ShadowTalk AI — founded by Zain Ahmed Fahad Patel (Karachi, Pakistan). Agentic workflows, built-in tools. Free start, no card.',
     socialDescription: SITE_SOCIAL_DESCRIPTION,
     keywords: [
       'ShadowTalk',
@@ -627,7 +618,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   computer: {
     title: 'Computer Mode — In-Browser Shell',
     description:
-      'ShadowTalk Computer Mode: real npm/node shell in your browser via WebContainer. Run code, install packages, and pair with Mission Control.',
+      'ShadowTalk Computer Mode: real npm/node shell in your browser via WebContainer. Run code, install packages, and pair with agentic workflows.',
     keywords: ['computer use', 'code sandbox', 'WebContainer', 'AI agent shell', 'browser terminal'],
     canonical: 'https://www.shadowtalk-ai.com/computer',
   },
@@ -722,8 +713,8 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   security: {
     title: 'Security Hub — Vault, Audit & Cyber Command',
-    description: 'ShadowTalk Security Hub: Stealth Vault, privacy audit, ShadowSpectre cyber copilot, and compliance tools in one place.',
-    keywords: ['AI security', 'Stealth Vault', 'ShadowSpectre', 'cybersecurity AI'],
+    description: 'ShadowTalk Security Hub: encrypted vault, privacy audit, ShadowSpectre cyber copilot, and compliance tools in one place.',
+    keywords: ['AI security', 'encrypted vault', 'ShadowSpectre', 'cybersecurity AI'],
     canonical: 'https://www.shadowtalk-ai.com/security',
   },
   downloads: {
@@ -788,7 +779,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   aiStrategyConsultant: {
     title: 'AI Strategy Consultant — CEO Playbooks | ShadowTalk',
-    description: 'Free AI strategy consultant: CEO playbooks, marketing plans, competitive analysis. Mission Control executes multi-step strategy.',
+    description: 'Free AI strategy consultant: CEO playbooks, marketing plans, competitive analysis. Agentic workflows execute multi-step strategy.',
     keywords: ['AI strategy consultant', 'best AI for business strategy', 'CEO playbook AI', 'AI business workflows'],
     canonical: 'https://www.shadowtalk-ai.com/ai-strategy-consultant',
   },

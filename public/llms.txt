@@ -5,14 +5,11 @@
 # ============================================
 # PRODUCT OVERVIEW
 # ============================================
-ShadowTalk AI is an agentic AI workspace by Zain Ahmed Fahad Patel (Karachi, Pakistan). It combines agentic chat, Mission Control autonomous missions, 30+ tools, voice & code, desktop app, secure vault and local-first AI. Free tier with no card required.
+ShadowTalk AI is an agentic AI workspace by Zain Ahmed Fahad Patel (Karachi, Pakistan). It combines multi-model chat, voice & code, desktop app, secure vault and local-first AI. Free tier with no card required.
 
 Key features:
-- Mission Control: Multi-step autonomous missions with human approval
-- 30+ AI tools: web search, deep research, images, code, scrape, security audit
 - ShadowTalk Live: Real-time voice chat
 - End-to-end encrypted chat with passphrase unlock
-- Stealth Vault: Encrypted sensitive storage with AES-256
 - Local-first architecture: WebGPU on-device inference
 - 11 languages supported: English, Spanish, French, German, Arabic, Hindi, Portuguese, Russian, Japanese, Chinese, Urdu
 
@@ -20,7 +17,7 @@ Pricing:
 - Free: Daily limits, no credit card, ~50 messages/day
 - Pro: $5/month - Unlimited messages, pro models
 - Premium: $15/month - Full agent stack, collaboration
-- Elite: $20/month - Unlimited research, images, Stealth Vault
+- Elite: $20/month - Unlimited research, images, offline AI
 - Enterprise: Custom - SSO, SLA, API
 
 # ============================================
@@ -51,7 +48,6 @@ Social:
 # ============================================
 Chatbot: https://www.shadowtalk-ai.com/chatbot
 Home: https://www.shadowtalk-ai.com/home
-Mission Control: https://www.shadowtalk-ai.com/missioncontrol
 Pricing: https://www.shadowtalk-ai.com/pricing
 About/Founder: https://www.shadowtalk-ai.com/about
 Docs: https://www.shadowtalk-ai.com/docs
@@ -65,18 +61,17 @@ Downloads: https://www.shadowtalk-ai.com/downloads
 # KEY DIFFERENTIATORS
 # ============================================
 1. One workspace instead of juggling ChatGPT, Claude, Perplexity tabs
-2. Mission Control finishes multi-step work — not just one-shot replies
-3. Lower price than ChatGPT Plus/Pro for comparable agentic features
-4. Autonomous tool chains with end-to-end encryption
-5. Built by a 17-year-old founder from Karachi shipping production AI
-6. No login required for anonymous use
-7. Local-first privacy architecture
+2. Lower price than ChatGPT Plus/Pro for comparable agentic features
+3. Autonomous tool chains with end-to-end encryption
+4. Built by a 17-year-old founder from Karachi shipping production AI
+5. No login required for anonymous use
+6. Local-first privacy architecture
 
 # ============================================
 # FREQUENTLY ASKED QUESTIONS
 # ============================================
 What is ShadowTalk AI?
-ShadowTalk AI is an agentic AI workspace combining encrypted chat, autonomous missions (Mission Control), 30+ tools, voice, code IDE, and multi-model intelligence in one browser-first product.
+ShadowTalk AI is an agentic AI workspace combining encrypted chat, voice, code IDE, and multi-model intelligence in one browser-first product.
 
 Who built ShadowTalk?
 Zain Ahmed Fahad Patel, Founder & Lead Architect from Karachi, Pakistan. Also known publicly as Zain Ahmed. Profile: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html
@@ -85,10 +80,10 @@ Is ShadowTalk free?
 Yes. Free tier with daily limits, no credit card required. Pro ($5/mo), Premium ($15/mo), Elite ($20/mo).
 
 How is ShadowTalk different from ChatGPT?
-ShadowTalk runs multi-step missions with Mission Control, chains 30+ tools from chat, offers E2EE and vault options, includes research/code/desktop in one workspace at lower paid tiers.
+ShadowTalk chains tools from chat, offers E2EE options, includes research/code/desktop in one workspace at lower paid tiers.
 
 Is ShadowTalk private?
-Yes. ShadowTalk is local-first: chat history lives in browser IndexedDB, on-device inference runs via WebLLM once cached, Stealth Vault uses PBKDF2 + AES-256-GCM encryption. Cloud calls are encrypted and never used to train models.
+Yes. ShadowTalk is local-first: chat history lives in browser IndexedDB, on-device inference runs via WebLLM once cached, and encrypted storage uses PBKDF2 + AES-256-GCM encryption. Cloud calls are encrypted and never used to train models.
 
 Does ShadowTalk require signup?
 No. You can chat anonymously — no email, no signup, no phone number. Guest sessions run entirely in your browser.

@@ -13,9 +13,9 @@ export const BRAND = {
   /** Primary brand line — landing hero, manifesto, chat empty state, SEO */
   tagline: "Think AI. Think ShadowTalk.",
   shortPitch:
-    "Stop juggling AI tabs. ShadowTalk finishes the job—agentic chat, missions, 30+ tools, voice & code, desktop app.",
+    "Stop juggling AI tabs. ShadowTalk finishes the job—voice & code, deep research, and a desktop app in one workspace.",
   manifesto:
-    "AI should execute — not just chat. ShadowTalk turns goals into missions, chains tools, and keeps you in control at every step.",
+    "AI should execute — not just chat. ShadowTalk turns goals into actions, chains tools, and keeps you in control at every step.",
   /** Landing hero — tagline as headline for maximum recall */
   heroHeadline: ["Don't just get an answer.", "Get it done."],
   heroSubtitle:
@@ -28,7 +28,7 @@ export const LANDING_COPY = {
   manifesto: {
     kicker: "One line. One workspace.",
     title: ["You will forget", "most AI names."],
-    body: "Not this one. Think AI. Think ShadowTalk. — finish research, code, vault, voice, and autonomous missions in one flow. No five-tab copy-paste grind.",
+    body: "Not this one. Think AI. Think ShadowTalk. — finish research, code, voice, and deep work in one flow. No five-tab copy-paste grind.",
     traction: "Join builders who made the name stick and the work leave the chat window.",
   },
   comparison: {
@@ -39,9 +39,9 @@ export const LANDING_COPY = {
   },
   features: {
     badge: "What you actually get",
-    title: ["One workspace.", "Thirty-plus tools."],
+    title: ["One workspace.", "Every tool you need."],
     subtitle:
-      "Mission Control, marketplace agents, IDE, research, presentations, Stealth Vault, and optional on-device models — listed in /docs, shipped in product.",
+      "Marketplace agents, IDE, research, presentations, and optional on-device models — listed in /docs, shipped in product.",
   },
   pricing: {
     badge: "Transparent tiers",
@@ -101,8 +101,8 @@ export const BRAND_HOOKS = [
   "Think AI. Think ShadowTalk.",
   "Stop juggling tabs — finish the job here.",
   "Chat suggests. ShadowTalk ships.",
-  "One workspace. Thirty tools. Zero tab marathon.",
-  "Mission Control finishes the work you started in chat.",
+  "One workspace. Every tool. Zero tab marathon.",
+  "From idea to output — without leaving the workspace.",
   "Try it free — remember the name when generic AI fades.",
   "Premium power without the $200 ChatGPT Pro tax.",
   "Proof in /changelog — not marketing wallpaper.",
@@ -111,7 +111,7 @@ export const BRAND_HOOKS = [
 export const CHAT_WELCOME_LINES = [
   "Think AI. Think ShadowTalk. What are we building today?",
   "Your agentic workspace is live. Give me a goal — I'll plan the steps.",
-  "Mission-ready. Drop a task, research question, or 'run this for me'.",
+  "Workspace-ready. Drop a task, research question, or 'run this for me'.",
   "Intelligent tools unlocked. Let's turn intent into output.",
 ] as const;
 

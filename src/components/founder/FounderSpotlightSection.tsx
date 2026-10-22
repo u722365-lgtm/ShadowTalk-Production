@@ -67,7 +67,7 @@ const FounderSpotlightSection = () => {
                 <Link to="/chatbot" className="text-cyan-400 hover:underline">
                   ShadowTalk AI
                 </Link>
-                . He designs the sovereign agentic execution engine, 30+ tools ecosystem, offline LLM pipelines,
+                . He designs the sovereign agentic execution engine, the integrated tools graph, offline LLM pipelines,
                 and sovereign desktop runtimes. {FOUNDER_CITATION}
               </p>
             </div>

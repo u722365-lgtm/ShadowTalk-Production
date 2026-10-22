@@ -238,7 +238,7 @@ const architectureGuarantees = [
   },
   {
     icon: Lock,
-    title: "Stealth Vault Encryption",
+    title: "Encrypted Storage",
     description: "Your secrets are encrypted before they touch any server — only your master password can decrypt them",
     proof: "PBKDF2 (SHA-256, 600k iterations) → AES-256-GCM. IV and salt stored alongside ciphertext. Key never transmitted.",
   },
@@ -491,7 +491,7 @@ const TrustPage = ({ embedded = false }: { embedded?: boolean }) => {
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary">WE CAN'T READ IT</span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <DataFlowNode icon={Lock} label="Stealth Vault" type="encrypted" delay={0.3} />
+                  <DataFlowNode icon={Lock} label="Encrypted Storage" type="encrypted" delay={0.3} />
                   <DataFlowNode icon={Database} label="Business Memory" type="encrypted" delay={0.35} />
                   <DataFlowNode icon={Shield} label="Vault Connections" type="encrypted" delay={0.4} />
                   <DataFlowNode icon={Server} label="Sync Queue" type="encrypted" delay={0.45} />

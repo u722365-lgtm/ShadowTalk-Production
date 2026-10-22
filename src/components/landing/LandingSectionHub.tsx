@@ -300,7 +300,7 @@ export const LandingSectionHub = ({
                         AI Chatbot
                       </p>
                       <p className="text-xs text-slate-400 line-clamp-2">
-                        Multi-model sovereign chat with 30+ built-in agentic tools.
+                        Multi-model sovereign chat with built-in agentic tools.
                       </p>
                     </div>
                     <span className="text-[10px] font-mono text-cyan-400">Launch Tool →</span>
@@ -316,10 +316,10 @@ export const LandingSectionHub = ({
                         <ArrowRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
                       </div>
                       <p className="text-sm font-semibold text-white group-hover:text-purple-300">
-                        Mission Control
+                        Agentic Workspace
                       </p>
                       <p className="text-xs text-slate-400 line-clamp-2">
-                        Autonomous goal planner chaining reasoning & browser tools.
+                        Multi-step agents chaining reasoning, tools & browser actions.
                       </p>
                     </div>
                     <span className="text-[10px] font-mono text-purple-400">Launch Tool →</span>
@@ -515,7 +515,7 @@ export const LandingSectionHub = ({
                       <span className="text-xs font-mono text-slate-400">Free Tier</span>
                       <p className="text-2xl font-bold text-white mt-1">$0</p>
                       <p className="text-xs text-slate-400 mt-2">
-                        Core AI chat, basic mission control, 30+ tools, free forever without card.
+                        Core AI chat, deep research, code IDE — free forever without card.
                       </p>
                     </div>
                     <Link

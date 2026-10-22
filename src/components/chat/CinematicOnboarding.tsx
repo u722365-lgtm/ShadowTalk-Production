@@ -19,8 +19,8 @@ const roles = [
 
 const features = [
   { icon: Globe, label: "ShadowBrowser", description: "Browse the web securely with AI assistance." },
-  { icon: Shield, label: "Stealth Vault", description: "End-to-end encrypted notes and memories." },
-  { icon: Sparkles, label: "Mission Control", description: "Autonomous multi-agent workflows." }
+  { icon: BrainCircuit, label: "E2EE Chat", description: "End-to-end encrypted multi-model conversations." },
+  { icon: Database, label: "Deep Research", description: "Multi-source synthesis with cited bibliographies." }
 ];
 
 export function CinematicOnboarding({ onComplete }: CinematicOnboardingProps) {

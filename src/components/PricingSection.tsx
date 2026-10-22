@@ -296,7 +296,7 @@ const PricingSection = () => {
           className="text-center mt-12"
         >
           <p className="text-sm text-muted-foreground mb-4">
-            Most builders choose <span className="text-foreground font-medium">Premium ($15/mo)</span> for unlimited messages + Mission Control
+            Most builders choose <span className="text-foreground font-medium">Premium ($15/mo)</span> for unlimited messages + Deep Research
           </p>
           <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 text-xs text-muted-foreground">
             {getRiskReversalBullets().map((label, i) => (

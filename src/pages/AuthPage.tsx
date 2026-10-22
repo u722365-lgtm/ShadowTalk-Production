@@ -403,7 +403,7 @@ const AuthPage = () => {
               </span>
             </h1>
             <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-              Multi-model autonomous reasoning, 30+ native tools, and 100% on-device WebGPU privacy designed for builders who demand sovereignty.
+              Multi-model autonomous reasoning, native agentic tools, and 100% on-device WebGPU privacy designed for builders who demand sovereignty.
             </p>
           </div>
 
@@ -418,7 +418,7 @@ const AuthPage = () => {
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-xs sm:text-sm font-semibold text-white">Multi-Model Reasoning Engine</h3>
                   <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-500/20 shrink-0">
-                    30+ Tools
+                    E2EE Chat
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -458,7 +458,7 @@ const AuthPage = () => {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Mission control, code playgrounds, deep research synthesis, and live voice loop.
+                  Deep research, code playgrounds, E2EE chat, and live voice loop.
                 </p>
               </div>
             </div>

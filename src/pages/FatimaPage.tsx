@@ -426,7 +426,7 @@ const FatimaPage = () => {
                 <h3 className="text-xl font-bold mb-1">Zain Ahmed</h3>
                 <p className="text-xs text-muted-foreground mb-3">AI Solutions Engineer · GIAIC Mentee</p>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  Architected the multi-model switchboard, S.E.E. agentic execution runtime, and sovereign mission control loops.
+                  Architected the multi-model switchboard, agentic execution runtime, and sovereign autonomous agent loops.
                 </p>
                 <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-primary p-0 h-auto" onClick={() => navigate("/founder")}>
                   View Zain&apos;s dedicated page <ArrowRight className="h-3 w-3" />

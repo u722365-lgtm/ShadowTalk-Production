@@ -63,7 +63,7 @@ export const ReferralModal = ({ isOpen, onClose }: ReferralModalProps) => {
               
               <h2 className="text-2xl font-bold mb-2">Invite Friends, Get Premium</h2>
               <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-                Help us reach 5,000 users this month! Invite 3 friends to ShadowTalk AI and unlock a free month of Premium features (Mission Control, Video Studio).
+                Help us reach 5,000 users this month! Invite 3 friends to ShadowTalk AI and unlock a free month of Premium features (Deep Research, Video Studio).
               </p>
 
               <div className="bg-muted/30 p-1 rounded-xl flex items-center gap-2 border border-border/50 mb-6">

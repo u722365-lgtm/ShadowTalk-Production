@@ -249,7 +249,7 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
                             className="block text-neutral-300 hover:text-white transition-colors"
                           >
                             <p className="font-medium text-white">Autonomous Chatbot</p>
-                            <p className="text-xs text-neutral-500 mt-0.5">Multi-model reasoning & 30+ native tools</p>
+                            <p className="text-xs text-neutral-500 mt-0.5">Multi-model reasoning & native agentic tools</p>
                           </Link>
 
                           <Link
@@ -257,8 +257,8 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
                             onClick={closeDrawer}
                             className="block text-neutral-300 hover:text-white transition-colors"
                           >
-                            <p className="font-medium text-white">Mission Control</p>
-                            <p className="text-xs text-neutral-500 mt-0.5">Goal execution & agent loops</p>
+                            <p className="font-medium text-white">Agentic Workspace</p>
+                            <p className="text-xs text-neutral-500 mt-0.5">Multi-step agents & tool chaining</p>
                           </Link>
 
                           <Link

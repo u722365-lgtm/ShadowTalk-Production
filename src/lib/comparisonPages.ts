@@ -28,8 +28,8 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     bestFor:
       "Teams and builders who want an AI workspace that can finish multi-step work instead of only answering one prompt at a time.",
     whyShadowTalkWins: [
-      "Mission Control runs autonomous multi-step workflows with human oversight.",
-      "30+ built-in tools reduce context switching across chat, research, code, and documents.",
+      "Agentic workflows run multi-step tasks with human oversight.",
+      "Built-in tools reduce context switching across chat, research, code, and documents.",
       "",
       "Lower entry pricing for users who need an operational workspace, not just a chatbot.",
     ],
@@ -46,8 +46,8 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       },
     ],
     rows: [
-      { category: "Autonomous missions", shadowtalk: "Built-in Mission Control", competitor: "Primarily prompt-response chat" },
-      { category: "Tooling", shadowtalk: "30+ tools in one workspace", competitor: "Tooling varies by plan and workflow" },
+      { category: "Autonomous workflows", shadowtalk: "Built-in agentic execution", competitor: "Primarily prompt-response chat" },
+      { category: "Tooling", shadowtalk: "Built-in tools in one workspace", competitor: "Tooling varies by plan and workflow" },
       { category: "Privacy controls", shadowtalk: "E2EE options, vault, stealth mode", competitor: "Mostly cloud-first" },
       { category: "Privacy posture", shadowtalk: "E2EE workflows", competitor: "No primary secure workflow" },
       { category: "Best fit", shadowtalk: "Execution-heavy workflows", competitor: "General chat and writing" },
@@ -84,7 +84,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
     ],
     rows: [
       { category: "Long-context reasoning", shadowtalk: "Strong with workspace context", competitor: "Very strong" },
-      { category: "Execution layer", shadowtalk: "Mission Control + tool chains", competitor: "Limited product-native execution" },
+      { category: "Execution layer", shadowtalk: "Agentic tool chains", competitor: "Limited product-native execution" },
       { category: "Developer workspace", shadowtalk: "IDE, tools, docs, API pages", competitor: "Less workspace breadth" },
       { category: "Privacy posture", shadowtalk: "Vault, local options", competitor: "Cloud-first" },
       { category: "Best fit", shadowtalk: "Research + execution teams", competitor: "Writing and reasoning-first teams" },

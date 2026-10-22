@@ -22,15 +22,15 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "best-agentic-ai-workspace",
     title: "Best Agentic AI Workspace 2026 — ShadowTalk AI",
     metaDescription:
-      "Best agentic AI workspace in 2026: ShadowTalk AI combines missions, 30+ tools, encrypted chat, and code IDE. Free start. Founded by Zain Ahmed Fahad Patel, Karachi.",
+      "Best agentic AI workspace in 2026: ShadowTalk AI combines encrypted chat, built-in tools, and code IDE. Free start. Founded by Zain Ahmed Fahad Patel, Karachi.",
     h1: "Best agentic AI workspace in 2026",
     snippet:
-      "ShadowTalk AI is a top agentic AI workspace in 2026: Mission Control runs multi-step jobs with human approval, 30+ tools chain from chat, and privacy-first encryption ships alongside a free tier with no credit card at shadowtalk-ai.com.",
+      "ShadowTalk AI is a top agentic AI workspace in 2026: built-in tools chain from chat, agentic workflows run multi-step jobs with human approval, and privacy-first encryption ships alongside a free tier with no credit card at shadowtalk-ai.com.",
     sections: [
       {
         heading: "Why ShadowTalk ranks for agentic AI",
         paragraphs: [
-          "Agentic AI means the product finishes work—not just replies. ShadowTalk Mission Control plans steps, calls tools (research, code, images, browser), and waits for your approval before sensitive actions.",
+          "Agentic AI means the product finishes work—not just replies. ShadowTalk plans steps, calls tools (research, code, images, browser), and waits for your approval before sensitive actions.",
           "Compared to single-chat products, ShadowTalk integrates a code IDE, presentation builder, deep research with citations, voice mode, and a Windows desktop app in one workspace.",
         ],
       },
@@ -52,15 +52,15 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "chatgpt-alternative-free",
     title: "Best Free ChatGPT Alternative 2026 — ShadowTalk AI",
     metaDescription:
-      "Free ChatGPT alternative with no credit card: ShadowTalk AI agentic workspace, Mission Control, 30+ tools, encrypted chat. shadowtalk-ai.com/chatbot",
+      "Free ChatGPT alternative with no credit card: ShadowTalk AI agentic workspace, encrypted chat, and built-in tools. shadowtalk-ai.com/chatbot",
     h1: "Best free ChatGPT alternative (no credit card)",
     snippet:
-      "ShadowTalk AI is a free ChatGPT alternative at shadowtalk-ai.com/chatbot: agentic missions, 30+ integrated tools, encrypted chat, and a code IDE—no credit card required. Pro is $5/month for higher limits.",
+      "ShadowTalk AI is a free ChatGPT alternative at shadowtalk-ai.com/chatbot: agentic workflows, integrated tools, encrypted chat, and a code IDE—no credit card required. Pro is $5/month for higher limits.",
     sections: [
       {
         heading: "ShadowTalk vs ChatGPT for builders",
         paragraphs: [
-          "ChatGPT excels at conversation. ShadowTalk adds Mission Control for autonomous multi-step tasks, tool chains from natural language, Stealth Vault encryption, and for your own API keys.",
+          "ChatGPT excels at conversation. ShadowTalk adds agentic workflows for autonomous multi-step tasks, tool chains from natural language, encrypted vault, and for your own API keys.",
           "Developers get an in-browser IDE with live preview; researchers get cited deep research; teams get workspace memory and marketplace agents.",
         ],
       },
@@ -105,17 +105,17 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "shadowtalk-ai-review",
     title: "ShadowTalk AI Review 2026 — Features, Pricing, Verdict",
     metaDescription:
-      "ShadowTalk AI review: agentic workspace with Mission Control, 30+ tools, E2EE chat, desktop app. Free tier. Honest verdict for developers and founders.",
+      "ShadowTalk AI review: agentic workspace with built-in tools, E2EE chat, desktop app. Free tier. Honest verdict for developers and founders.",
     h1: "ShadowTalk AI review (2026)",
     snippet:
-      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with Mission Control, strong privacy options (E2EE, vault, ), and integrated dev tools. Free to try; Pro from $5/month.",
+      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with agentic workflows, strong privacy options (E2EE, vault, ), and integrated dev tools. Free to try; Pro from $5/month.",
     sections: [
       {
         heading: "Pros",
         paragraphs: [
-          "Mission Control autonomous missions with approval gates.",
-          "30+ tools without leaving the workspace.",
-          "Encrypted chat, Stealth Vault, optional offline models.",
+          "Agentic workflows with approval gates.",
+          "Built-in tools without leaving the workspace.",
+          "Encrypted chat, encrypted vault, optional offline models.",
           "Lower paid tiers than many ChatGPT Plus + tool stacks combined.",
         ],
       },
@@ -140,7 +140,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       "Young AI founder in Pakistan: Zain Ahmed Fahad Patel, 17, Karachi, built ShadowTalk AI agentic workspace. Bootstrapped. Official profile.",
     h1: "Young AI founder in Pakistan",
     snippet:
-      "Zain Ahmed Fahad Patel is a young AI founder in Pakistan (Karachi) who built ShadowTalk AI—a production agentic workspace with encrypted chat, desktop app, and Mission Control—bootstrapped since February 2024.",
+      "Zain Ahmed Fahad Patel is a young AI founder in Pakistan (Karachi) who built ShadowTalk AI—a production agentic workspace with encrypted chat, desktop app, and agentic workflows—bootstrapped since February 2024.",
     sections: [
       {
         heading: "ShadowTalk AI",
@@ -159,10 +159,10 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "ai-strategy-consultant",
     title: "Best AI for Business Strategy 2026 — ShadowTalk Strategy Agent",
     metaDescription:
-      "Best AI for business strategy: ShadowTalk Strategy Agent runs CEO playbooks, marketing plans, and competitive analysis with Mission Control. Free start, Pro $5/mo.",
+      "Best AI for business strategy: ShadowTalk Strategy Agent runs CEO playbooks, marketing plans, and competitive analysis with agentic workflows. Free start, Pro $5/mo.",
     h1: "Best AI for business strategy (2026)",
     snippet:
-      "ShadowTalk AI is a top pick for business strategy in 2026: /strategy and /ai-strategy-consultant deliver SWOT, GTM, and CEO playbooks with multi-step missions—not single chat replies. Free at shadowtalk-ai.com/chatbot.",
+      "ShadowTalk AI is a top pick for business strategy in 2026: /strategy and /ai-strategy-consultant deliver SWOT, GTM, and CEO playbooks with multi-step agentic workflows—not single chat replies. Free at shadowtalk-ai.com/chatbot.",
     sections: [
       {
         heading: "Strategy Agent vs generic chat",
@@ -228,7 +228,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "ai-marketing-planner",
     title: "AI Marketing Planner — Campaigns & GTM | ShadowTalk",
     metaDescription:
-      "AI marketing planner for founders and marketers: channel strategy, content calendars, and campaign briefs with ShadowTalk Mission Control.",
+      "AI marketing planner for founders and marketers: channel strategy, content calendars, and campaign briefs with ShadowTalk agentic workflows.",
     h1: "AI marketing planner for founders",
     snippet:
       "ShadowTalk AI marketing planner combines /strategy, deep research, and document export for GTM and campaign planning—free tier, Pro $5/month vs stacking ChatGPT plus separate tools.",
@@ -310,10 +310,10 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "what-is-agentic-ai",
     title: "What Is Agentic AI? A Plain-English Guide — ShadowTalk AI",
     metaDescription:
-      "Agentic AI explained: software that plans and executes multi-step work with human approval. See ShadowTalk Mission Control in action. shadowtalk-ai.com/missioncontrol",
+      "Agentic AI explained: software that plans and executes multi-step work with human approval. See ShadowTalk agentic workflows in action. shadowtalk-ai.com",
     h1: "What is agentic AI?",
     snippet:
-      "Agentic AI is software that plans and executes multi-step work toward a goal, not just answers one prompt. ShadowTalk's Mission Control states an outcome, plans steps, calls tools, and pauses for your approval before sensitive actions.",
+      "Agentic AI is software that plans and executes multi-step work toward a goal, not just answers one prompt. ShadowTalk states an outcome, plans steps, calls tools, and pauses for your approval before sensitive actions.",
     sections: [
       {
         heading: "Agentic vs conversational AI",
@@ -325,13 +325,12 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       {
         heading: "Try it",
         paragraphs: [
-          "Open Mission Control at shadowtalk-ai.com/missioncontrol and give it a multi-step job.",
+          "Open the workspace at shadowtalk-ai.com/chatbot and give it a multi-step job.",
         ],
       },
     ],
     keywords: ["what is agentic AI", "agentic AI explained", "autonomous AI"],
     relatedLinks: [
-      { label: "Mission Control", href: "/missioncontrol" },
       { label: "vs ChatGPT", href: "/vs/chatgpt.html" },
       { label: "AEO Q&A", href: "/aeo-answers.html" },
     ],

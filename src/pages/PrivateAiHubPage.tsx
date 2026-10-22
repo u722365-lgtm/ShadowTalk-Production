@@ -38,7 +38,7 @@ const pillars = [
   {
     icon: Zap,
     title: "Agentic tools included",
-    body: "Deep Research, autonomous Missions, Video Studio, Code IDE, Vault — 30+ tools in one workspace, not just chat.",
+    body: "Deep Research, autonomous agents, Video Studio, Code IDE, Vault — integrated tools in one workspace, not just chat.",
   },
   {
     icon: Globe,

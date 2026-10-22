@@ -1,4 +1,4 @@
-import { Code, Wifi, Brain, Shield, Zap, Download, ArrowUpRight, Bot, Target, Layers } from "lucide-react";
+import { Code, Wifi, Brain, Shield, Zap, Download, ArrowUpRight, Bot, Target, Layers, Mic, Search } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -55,19 +55,19 @@ const FeaturesSection = () => {
       span: "sm:col-span-2 md:col-span-2",
     },
     {
-      icon: Target,
-      title: "Mission Control",
-      href: "/missioncontrol",
-      description: "Launch autonomous missions that research, draft, and execute multi-step workflows while you focus on what matters.",
+      icon: Search,
+      title: "Deep Research",
+      href: "/deep-research",
+      description: "Multi-source web synthesis with cited bibliographies and executive-grade reports in one flow.",
       gradient: "from-secondary/20 to-secondary/5",
       iconColor: "text-secondary",
       span: "",
     },
     {
-      icon: Zap,
-      title: "30+ Tool Orchestration",
+      icon: Mic,
+      title: "Voice Mode",
       href: "/chatbot",
-      description: "Natural language triggers code, research, calendar, vault, and more — no manual tool-switching.",
+      description: "Talk to ShadowTalk hands-free with real-time speech-to-text and natural voice responses.",
       gradient: "from-accent/20 to-accent/5",
       iconColor: "text-accent",
       span: "",
@@ -204,8 +204,8 @@ const FeaturesSection = () => {
 
         <LandingStagger className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-16 sm:mt-20 max-w-4xl mx-auto">
           {[
-            { value: "30+", label: "Integrated Tools", sub: "Natural-language triggers", subColor: "text-primary" },
-            { value: "24/7", label: "Mission Control", sub: "Autonomous workflows", subColor: "text-secondary" },
+            { value: "E2EE", label: "Encrypted Chat", sub: "Client-side privacy", subColor: "text-primary" },
+            { value: "24/7", label: "Deep Research", sub: "Cited web synthesis", subColor: "text-secondary" },
             { value: "HITL", label: "Human-in-the-Loop", sub: "Approve agent actions", subColor: "text-success" },
             { value: "Edge AI", label: "On-Device Engine", sub: "WebGPU local acceleration", subColor: "text-warning" },
           ].map((stat, i) => (
@@ -225,8 +225,8 @@ const FeaturesSection = () => {
         <LandingStagger className="mt-12 sm:mt-16 flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
           {[
             "🤖 Agentic Task Runner",
-            "⚡ Tool Orchestration",
-            "🎯 Mission Control",
+            "🎙️ Voice Mode",
+            "🔍 Deep Research",
             "⚡ Intelligent Multi-Model Execution",
           ].map((badge, i) => (
             <motion.div

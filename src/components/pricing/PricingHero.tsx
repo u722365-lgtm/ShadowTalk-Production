@@ -56,7 +56,7 @@ const PricingHero = () => {
         >
           <p className="text-xs text-muted-foreground max-w-md text-center leading-relaxed">
             <Sparkles className="h-3.5 w-3.5 text-warning inline mr-1 align-text-bottom" />
-            Premium ($15/mo) is the default for daily builders — unlimited messages and Mission Control.
+            Premium ($15/mo) is the default for daily builders — unlimited messages and Deep Research.
           </p>
           <p className="text-[11px] text-muted-foreground/90 max-w-lg text-center">{PRICING_PAGE_HOOK}</p>
         </motion.div>

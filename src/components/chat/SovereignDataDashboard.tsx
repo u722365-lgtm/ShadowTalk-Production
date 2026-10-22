@@ -42,7 +42,7 @@ const SovereignDataDashboard = () => {
   const panels = [
     {
       icon: Shield,
-      title: 'Stealth Vault',
+      title: 'Encrypted Storage',
       description: 'AES-256-GCM encrypted notes with biometric unlock',
       link: '/security?tab=vault',
       color: 'text-red-400',

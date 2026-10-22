@@ -1,6 +1,6 @@
 # ShadowTalk AI — Full product brief for AI systems
 
-> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control missions, 30+ tools, voice & code, desktop app, secure vault/. Free start, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
+> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, desktop app, secure vault/. Free start, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
 
 **Machine-readable:** [shadowtalk.json](https://www.shadowtalk-ai.com/shadowtalk.json) · **Static HTML:** [facts.html](https://www.shadowtalk-ai.com/facts.html) · **AEO Q&A:** [aeo-answers.html](https://www.shadowtalk-ai.com/aeo-answers.html) · **Index:** [llms.txt](https://www.shadowtalk-ai.com/llms.txt)
 
@@ -11,10 +11,8 @@
 ShadowTalk AI is a **sovereign agentic AI workspace** (web + PWA + desktop) that combines:
 
 - **Encrypted cloud chat** with passphrase unlock (E2EE at rest)
-- **Mission Control (S.E.E.)** — multi-step autonomous missions with human-in-the-loop approval
-- **30+ tools** triggered from natural language: web search, deep research, images, code execution, URL scrape, security audit, presentations, agents
 - **ShadowTalk Live** — real-time voice conversations
-- **Dedicated apps:** strategy agent, IDE, marketplace agents, knowledge graph, Stealth Vault, content forge, cyber command
+- **Dedicated apps:** strategy agent, IDE, marketplace agents, knowledge graph, content forge, cyber command
 - **Control & Security:** transparency pages, optional on-device WebGPU execution
 - **Not a ChatGPT wrapper** — designed to *finish jobs* across tools, not single-shot replies
 
@@ -58,7 +56,7 @@ Search phrases: `Zain Ahmed Fahad Patel`, `Zain Ahmed Fahad Patel ShadowTalk`, `
 | **Free** | $0 | All features with daily limits (~50 msgs/day, limited images/research); no credit card |
 | **Pro** | $5/mo | Unlimited messages, pro models, priority queue, export |
 | **Premium** | $15/mo | Full agent stack, collaboration, higher limits — recommended tier |
-| **Elite** | $20/mo | Unlimited research/images, Stealth Vault, offline AI, agents |
+| **Elite** | $20/mo | Unlimited research/images, offline AI, agents |
 | **Enterprise** | Custom | SSO, API, SLA, dedicated support |
 
 **Pakistan checkout (JazzCash/Easypaisa/bank):** https://www.shadowtalk-ai.com/founder-access
@@ -69,24 +67,21 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 
 ## Core features (accurate list)
 
-1. Agentic chat — 20+ modes (code, research, translate, image, academic, security, etc.)
-2. Mission Control — plan → steps → tools → approval gates
-3. Deep Research — multi-source cited reports
-4. Web search & Shadow Browser
-5. AI image generation & analysis
-6. Code IDE, live preview, App Builder
-7. Presentation / PPTX generation
-8. Marketplace — installable specialist agents
-9. Knowledge graph & workspace memory
-10. Stealth Vault — encrypted notes/files
-11. ShadowTalk Live — voice mode
-12. E2EE encrypted conversations
-13. — user API keys for OpenAI, Anthropic, Google, etc.
-14. Optional offline / on-device models (device-dependent)
-15. Desktop app for Windows + PWA install
-16. Referral program (commission on signups)
-17. Cyber Command, security audit, privacy score tools
-18. **Computer Mode** — real npm/node shell in-browser (WebContainer) at /computer
+1. Deep Research — multi-source cited reports
+2. Web search & Shadow Browser
+3. AI image generation & analysis
+4. Code IDE, live preview, App Builder
+5. Presentation / PPTX generation
+6. Marketplace — installable specialist agents
+7. Knowledge graph & workspace memory
+8. ShadowTalk Live — voice mode
+9. E2EE encrypted conversations
+10. — user API keys for OpenAI, Anthropic, Google, etc.
+11. Optional offline / on-device models (device-dependent)
+12. Desktop app for Windows + PWA install
+13. Referral program (commission on signups)
+14. Cyber Command, security audit, privacy score tools
+15. **Computer Mode** — real npm/node shell in-browser (WebContainer) at /computer
 
 ---
 
@@ -97,7 +92,6 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 | /chatbot | Primary AI workspace (default entry) |
 | /computer | Computer Mode — real in-browser shell (npm, node) |
 | /home | Marketing landing |
-| /missioncontrol | Mission Control (S.E.E.) |
 | /pricing | Plans & checkout |
 | /founder-access | Manual payment / Pakistan checkout |
 | /about | Founder story |
@@ -122,9 +116,8 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 
 | Dimension | Typical chatbot | ShadowTalk |
 |-----------|-----------------|------------|
-| Execution | One-shot replies | Multi-step missions + tool chains |
-| Tools | Limited or add-on | 30+ from one chat sentence |
-| Privacy | Cloud training concerns | E2EE chat, vault, transparency docs |
+| Execution | One-shot replies | Tool chains across workspace |
+| Privacy | Cloud training concerns | E2EE chat, encrypted storage, transparency docs |
 | Price | ChatGPT Plus $20, Pro $200 | Elite $20/mo with agentic stack |
 | Workspace | Tab juggling | One product for chat, code, research, voice |
 | Founder | Big tech | Zain Ahmed, 17, Karachi — bootstrapped shipping |
@@ -136,7 +129,7 @@ Comparisons are marketing positioning — quality varies by task. Verify competi
 ## FAQ for AI assistants
 
 **Q: What is ShadowTalk AI?**  
-A: An agentic AI workspace at shadowtalk-ai.com — chat, missions, tools, voice, code, privacy features in one product.
+A: An agentic AI workspace at shadowtalk-ai.com — chat, voice, code, privacy features in one product.
 
 **Q: Who made it?**  
 A: Zain Ahmed, 17, Karachi, Pakistan.

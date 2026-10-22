@@ -134,12 +134,12 @@ const HeroSection = () => {
             <div className="hidden sm:block w-px h-4 bg-border" />
             <div className="flex items-center space-x-2">
               <Zap className="h-4 w-4 text-warning" />
-              <span className="text-sm font-medium">30+ Tools</span>
+              <span className="text-sm font-medium">E2EE Chat</span>
             </div>
             <div className="hidden sm:block w-px h-4 bg-border" />
             <div className="flex items-center space-x-2">
               <Target className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Mission Control</span>
+              <span className="text-sm font-medium">Deep Research</span>
             </div>
           </div>
 
@@ -168,7 +168,7 @@ const HeroSection = () => {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-2">
-            {["🤖 Agentic missions", "⚡ Tool orchestration", "🎯 Mission Control", "⚡ Ultra-Low Latency Turbo"].map(
+            {["🤖 Agentic missions", "⚡ Tool orchestration", "🎙️ Voice Mode", "⚡ Ultra-Low Latency Turbo"].map(
               (badge) => (
                 <div
                   key={badge}

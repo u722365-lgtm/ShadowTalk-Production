@@ -46,7 +46,7 @@ const CompetitiveComparison = () => {
     {
       competitor: "Chat-Only AI",
       weaknesses: ["Agent features locked behind expensive tiers", "Limited tool orchestration in free tier", "Expensive monthly subscriptions"],
-      shadowAdvantages: ["Agentic Task Runner + Mission Control", "30+ tools from natural language", "Affordable premium tiers"],
+      shadowAdvantages: ["Agentic Task Runner + Multi-Step Agents", "Natural-language tool triggers", "Affordable premium tiers"],
       priceDiff: "More agents, lower cost",
     },
     {
@@ -66,12 +66,12 @@ const CompetitiveComparison = () => {
   const architectureComparisons = [
     {
       feature: "Agentic Execution",
-      shadowtalk: { label: "Task Runner + Mission Control", icon: Sparkles, advantage: true },
+      shadowtalk: { label: "Task Runner + Multi-Step Agents", icon: Sparkles, advantage: true },
       competitors: { label: "Chat-only or limited agents", icon: MessageCircle },
     },
     {
       feature: "Tool Orchestration",
-      shadowtalk: { label: "30+ tools, NL triggers", icon: Zap, advantage: true },
+      shadowtalk: { label: "Natural-language tool triggers", icon: Zap, advantage: true },
       competitors: { label: "Fewer integrated actions", icon: Server },
     },
     {

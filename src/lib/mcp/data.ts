@@ -9,13 +9,13 @@ export type PlanInfo = {
 export const PRODUCT = {
   name: "ShadowTalk AI",
   tagline:
-    "A sovereign agentic AI workspace: encrypted chat, Mission Control missions, 30+ tools, voice, code IDE, desktop app, and optional on-device models.",
+    "A sovereign agentic AI workspace: encrypted chat, voice, code IDE, desktop app, and optional on-device models.",
   website: "https://www.shadowtalk-ai.com",
   founder: "Zain Ahmed Fahad Patel (Karachi, Pakistan)",
   freeTier:
     "Free tier with no credit card: 5,000 chat messages, 20 image generations, 20 document generations, 5 deep-research tasks.",
   privacy:
-    "Privacy-first: client-side encryption for the Stealth Vault, local-first storage, optional offline models so normal chat can run fully on-device.",
+    "Privacy-first: client-side encryption, local-first storage, and optional offline models so normal chat can run fully on-device.",
 };
 
 export const PLANS: PlanInfo[] = [
@@ -37,7 +37,7 @@ export const PLANS: PlanInfo[] = [
   {
     name: "Premium",
     price: "$15/month",
-    highlights: ["Mission Control automation", "Advanced research", "Creative Studio"],
+    highlights: ["Advanced automation", "Advanced research", "Creative Studio"],
   },
   {
     name: "Elite",
@@ -55,18 +55,11 @@ export type FeatureInfo = {
 
 export const FEATURES: FeatureInfo[] = [
   {
-    name: "Agentic Chat",
+    name: "Multi-model Chat",
     category: "chat",
     route: "/chatbot",
     description:
-      "Multi-model agentic chat with tool orchestration, documents, images, voice input and code execution.",
-  },
-  {
-    name: "Mission Control",
-    category: "automation",
-    route: "/missioncontrol",
-    description:
-      "Long-running autonomous missions with real web search, scraping and step-by-step execution logs.",
+      "Multi-model chat with tool orchestration, documents, images, voice input and code execution.",
   },
   {
     name: "Deep Research",
@@ -91,12 +84,6 @@ export const FEATURES: FeatureInfo[] = [
     category: "media",
     route: "/studio",
     description: "AI media and document editor: images, audio, video and presentation building.",
-  },
-  {
-    name: "Stealth Vault",
-    category: "security",
-    route: "/stealth-vault",
-    description: "PBKDF2 + AES-256-GCM client-side encrypted vault with biometric (WebAuthn) unlock.",
   },
   {
     name: "Cyber Command Center",
@@ -139,7 +126,7 @@ export const FAQS: { question: string; answer: string }[] = [
   {
     question: "Is my data used for training?",
     answer:
-      "No. ShadowTalk does not train on your conversations. Vault content is encrypted client-side, and normal chat can run on an on-device model.",
+      "No. ShadowTalk does not train on your conversations. Sensitive content is encrypted client-side, and normal chat can run on an on-device model.",
   },
   {
     question: "What does ShadowTalk cost?",

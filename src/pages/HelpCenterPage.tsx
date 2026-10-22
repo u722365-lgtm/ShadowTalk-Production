@@ -98,64 +98,6 @@ Type any page name, such as "Analytics", "Workspace", "Settings", "Changelog", o
     `,
   },
 
-  // Category: Mission Control & Agents
-  {
-    id: "missions-how-see-works",
-    title: "Understanding Mission Control (S.E.E. Architecture)",
-    category: "missions",
-    summary: "How Sense, Evaluate, Execute runs multi-step jobs with human-in-the-loop safety controls.",
-    readTime: "5 min read",
-    tags: ["Agents", "Automation", "Architecture"],
-    content: `
-### What is Mission Control?
-Single-turn chatbots answer questions; autonomous agents finish objectives. Mission Control implements the **S.E.E. (Sense, Evaluate, Execute)** architecture:
-
-1. **Sense**: Ingests your goal, extracts relevant context from Business Memory, and inspects available external tools.
-2. **Evaluate**: Decomposes the objective into ordered task graphs, estimating dependencies, token budgets, and risk tiers.
-3. **Execute**: Runs tools sequentially or in parallel, capturing intermediate outputs for human verification when configured.
-
-#### Human-in-the-Loop (HITL)
-High-stakes operations (such as scraping proprietary endpoints, running file writes, or generating external network requests) trigger approval gates. You can inspect the planned action, modify parameters, or approve execution with a single click.
-    `,
-  },
-  {
-    id: "missions-creating-playbooks",
-    title: "Creating Reusable Mission Playbooks",
-    category: "missions",
-    summary: "Save, share, and schedule recurring multi-step tasks for market intelligence and code generation.",
-    readTime: "4 min read",
-    tags: ["Playbooks", "Workflows", "Automation"],
-    content: `
-### Mission Playbooks
-Playbooks allow you to turn repeatable workflows into one-click executable missions.
-
-#### How to create a playbook:
-1. Open **/workspace** or ask the AI: *"Create an automated research mission for competitor product launches."*
-2. Configure tool chains: select **Deep Research**, **Web Scrape**, and **Presentation Builder**.
-3. Set your execution triggers: run manually, on schedule, or via developer API webhooks.
-    `,
-  },
-
-  // Category: 30+ Tools & Integrations
-  {
-    id: "tools-natural-language-triggers",
-    title: "Triggering Tools from Natural Language",
-    category: "tools",
-    summary: "Learn how ShadowTalk seamlessly orchestrates 30+ tools directly from ordinary conversational prompts.",
-    readTime: "4 min read",
-    tags: ["Tools", "Web Search", "Code Execution"],
-    content: `
-### Zero-Config Natural Language Tool Orchestration
-In ShadowTalk, you don't need complicated slash commands or menu toggling. Simply speak naturally:
-
-#### Tool Trigger Examples:
-- **Deep Web Research**: *"Investigate the latest developments in humanoid robotics across IEEE and ArXiv papers with citations."*
-- **Computer Code Sandbox**: *"Run a Node.js script that fetches GitHub repo metrics and calculates issue velocity."*
-- **Presentation Slides**: *"Generate a 5-slide pitch deck explaining multi-agent orchestration for enterprise CIOs."*
-- **Security Audit**: *"Perform a static security analysis on this React component for XSS and memory leak vulnerabilities."*
-    `,
-  },
-
   // Category: Model Routing & Execution
   {
     id: "models-groq-deepseek-routing",
@@ -193,7 +135,7 @@ ShadowTalk provides flexible tiers designed for individual developers up to scal
 
 - **Free Tier ($0/mo)**: ~50 messages/day, access to Groq Llama Turbo, standard tools, and no credit card required.
 - **Pro ($5/mo)**: Unlimited messages, DeepSeek R1 reasoning, priority model queue, and custom memory slots.
-- **Premium ($15/mo)**: Full Mission Control autonomous missions, extended tool execution, and team collaboration.
+- **Premium ($15/mo)**: Full autonomous agent workflows, extended tool execution, and team collaboration.
 - **Elite ($20/mo)**: Unlimited deep research briefs, WebGPU model runtime, and priority technical support.
 
 #### 14-Day Money-Back Guarantee
@@ -243,8 +185,6 @@ If on-device edge execution fails to initialize:
 const CATEGORIES = [
   { id: "all", label: "All Topics", icon: Layers },
   { id: "getting-started", label: "Getting Started", icon: BookOpen },
-  { id: "missions", label: "Mission Control", icon: Target },
-  { id: "tools", label: "30+ Tools", icon: Zap },
   { id: "models", label: "Model Engines", icon: Cpu },
   { id: "billing", label: "Billing & Plans", icon: CreditCard },
   { id: "developer", label: "Developer & ", icon: Code },

@@ -36,7 +36,7 @@ import { motion } from "framer-motion";
 
 interface FAQItem {
   id: string;
-  category: "general" | "product" | "missions" | "pricing" | "security" | "founder";
+  category: "general" | "product" | "pricing" | "security" | "founder";
   question: string;
   answer: string;
 }
@@ -46,7 +46,7 @@ const STATIC_FAQS: FAQItem[] = [
     id: "faq-what-is",
     category: "general",
     question: "What is ShadowTalk AI?",
-    answer: "ShadowTalk AI is an agentic AI workspace that unifies multi-model chat, autonomous Mission Control workflows, 30+ integrated tools (web search, deep research, code execution, slides), and an on-device cryptographic ledger into one focused interface at shadowtalk-ai.com.",
+    answer: "ShadowTalk AI is an agentic AI workspace that unifies multi-model chat, autonomous multi-step agents, integrated tool orchestration (web search, deep research, code execution, slides), and an on-device cryptographic ledger into one focused interface at shadowtalk-ai.com.",
   },
   {
     id: "faq-how-different-chatgpt",
@@ -61,34 +61,22 @@ const STATIC_FAQS: FAQItem[] = [
     answer: "Yes. ShadowTalk offers a generous free tier with daily message allocations, access to Groq Llama Turbo, tool triggers, and memory slots without requiring a credit card to get started.",
   },
   {
-    id: "faq-mission-control",
-    category: "missions",
-    question: "What is Mission Control and the S.E.E. architecture?",
-    answer: "Mission Control implements Sense, Evaluate, Execute (S.E.E.) to break down multi-step goals into dependency graphs. It executes sub-tasks (researching sources, scraping data, running code, synthesizing summaries) with Human-in-the-Loop (HITL) approval gates for high-stakes actions.",
-  },
-  {
     id: "faq-models-supported",
     category: "product",
     question: "Which AI models can I use on ShadowTalk?",
     answer: "ShadowTalk integrates Groq Llama 3.3 70B (ultra-fast inference), DeepSeek R1 (deep logical reasoning), OpenAI GPT-4o (multimodal intelligence), and client-side WebGPU acceleration for on-device edge execution.",
   },
   {
-    id: "faq-tools-available",
-    category: "product",
-    question: "What 30+ tools are integrated into the workspace?",
-    answer: "Tools include Live Web Search, Multi-Source Deep Research with cited bibliographies, Python/Node In-Browser Sandbox Execution, Presentation Deck Generation, URL Web Scraper, Security Audit Vulnerability Scanner, Image Generation, and Custom Specialist Marketplace Agents.",
-  },
-  {
     id: "faq-security-privacy",
     category: "security",
     question: "How does ShadowTalk protect my confidential data?",
-    answer: "ShadowTalk enforces client-side encryption for the Stealth Vault, stores local telemetry inside IndexedDB sandboxes, supports where API keys never touch our database, and guarantees that your proprietary business conversations are never used to train foundation models.",
+    answer: "ShadowTalk enforces client-side encryption for your private vault, stores local telemetry inside IndexedDB sandboxes, supports where API keys never touch our database, and guarantees that your proprietary business conversations are never used to train foundation models.",
   },
   {
     id: "faq-pricing-tiers",
     category: "pricing",
     question: "What are the paid tiers and pricing?",
-    answer: "We offer Pro ($5/month) for unlimited messages and DeepSeek R1 reasoning, Premium ($15/month) for full Mission Control automation and team features, and Elite ($20/month) for priority GPU queues, WebGPU edge runtimes, and unlimited deep research. All plans include a 14-day money-back guarantee.",
+    answer: "We offer Pro ($5/month) for unlimited messages and DeepSeek R1 reasoning, Premium ($15/month) for full autonomous agents and team features, and Elite ($20/month) for priority GPU queues, WebGPU edge runtimes, and unlimited deep research. All plans include a 14-day money-back guarantee.",
   },
   {
     id: "faq-refund-policy",
@@ -120,7 +108,6 @@ const CATEGORY_MAP = [
   { id: "all", label: "All Questions", icon: Sparkles },
   { id: "general", label: "General & Overview", icon: HelpCircle },
   { id: "product", label: "Product & Tools", icon: Zap },
-  { id: "missions", label: "Mission Control", icon: Target },
   { id: "pricing", label: "Pricing & Billing", icon: CreditCard },
   { id: "security", label: "Security & Control", icon: Shield },
   { id: "founder", label: "Founder & Team", icon: Code },
@@ -220,14 +207,14 @@ export const FAQPage = () => {
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
               Find transparent, accurate answers regarding model capabilities, billing policies, 
-              autonomous missions, security architecture, and system limits.
+              autonomous agents, security architecture, and system limits.
             </p>
 
             {/* Interactive Search Bar */}
             <div className="relative max-w-2xl mx-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search questions (e.g. 'refunds', 'Groq speed', '', 'missions')..."
+                placeholder="Search questions (e.g. 'refunds', 'Groq speed', '', 'security')..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-6 text-base bg-background/80 border-border/60 rounded-xl shadow-lg focus-visible:ring-primary/40"

@@ -161,11 +161,9 @@ const FeatureComparison = () => (
           { feature: "Voice sessions", free: "3/day", pro: "Unlimited", premium: "Unlimited", elite: "Unlimited" },
           { feature: "File uploads", free: "3/day", pro: "50/day", premium: "Unlimited", elite: "Unlimited" },
           { feature: "ShadowBrowser & IDE", free: true, pro: true, premium: true, elite: true },
-          { feature: "Mission Control (S.E.E.)", free: "3/mo", pro: "15/mo", premium: "30/mo", elite: "50/mo" },
           { feature: "Collaborative rooms", free: false, pro: true, premium: true, elite: true },
           { feature: "Chat export", free: false, pro: true, premium: true, elite: true },
           { feature: "/ on-device AI", free: false, pro: false, premium: false, elite: true },
-          { feature: "Stealth Vault", free: false, pro: false, premium: false, elite: true },
           { feature: "API access", free: false, pro: false, premium: false, elite: true },
           { feature: "Priority support", free: false, pro: "<4h", premium: "<2h", elite: "24/7" },
         ].map((row, i) => (
@@ -429,7 +427,6 @@ const DocsPage = () => {
                 <TabsTrigger value="getting-started">Get Started</TabsTrigger>
                 <TabsTrigger value="workspace">Workspace</TabsTrigger>
                 <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="missions">Missions</TabsTrigger>
                 <TabsTrigger value="tools">Tools</TabsTrigger>
                 <TabsTrigger value="privacy">Privacy</TabsTrigger>
                 <TabsTrigger value="pricing">Pricing</TabsTrigger>
@@ -824,39 +821,6 @@ const DocsPage = () => {
                   ))}
                 </div>
               </DocSection>
-            </TabsContent>
-
-            {/* Missions */}
-            <TabsContent value="missions" className="space-y-8">
-              <DocSection title="Mission Control">
-                <p className="text-muted-foreground mb-6">
-                  ShadowTalk runs multi-step autonomous work through Mission Control (/missioncontrol).
-                  Sensitive tool calls pause for your approval before continuing.
-                </p>
-                <div className="grid gap-5 md:grid-cols-2">
-                  {missionSteps.map((step, i) => (
-                    <motion.div key={step.step} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                      <SpotlightCard className="h-full">
-                        <Card className="card-glass h-full">
-                          <CardHeader>
-                            <Badge variant="outline" className="mb-2 w-fit glass-subtle">Step {step.step}</Badge>
-                            <CardTitle className="text-lg">{step.title}</CardTitle>
-                            <CardDescription className="mt-2">{step.description}</CardDescription>
-                          </CardHeader>
-                        </Card>
-                      </SpotlightCard>
-                    </motion.div>
-                  ))}
-                </div>
-              </DocSection>
-              <div className="flex flex-wrap gap-3">
-                <Button className="btn-glow rounded-xl" onClick={() => navigate("/studio")}>
-                  <Rocket className="h-4 w-4 mr-2" /> Open Model Studio
-                </Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => navigate("/templates")}>
-                  <Sparkles className="h-4 w-4 mr-2" /> Prompt Templates
-                </Button>
-              </div>
             </TabsContent>
 
             {/* Tools & modes */}

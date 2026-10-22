@@ -34,13 +34,13 @@ export const WEDGE_PAGES: WedgePage[] = [
     h1: "AI Strategy Consultant — finish the playbook, not just the brainstorm",
     badge: "Wedge: Strategy Agent",
     snippet:
-      "ShadowTalk AI is an AI strategy consultant workspace: run CEO playbooks, marketing plans, and competitive analysis with Mission Control multi-step missions. Free start at shadowtalk-ai.com/chatbot — Pro $5/month undercuts ChatGPT Plus.",
+      "ShadowTalk AI is an AI strategy consultant workspace: run CEO playbooks, marketing plans, and competitive analysis with agentic multi-step workflows. Free start at shadowtalk-ai.com/chatbot — Pro $5/month undercuts ChatGPT Plus.",
     sections: [
       {
         heading: "What you get vs generic chat",
         paragraphs: [
           "ChatGPT answers strategy questions. ShadowTalk chains research, frameworks, and exportable outputs — SWOT, OKRs, channel plans, and investor one-pagers in one flow.",
-          "Open Mission Control (/missioncontrol) for structured business intelligence with human approval gates before sensitive actions.",
+          "Open the workspace (/chatbot) for structured business intelligence with human approval gates before sensitive actions.",
         ],
       },
       {
@@ -69,7 +69,7 @@ export const WEDGE_PAGES: WedgePage[] = [
     slug: "ai-business-planner",
     title: "AI Business Planner — Plans, Forecasts & GTM | ShadowTalk AI",
     metaDescription:
-      "AI business planner for founders: financial models, GTM strategy, competitive maps, and pitch outlines. ShadowTalk Mission Control executes multi-step plans.",
+      "AI business planner for founders: financial models, GTM strategy, competitive maps, and pitch outlines. ShadowTalk agentic workflows execute multi-step plans.",
     h1: "AI Business Planner — from idea to executable plan",
     badge: "Wedge: Business planning",
     snippet:
@@ -99,7 +99,6 @@ export const WEDGE_PAGES: WedgePage[] = [
     ],
     relatedLinks: [
       { label: "Strategy consultant", href: "/ai-strategy-consultant" },
-      { label: "Mission Control", href: "/missioncontrol" },
       { label: "Pricing", href: "/pricing" },
       { label: "Case studies", href: "/case-studies" },
     ],

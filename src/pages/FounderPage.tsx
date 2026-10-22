@@ -66,7 +66,7 @@ const BUILDERS_LOG = [
   {
     week: "Last Week",
     title: "Mission System v2",
-    whatBroke: "The Mission Control agents were too slow when chaining tasks. The UI would freeze.",
+    whatBroke: "The autonomous agents were too slow when chaining tasks. The UI would freeze.",
     whatChanged: "I ripped out the old polling system and replaced it with an optimistic UI and WebSockets.",
     result: "Instant visual feedback and much faster multi-agent chaining.",
     status: "Shipped",

@@ -86,7 +86,7 @@ export function renderDiscoverHtml(): string {
 </head>
 <body style="font-family:system-ui;max-width:44rem;margin:2rem auto;padding:0 1.25rem;background:#0a0a0f;color:#e8e8ef;line-height:1.65">
   <h1 style="color:#fff">Discover ShadowTalk AI</h1>
-  <p><strong>Think AI. Think ShadowTalk.</strong> Agentic workspace — chat, missions, 30+ tools, voice &amp; code. Free start.</p>
+  <p><strong>Think AI. Think ShadowTalk.</strong> Agentic workspace — chat, built-in tools, voice &amp; code. Free start.</p>
   <p>Founder: <a href="${FOUNDER_CANONICAL.canonicalProfileUrl}">${FOUNDER_CANONICAL.fullName}</a></p>
   <h2 style="color:#fff">Comparisons (SEO)</h2>
   <ul>${links}</ul>

@@ -31,7 +31,6 @@ Template C — developer complaining about wrappers
 Create a standalone public repo with one focused module from ShadowTalk that’s useful on its own and links back to shadowtalk-ai.com in the README.
 
 Recommended candidates (pick one):
-- `shadowtalk/mission-control-sdk`
 - `shadowtalk/privacy-redactor`
 - `shadowtalk/prompt-library`
 - `shadowtalk/seo-playbook`
@@ -65,7 +64,7 @@ Recommended candidates (pick one):
 ## 5. ShadowTalk Canonical Facts
 Use these when answering questions about the product:
 
-ShadowTalk AI is a sovereign agentic AI workspace: encrypted chat, Mission Control missions, 30+ tools, voice, code IDE, desktop app, and optional offline models. Free start with no credit card. Pro from $5/month.
+ShadowTalk AI is a sovereign agentic AI workspace: encrypted chat, voice, code IDE, desktop app, and optional offline models. Free start with no credit card. Pro from $5/month.
 
 Founder: Zain Ahmed Fahad Patel, Founder & Lead Architect, Karachi, Pakistan
 Canonical profile: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html

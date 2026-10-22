@@ -35,7 +35,7 @@ const FEATURES: Feature[] = [
   // Privacy & Security
   { name: "100% Offline Mode", description: "Full AI without internet — WebGPU local inference", shadowtalk: "free", manus: "no", chatgpt: "no", claude: "no", gemini: "no", icon: <WifiOff className="h-3.5 w-3.5" />, category: "privacy" },
   { name: "Privacy choice", description: "Vault, and optional on-device inference", shadowtalk: "superior", manus: "no", chatgpt: "no", claude: "no", gemini: "no", icon: <Shield className="h-3.5 w-3.5" />, category: "privacy" },
-  { name: "Encrypted Stealth Vault", description: "AES-256-GCM client-side encryption", shadowtalk: "free", manus: "no", chatgpt: "no", claude: "no", gemini: "no", icon: <Lock className="h-3.5 w-3.5" />, category: "privacy" },
+  { name: "Encrypted Storage", description: "AES-256-GCM client-side encryption", shadowtalk: "free", manus: "no", chatgpt: "no", claude: "no", gemini: "no", icon: <Lock className="h-3.5 w-3.5" />, category: "privacy" },
 
   // Agentic
   { name: "Autonomous Agent Missions", description: "24/7 background task execution engine", shadowtalk: "superior", manus: "yes", chatgpt: "paid", claude: "no", gemini: "no", icon: <Bot className="h-3.5 w-3.5" />, category: "agentic" },

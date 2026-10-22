@@ -36,12 +36,12 @@ export function getUpgradeNudgeSubline(
   const endowment = getEndowmentMessage(conversationCount);
 
   if (level === "blocking") {
-    return `${honest} ${premium.name} ($${premium.price}/mo) — unlimited messages, Mission Control, ${anchor}.`;
+    return `${honest} ${premium.name} ($${premium.price}/mo) — unlimited messages, ${anchor}.`;
   }
   if (level === "strong") {
     return `${endowment} ${premium.name} keeps momentum without daily caps — ${anchor}.`;
   }
-  return `${honest} When ShadowTalk is your daily driver, ${premium.name} removes caps and unlocks Mission Control.`;
+  return `${honest} When ShadowTalk is your daily driver, ${premium.name} removes caps and unlocks the full tool stack.`;
 }
 
 export const FREE_TIER_MARKETING = {
@@ -51,13 +51,13 @@ export const FREE_TIER_MARKETING = {
 } as const;
 
 export const PRICING_PAGE_HOOK =
-  "Cancel anytime. 30-day money-back on paid plans. Your data stays under your control with Vault, and on-device options.";
+  "Cancel anytime. 30-day money-back on paid plans. Your data stays under your control with on-device options.";
 
 export const COMMUNITY_MARKETING = {
   title: "Building in public",
   headline: "Ship with us — not around us",
   subtitle:
-    "Follow the real changelog, uptime, and security docs. Early builders shape Mission Control, agents, and pricing — no inflated user counts or stock testimonials.",
+    "Follow the real changelog, uptime, and security docs. Early builders shape agents, tools, and pricing — no inflated user counts or stock testimonials.",
 } as const;
 
 export const PROACTIVE_MARKETING = {
@@ -68,7 +68,7 @@ export const PROACTIVE_MARKETING = {
 
 export const CHAT_LIMIT_TOAST = {
   title: "Daily free limit reached",
-  description: `Premium ($${premium.price}/mo) — unlimited messages, Mission Control, and the full tool stack. Limits reset at midnight UTC on Free.`,
+  description: `Premium ($${premium.price}/mo) — unlimited messages and the full tool stack. Limits reset at midnight UTC on Free.`,
 } as const;
 
 export const PROOF_BAR_LABEL = "Verify before you buy:";

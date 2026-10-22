@@ -55,7 +55,7 @@ const CASE_STUDIES: CaseStudy[] = [
       { label: "Deck Turnaround", value: "90% faster" },
       { label: "Tool Consolidation", value: "4 tools → 1" },
     ],
-    framework: "Problem: Fragmented research tabs → Solution: Autonomous S.E.E. Strategy Mission → Outcome: Single-session board-ready deliverables.",
+    framework: "Problem: Fragmented research tabs → Solution: Autonomous Strategy Agent mission → Outcome: Single-session board-ready deliverables.",
     ctaPrompt: "Analyze competitor pricing for cross-border B2B payments in MENA and build an executive brief.",
   },
   {
@@ -163,7 +163,7 @@ export const CaseStudiesPage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               {[
                 { value: "85%", label: "Faster Research Velocity", sub: "Multi-source synthesis" },
-                { value: "10x", label: "Workflow Throughput", sub: "Mission Control S.E.E." },
+                { value: "10x", label: "Workflow Throughput", sub: "Autonomous agents" },
                 { value: "40+ hrs", label: "Saved per Engineer/Mo", sub: "In-browser shell & IDE" },
                 { value: "100%", label: "Client Data Sovereignty", sub: "& Local Memory" },
               ].map((stat, i) => (

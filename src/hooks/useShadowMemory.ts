@@ -277,7 +277,7 @@ export const useShadowMemory = () => {
       },
       {
         category: 'vault',
-        action: 'Document Encrypted in Stealth Vault',
+        action: 'Document Encrypted in Encrypted Storage',
         detail: 'Saved confidential financial ledger with AES-256 GCM client-side encryption.',
         metadata: { file: 'Ledger-2026.enc', bytes: 1048576 },
       },

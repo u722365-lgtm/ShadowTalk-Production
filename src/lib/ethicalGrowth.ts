@@ -16,7 +16,7 @@ export const PRICING_TRANSPARENCY = {
   cancel: "Cancel anytime from billing or your payment provider — no lock-in contracts.",
   refund: "30-day money-back guarantee on paid plans (see Terms for details).",
   data:
-    "Cloud chat uses our servers; Stealth Vault, and optional on-device models keep sensitive work under your control.",
+    "Cloud chat uses our servers; the encrypted vault, and optional on-device models keep sensitive work under your control.",
   privacyLinks: [
     { href: "/privacy", label: "Privacy Policy" },
     { href: "/transparency", label: "Transparency" },

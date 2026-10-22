@@ -42,14 +42,14 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "ChatGPT",
     title: "ShadowTalk vs ChatGPT — Best Agentic AI Workspace (2026)",
     metaDescription:
-      "ShadowTalk AI vs ChatGPT: Mission Control missions, 30+ tools, encrypted chat, code IDE, and desktop app — free start. Compare features, pricing, and privacy.",
+      "ShadowTalk AI vs ChatGPT: encrypted chat, code IDE, and desktop app — free start. Compare features, pricing, and privacy.",
     h1: "ShadowTalk vs ChatGPT",
     verdict:
-      "ChatGPT excels at single-turn chat. ShadowTalk AI finishes multi-step jobs with Mission Control, tool chains, E2EE chat, and a full developer workspace — starting free at shadowtalk-ai.com.",
+      "ChatGPT excels at single-turn chat. ShadowTalk AI finishes multi-step jobs with tool chains, E2EE chat, and a full developer workspace — starting free at shadowtalk-ai.com.",
     shadowtalkWins: [
-      "Mission Control — autonomous multi-step missions with approval gates",
-      "30+ integrated tools (research, code, images, security) from one chat",
-      "End-to-end encrypted chat + Stealth Vault",
+      "Agentic workflows — multi-step tasks with approval gates",
+      "Integrated tools (research, code, images, security) from one chat",
+      "End-to-end encrypted chat",
       "In-browser IDE, presentations, and desktop app",
       "Pro from $5/mo vs ChatGPT Plus pricing for more integrated tooling",
       "+ optional on-device stealth models",
@@ -66,16 +66,16 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Perplexity",
     title: "ShadowTalk vs Perplexity — Research + Execution in One Workspace",
     metaDescription:
-      "ShadowTalk AI vs Perplexity: cited deep research plus agentic execution — code IDE, missions, encrypted vault. Not just answers — finished work.",
+      "ShadowTalk AI vs Perplexity: cited deep research plus agentic execution — code IDE, encrypted vault. Not just answers — finished work.",
     h1: "ShadowTalk vs Perplexity",
     verdict:
-      "Perplexity leads at search-style cited answers. ShadowTalk adds Mission Control, code IDE, presentations, and encrypted storage so you research and act in the same workspace.",
+      "Perplexity leads at search-style cited answers. ShadowTalk adds a code IDE, presentations, and encrypted storage so you research and act in the same workspace.",
     shadowtalkWins: [
       "Deep Research with citations plus agentic follow-through",
-      "Mission Control for approved multi-step workflows",
+      "Agentic workflows for approved multi-step tasks",
       "Code IDE, App Builder, and presentation export",
       "Encrypted vault for sensitive project context",
-      "Voice mode and 20+ specialized chat modes",
+      "Voice mode",
     ],
     competitorWins: [
       "Focused search UI with strong source cards",
@@ -88,13 +88,13 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Claude",
     title: "ShadowTalk vs Claude — Agentic Workspace vs Reasoning Chat",
     metaDescription:
-      "ShadowTalk AI vs Claude: combine Anthropic-quality reasoning  with missions, tools, browser, and vault in one product at shadowtalk-ai.com.",
+      "ShadowTalk AI vs Claude: combine Anthropic-quality reasoning  with tools, browser, and vault in one product at shadowtalk-ai.com.",
     h1: "ShadowTalk vs Claude",
     verdict:
-      "Claude shines at long-form reasoning. ShadowTalk wraps agentic missions, live web tools, and encrypted storage around your models — including for Claude API keys.",
+      "Claude shines at long-form reasoning. ShadowTalk wraps agentic workflows, live web tools, and encrypted storage around your models — including for Claude API keys.",
     shadowtalkWins: [
       "— use your Anthropic API keys inside ShadowTalk",
-      "Mission Control + Shadow Browser for live web tasks",
+      "Agentic workflows + Shadow Browser for live web tasks",
       "Tool chain from natural language (not just chat)",
       "Team workspace, marketplace agents, desktop app",
       "Privacy vault and transparency pages",
@@ -110,14 +110,14 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Gemini",
     title: "ShadowTalk vs Gemini — Sovereign Agentic AI Workspace",
     metaDescription:
-      "ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, stealth models, and Mission Control — not locked to one ecosystem.",
+      "ShadowTalk AI vs Google Gemini: privacy-first agentic workspace with encrypted chat, stealth models, and cross-ecosystem tooling — not locked to one ecosystem.",
     h1: "ShadowTalk vs Gemini",
     verdict:
       "Gemini integrates deeply with Google. ShadowTalk is ecosystem-neutral with E2EE, local WebGPU models, and open — built to finish jobs across tools.",
     shadowtalkWins: [
       "Not tied to Google account or Workspace",
       "Optional on-device Gemma/WebGPU inference",
-      "Mission Control autonomous missions",
+      "Agentic autonomous workflows",
       "Encrypted chat with passphrase unlock",
       "Code IDE + research + voice in one tab",
     ],
@@ -132,14 +132,14 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     competitor: "Microsoft Copilot",
     title: "ShadowTalk vs Microsoft Copilot — Developer-First AI Workspace",
     metaDescription:
-      "ShadowTalk AI vs Microsoft Copilot: cross-platform agentic workspace with IDE, missions, and encryption — for builders who outgrew Office-locked AI.",
+      "ShadowTalk AI vs Microsoft Copilot: cross-platform agentic workspace with IDE, agentic workflows, and encryption — for builders who outgrew Office-locked AI.",
     h1: "ShadowTalk vs Microsoft Copilot",
     verdict:
-      "Copilot fits Microsoft 365 users. ShadowTalk targets builders who need missions, open tooling, and privacy without an Office subscription.",
+      "Copilot fits Microsoft 365 users. ShadowTalk targets builders who need agentic workflows, open tooling, and privacy without an Office subscription.",
     shadowtalkWins: [
       "Works without Microsoft 365 subscription",
       "Full in-browser IDE with live preview",
-      "Mission Control for custom multi-step automation",
+      "Agentic workflows for custom multi-step automation",
       "Marketplace specialist agents",
       "Free tier with no credit card",
     ],
@@ -161,7 +161,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     shadowtalkWins: [
       "End-to-end encrypted chat with passphrase unlock",
       "Optional on-device local inference — data never leaves your machine",
-      "Stealth Vault for sensitive notes and keys",
+      "Encrypted vault for sensitive notes and keys",
       "Transparent data handling and usage disclosure",
       "— you control which model provider powers responses",
     ],
@@ -183,7 +183,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "ChatGPT is useful for drafting copy. ShadowTalk is built to run startups: strategy briefs, offer analysis, competitive research, PDF export, and autonomous missions.",
     shadowtalkWins: [
       "Strategy/market research + PDF export from one prompt",
-      "Mission Control for multi-step go-to-market tasks",
+      "Agentic workflows for multi-step go-to-market tasks",
       "In-browser code workspace and document generation",
       "Affiliate and referral tools built in",
       "Pro from $5/mo with transparent usage caps",
@@ -251,7 +251,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     verdict:
       "Perplexity is strong at citation-first lookup. ShadowTalk continues research into execution: synthesis, code, exports, and encrypted project context.",
     shadowtalkWins: [
-      "Multi-step research missions with approval gates",
+      "Multi-step research tasks with approval gates",
       "Citations plus executable follow-up work",
       "PDF/DOCX export and presentation builder",
       "Encrypted project memory across sessions",
@@ -295,10 +295,10 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Code-focused comparison: Copilot fits Office and GitHub; ShadowTalk gives Monaco IDE, missions, and outside Microsoft lock-in.",
     h1: "ShadowTalk vs Copilot for Coding",
     verdict:
-      "Copilot assists inside Microsoft toolchains. ShadowTalk gives an in-browser Monaco IDE, autonomous missions, local inference, and provider flexibility.",
+      "Copilot assists inside Microsoft toolchains. ShadowTalk gives an in-browser Monaco IDE, autonomous workflows, local inference, and provider flexibility.",
     shadowtalkWins: [
       "Full in-browser Monaco IDE with live preview",
-      "Autonomous code and research missions",
+      "Autonomous code and research workflows",
       "+ optional local model inference",
       "Marketplace specialist agents",
       "No Microsoft 365 subscription required",
@@ -318,9 +318,9 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Why ShadowTalk AI can feel better than ChatGPT: combined chat, research, code, presentations, vault, and desktop app in one sovereign workspace.",
     h1: "Why ShadowTalk Feels Better Than ChatGPT",
     verdict:
-      "ChatGPT is great at chat. ShadowTalk is built for finished work: missions, documents, code, research, private vault, and a desktop experience in one place.",
+      "ChatGPT is great at chat. ShadowTalk is built for finished work: agentic workflows, documents, code, research, encrypted vault, and a desktop experience in one place.",
     shadowtalkWins: [
-      "Mission Control for multi-step autonomous tasks",
+      "Agentic workflows for multi-step tasks",
       "Built-in code IDE and document generation",
       "Encrypted vault and privacy controls",
       "Free start, no card, transparent limits",
@@ -345,7 +345,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
     shadowtalkWins: [
       "Free tier with stated limits and no hidden gating",
       "End-to-end encrypted chat option",
-      "30+ tools beyond basic chat",
+      "Built-in tools beyond basic chat",
       "Local stealth models for sensitive use",
       "Clear upgrade path: Pro, Premium, Elite",
     ],
@@ -364,10 +364,10 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Strategy comparison: ChatGPT for brainstorming vs ShadowTalk Strategy Agent for CEO playbooks, GTM plans, and multi-step missions with exports.",
     h1: "ShadowTalk vs ChatGPT for business strategy",
     verdict:
-      "ChatGPT excels at single-turn strategy brainstorming. ShadowTalk adds /strategy, Mission Control, cited research, and exportable plans—built for founders who need finished playbooks.",
+      "ChatGPT excels at single-turn strategy brainstorming. ShadowTalk adds /strategy, cited research, and exportable plans—built for founders who need finished playbooks.",
     shadowtalkWins: [
       "Strategy Agent + /ai-strategy-consultant wedge landing",
-      "Multi-step missions with human approval",
+      "Multi-step workflows with human approval",
       "Deep research with citations in same workspace",
       "Document and presentation export",
       "Pro $5/mo vs ChatGPT Plus for integrated tooling",

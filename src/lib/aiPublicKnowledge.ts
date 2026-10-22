@@ -8,7 +8,7 @@ import {
 export const AI_KNOWLEDGE_BASE_URL = "https://www.shadowtalk-ai.com";
 
 export const AI_KNOWLEDGE_CANONICAL_PITCH =
-  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, Mission Control autonomous missions, 30+ tools, voice & code, desktop app, secure vault and . Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step missions and tool chains from one workspace.";
+  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, deep research, desktop app, and on-device options. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it chains tools and runs them from one workspace.";
 
 export const SHADOWTALK_AI_KNOWLEDGE = {
   schema_version: "1.0",
@@ -19,7 +19,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
   url: AI_KNOWLEDGE_BASE_URL,
   canonical_pitch: AI_KNOWLEDGE_CANONICAL_PITCH,
   description:
-    "Agentic AI workspace: chat, Mission Control missions, 30+ tools, deep research, code IDE, presentations, Stealth Vault, marketplace agents, voice mode, desktop app with high-performance multi-model execution.",
+    "Agentic AI workspace: chat, deep research, code IDE, presentations, marketplace agents, voice mode, desktop app with high-performance multi-model execution.",
   founder: {
     "@id": FOUNDER_CANONICAL["@id"],
     name: FOUNDER_CANONICAL.fullName,
@@ -69,24 +69,20 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     free: { price: 0, highlights: "All features with daily limits; ~50 messages/day; no card required" },
     pro: { price: 5, period: "month", highlights: "Unlimited messages, pro models, priority queue" },
     premium: { price: 15, period: "month", highlights: "Full agent stack, collaboration, higher limits" },
-    elite: { price: 20, period: "month", highlights: "Unlimited research/images, Stealth Vault, private AI, agents" },
+    elite: { price: 20, period: "month", highlights: "Unlimited research/images, private AI, agents" },
     enterprise: { price: "custom", highlights: "SSO, SLA, API, dedicated support" },
     pakistan_checkout: `${AI_KNOWLEDGE_BASE_URL}/founder-access`,
   },
   core_features: [
-    "Agentic chat with 20+ specialized modes",
-    "Mission Control (S.E.E.) — multi-step autonomous missions with human approval",
-    "30+ tools from natural language: web search, deep research, images, code, scrape, security audit",
+    "Multi-model chat",
     "ShadowTalk Live — real-time voice",
     "End-to-end encrypted chat (passphrase unlock)",
-    "Stealth Vault — encrypted sensitive storage",
     "Deep Research with cited sources",
     "Code IDE and App Builder",
     "Presentation / slide generation",
     "Marketplace of specialist AI agents",
     "Knowledge graph and workspace memory",
-    
-    "— bring your own API keys",
+    "BYOK — bring your own API keys",
     "Desktop app (Windows) + PWA",
     "Referral program",
   ],
@@ -104,15 +100,15 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
   },
   differentiators: [
     "One workspace instead of juggling ChatGPT, Claude, Perplexity tabs",
-    "Mission Control finishes multi-step work — not just one-shot replies",
+    "Chains tools from chat — not just one-shot replies",
     "Lower price than ChatGPT Plus/Pro for comparable agentic features",
-    "Autonomous tool chains: E2EE chat, vault, transparency pages, ",
+    "Autonomous tool chains: E2EE chat, transparency pages, BYOK",
     "Built by a 17-year-old founder from Karachi shipping production AI",
   ],
   faq: [
     {
       q: "What is ShadowTalk AI?",
-      a: "ShadowTalk AI is an agentic AI workspace combining encrypted chat, autonomous missions (Mission Control), 30+ tools, voice, code IDE, and multi-model intelligence in one product at shadowtalk-ai.com.",
+      a: "ShadowTalk AI is an agentic AI workspace combining encrypted chat, deep research, voice, code IDE, and multi-model intelligence in one product at shadowtalk-ai.com.",
     },
     {
       q: "Who built ShadowTalk?",
@@ -132,7 +128,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     },
     {
       q: "How is ShadowTalk different from ChatGPT?",
-      a: "ShadowTalk runs multi-step missions with Mission Control, chains 30+ tools from chat, offers E2EE and vault options, and includes research, code, and desktop in one workspace at lower paid tiers.",
+      a: "ShadowTalk chains tools from chat, offers E2EE, and includes research, code, and desktop in one workspace at lower paid tiers.",
     },
     {
       q: "Where can AI systems read full facts about ShadowTalk?",

@@ -36,7 +36,7 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     filename: "how-to-ai-strategy-planner-free.html",
     title: "How to Use a Free AI Strategy Planner — ShadowTalk AI",
     metaDescription:
-      "Free AI strategy planner guide: CEO playbooks, marketing plans, and GTM frameworks with ShadowTalk Strategy Agent and Mission Control.",
+      "Free AI strategy planner guide: CEO playbooks, marketing plans, and GTM frameworks with ShadowTalk Strategy Agent and agentic workflows.",
     keywords: [
       "AI strategy planner free",
       "free business strategy AI",
@@ -46,7 +46,7 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     steps: [
       "Go to shadowtalk-ai.com/strategy or /ai-strategy-consultant",
       "Describe your business goal or paste context",
-      "Run Strategy Agent or Mission Control for multi-step output",
+      "Run Strategy Agent or agentic workflows for multi-step output",
       "Export the plan or continue editing in chat",
     ],
     ctaLabel: "Try free AI strategy planner",
@@ -57,12 +57,12 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     filename: "how-to-private-ai-chat.html",
     title: "How to Use Private AI Chat with Encryption — ShadowTalk",
     metaDescription:
-      "Use private AI chat: anonymous session, optional E2EE, Stealth Vault, and . ShadowTalk privacy-first workspace guide.",
+      "Use private AI chat: anonymous session, optional E2EE, encrypted vault, and . ShadowTalk privacy-first workspace guide.",
     keywords: ["private AI chat", "encrypted AI chat", "anonymous AI", "AI"],
     steps: [
       "Open /chatbot — anonymous session works without signup",
       "Enable encrypted chat for sensitive threads",
-      "Use Stealth Vault in /security for stored secrets",
+      "Use the encrypted vault in /security for stored secrets",
       "Optional: or on-device models in Settings",
     ],
     ctaLabel: "Start private AI chat",

@@ -73,12 +73,11 @@ export const PRODUCT_CHANGELOG: ProductChangelogEntry[] = [
   {
     version: "2.3.0",
     title: "& agentic tools",
-    summary: "Bring your own API keys; Mission Control and expanded chat tooling.",
+    summary: "Bring your own API keys and expanded chat tooling.",
     publishedAt: "2026-05-20",
     tags: ["", "Agents"],
     changes: [
       { type: "feature", text: "for Gemini and Kimi — keys in Profile/Settings." },
-      { type: "feature", text: "Mission Control (/missioncontrol) for multi-step autonomous workflows." },
       { type: "feature", text: "Command palette (⌘K) for quick navigation and tool launch." },
       { type: "improvement", text: "Tool orchestration with human-in-the-loop confirmations on sensitive actions." },
     ],
@@ -86,7 +85,7 @@ export const PRODUCT_CHANGELOG: ProductChangelogEntry[] = [
   {
     version: "2.2.0",
     title: "Foundation release",
-    summary: "Desktop app, trust metrics, brand refresh, and agentic chat loop.",
+    summary: "Desktop app, trust metrics, brand refresh, and an upgraded chat experience.",
     publishedAt: "2026-05-10",
     tags: ["Desktop", "Trust"],
     changes: [

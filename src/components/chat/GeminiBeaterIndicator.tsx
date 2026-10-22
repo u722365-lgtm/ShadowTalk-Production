@@ -55,7 +55,7 @@ const FEATURE_COMPARISONS: FeatureComparison[] = [
     description: 'See AI reasoning steps, not just answers'
   },
   {
-    feature: 'Stealth Vault Encryption',
+    feature: 'Encrypted Storage',
     shadowtalk: 'yes',
     gemini: 'no',
     advantage: 'shadowtalk',
@@ -219,7 +219,7 @@ export const GeminiBeaterIndicator: React.FC = () => {
                 className="flex items-center gap-2 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20"
               >
                 <Lock className="w-4 h-4 text-rose-500" />
-                <span className="text-xs font-medium text-rose-400">Stealth Vault E2E</span>
+                <span className="text-xs font-medium text-rose-400">Encrypted Storage E2E</span>
               </motion.div>
             </div>
 

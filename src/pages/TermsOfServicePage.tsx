@@ -44,7 +44,7 @@ By creating an account, accessing, or using ShadowTalk AI (the "Service"), you a
     content: `
 ShadowTalk AI provides a software workspace designed for agentic AI workflows, including:
 - Natural-language access to multiple frontier AI models (including Groq-accelerated Llama, DeepSeek reasoning, OpenAI multimodal engines, and client-side WebGPU edge runtimes).
-- Autonomous mission execution via Mission Control (Sense, Evaluate, Execute architecture).
+- Autonomous agent execution via Sense, Evaluate, Execute loops.
 - Integrated tool graph capabilities (web search, deep research, sandboxed code execution, slide generation).
 - Long-term workspace context management via Business Memory and on-device Shadow Memory.
 
@@ -80,7 +80,7 @@ You agree not to misuse the Service or facilitate any of the following prohibite
     content: `
 **Your Ownership of Generated Outputs**: As between you and ShadowTalk AI, you retain **100% intellectual property ownership** of all prompts, custom memory contexts, code files, slide presentations, and textual outputs generated through your use of the Service. ShadowTalk claims zero copyright over your creations.
 
-**Platform Ownership**: The ShadowTalk AI platform interface, proprietary S.E.E. agentic orchestration software, logos, trade dress, and system documentation remain the exclusive intellectual property of ShadowTalk AI and its founder.
+**Platform Ownership**: The ShadowTalk AI platform interface, proprietary agentic orchestration software, logos, trade dress, and system documentation remain the exclusive intellectual property of ShadowTalk AI and its founder.
 
 **No Model Training on User Data**: We do not use your proprietary business conversations or private memory slots to train public foundation models.
     `,
@@ -110,7 +110,7 @@ Users utilizing  configurations:
     id: "section-8",
     title: "8. Autonomous Missions & Human-in-the-Loop Safeguards",
     content: `
-Mission Control operates on an autonomous execution loop. While ShadowTalk incorporates strict Human-in-the-Loop (HITL) approval gates for high-risk operations, you acknowledge that autonomous agents execute commands according to your natural language instructions. You are responsible for inspecting and approving agent task graphs prior to execution.
+ShadowTalk's autonomous agents operate on an execution loop. While ShadowTalk incorporates strict Human-in-the-Loop (HITL) approval gates for high-risk operations, you acknowledge that autonomous agents execute commands according to your natural language instructions. You are responsible for inspecting and approving agent task graphs prior to execution.
     `,
   },
   {

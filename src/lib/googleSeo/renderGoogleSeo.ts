@@ -156,7 +156,7 @@ export function getWebSiteSchema() {
     alternateName: ["ShadowTalk", "shadowtalk-ai.com"],
     url: BASE,
     description:
-      "Agentic AI workspace — Mission Control, 30+ tools, encrypted chat. Founded by Zain Ahmed Fahad Patel.",
+      "Agentic AI workspace — encrypted chat, built-in tools, voice & code. Founded by Zain Ahmed Fahad Patel.",
     publisher: {
       "@type": "Organization",
       name: "ShadowTalk AI",

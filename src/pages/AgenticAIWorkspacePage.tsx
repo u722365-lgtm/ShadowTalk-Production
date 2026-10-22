@@ -100,7 +100,7 @@ export const AgenticAIWorkspacePage = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-emerald-500" />
-                      <span>30+ integrated tools</span>
+                      <span>E2EE chat & deep research</span>
                     </li>
                   </ul>
                 </CardContent>
@@ -117,11 +117,11 @@ export const AgenticAIWorkspacePage = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Mission Control</CardTitle>
+                <CardTitle>E2EE Chat</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Multi-step autonomous missions with human approval checkpoints. Define a goal, approve steps, and let AI execute the plan.
+                  End-to-end encrypted multi-model conversations with business memory and zero server-side retention of prompts.
                 </p>
               </CardContent>
             </Card>
@@ -132,7 +132,7 @@ export const AgenticAIWorkspacePage = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Chain 30+ tools including web search, deep research, code execution, file operations, security audit, and more from natural language.
+                  Chain web search, deep research, code execution, file operations, security audit, and more from natural language.
                 </p>
               </CardContent>
             </Card>

@@ -65,7 +65,7 @@ We collect information in the following categories:
 
 ### D. Client-Side Keys & Vault Data
 - ****: API keys you supply for external providers (e.g., Groq, OpenAI, Anthropic) are saved in your browser's local sandbox storage and never transmitted to our backend databases.
-- **Stealth Vault Records**: Private credentials and secrets stored in the Stealth Vault are encrypted client-side using AES-GCM-256 before persistence.
+- **Private Vault Records**: Private credentials and secrets stored in the on-device vault are encrypted client-side using AES-GCM-256 before persistence.
     `,
   },
   {
@@ -76,7 +76,7 @@ We process data strictly to provide, maintain, and enhance our services:
 
 1. **AI Model Inference**: When you submit a query, the prompt context is routed to the selected model provider (such as Groq for Llama models or OpenAI for multimodal tasks) via encrypted TLS 1.3 tunnels.
 2. **Zero Model Training**: Commercial API agreements with our inference infrastructure partners specify that **user prompts are not utilized to train or fine-tune public foundation models**.
-3. **Mission Orchestration**: Autonomous agent loops (S.E.E. architecture) process multi-step instructions to trigger integrated tools (e.g., web search, code execution, slide deck generation).
+3. **Agent Orchestration**: Autonomous agent loops process multi-step instructions to trigger integrated tools (e.g., web search, code execution, slide deck generation).
 4. **Platform Security & Abuse Prevention**: We analyze request volume, rate limits, and network anomalies to protect our systems from denial-of-service attacks and malicious exploit payloads.
     `,
   },
@@ -248,7 +248,7 @@ export const PrivacyPolicyPage = () => {
                 <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center justify-center sm:justify-start gap-1.5">
                   <Lock className="h-4 w-4" /> AES-256 Vault
                 </span>
-                <p className="text-xs text-muted-foreground">Stealth Vault items are encrypted on-device before persistence.</p>
+                <p className="text-xs text-muted-foreground">On-device vault items are encrypted on-device before persistence.</p>
               </div>
 
               <div className="space-y-1">

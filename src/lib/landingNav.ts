@@ -37,7 +37,7 @@ export const LANDING_PRODUCT_LINKS: LandingProductLink[] = [
     icon: MessageSquare,
   },
   {
-    label: "Mission Control",
+    label: "Agentic Workspace",
     description: "Autonomous workflows",
     href: "/missioncontrol",
     icon: Target,
