@@ -169,7 +169,24 @@ service cloud.firestore {
         'chat_sessions',
         'chat_messages',
         'user_journeys',
+        'realtime_channels',
+        'room_presences',
       ];
+    }
+
+    // Realtime collections — signed-in users can read all, create their own.
+    // These back the broadcast/presence features (live cursors, typing indicators).
+    match /realtime_channels/{doc} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn();
+      allow delete: if signedIn() || isAdmin();
+    }
+    match /room_presences/{doc} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn();
+      allow delete: if signedIn() || isAdmin();
     }
 
     match /{collection}/{doc} {
