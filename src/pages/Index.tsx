@@ -31,8 +31,13 @@ const Index = () => {
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace("#", "");
-      if (["services", "founders", "contact"].includes(hash)) {
+      if (["services", "founders", "pricing", "contact"].includes(hash)) {
         setActiveSection(hash as SectionHubTab);
+        // Wait for React to render the section, then scroll to it.
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
       }
     };
     handleHash();
