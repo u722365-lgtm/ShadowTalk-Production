@@ -1,7 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
-const puppeteer = require('puppeteer');
+
+// Try to load puppeteer — if it's not available or can't launch,
+// the build continues without prerendering (non-fatal).
+let puppeteer;
+try {
+  puppeteer = require('puppeteer');
+} catch {
+  console.warn('⚠️ Puppeteer not installed — skipping prerender. Build continues normally.');
+  process.exit(0);
+}
 
 const PORT = 8089;
 const DIST_DIR = path.resolve(__dirname, 'dist');
@@ -109,6 +118,8 @@ async function runPrerender() {
 }
 
 runPrerender().catch(err => {
-  console.error('Prerender error:', err);
-  process.exit(1);
+  console.warn('⚠️ Prerender skipped (non-fatal):', err.message);
+  console.warn('Build continues without prerendered pages. This is expected in environments without Chromium (e.g., Lovable, CI).');
+  // Exit 0 so the build doesn't fail — prerendering is optional.
+  process.exit(0);
 });
