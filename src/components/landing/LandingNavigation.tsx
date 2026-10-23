@@ -81,7 +81,7 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 120, damping: 22 }}
           className={`pointer-events-auto flex items-center justify-between transition-all duration-300 ease-out 
-            w-full max-w-[1100px] ${
+            w-full max-w-[1400px] ${
               scrolled
                 ? 'shadow-[0_12px_36px_rgba(0,0,0,0.5)] bg-slate-900/90 border-white/15'
                 : 'shadow-[0_8px_30px_rgba(0,0,0,0.35)] bg-slate-900/75 border-white/10'
@@ -99,7 +99,7 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-5 shrink-0 mx-2" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center justify-center gap-5 flex-1 mx-2" aria-label="Main navigation">
             <a
               href="#services"
               className="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-cyan-400 transition-colors shrink-0 whitespace-nowrap px-1.5 py-1"
