@@ -70,6 +70,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { backend } from '@/integrations/local/client';
+import { streamCloudChat, type CloudChatMessage } from '@/lib/cloudChat';
 import { useAuth } from '@/components/AuthProvider';
 
 // Types
@@ -496,8 +497,9 @@ const AdvancedSecurityAuditPanel: React.FC<AdvancedSecurityAuditPanelProps> = ({
           }
         ];
         
-        const response = await backend.functions.invoke("chat", { body: { messages } });
-        let rawContent = response.data?.choices?.[0]?.message?.content || response.data?.generatedText || "[]";
+        const response = await streamCloudChat(messages as CloudChatMessage[]);
+        if (response.error) throw new Error(response.error);
+        let rawContent = response.content || "[]";
         if (rawContent.startsWith("```")) {
            rawContent = rawContent.replace(/```(json)?\n/, "").replace(/```$/, "");
         }

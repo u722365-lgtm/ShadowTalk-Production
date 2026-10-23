@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Loader2, RefreshCw, Lightbulb, MapPin, Leaf } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { backend } from '@/integrations/local/client';
+import { streamCloudChat } from '@/lib/cloudChat';
 import { toast } from 'sonner';
 
 interface AISuggestion {
@@ -31,18 +31,15 @@ const AISuggestions: React.FC<AISuggestionsProps> = ({ location, co2Saved, actio
   const getSuggestions = async () => {
     setLoading(true);
     try {
-      const { data, error } = await backend.functions.invoke('chat', {
-        body: {
-          message: `Based on this user's eco profile, suggest 4 personalized eco-actions. User location: ${location || 'Unknown'}. CO2 saved so far: ${co2Saved}kg. Actions completed: ${actionsCompleted}. Streak: ${streak} days. Recent categories: ${recentCategories.join(', ') || 'none'}. 
-          
+      const result = await streamCloudChat([{
+        role: 'user',
+        content: `Based on this user's eco profile, suggest 4 personalized eco-actions. User location: ${location || 'Unknown'}. CO2 saved so far: ${co2Saved}kg. Actions completed: ${actionsCompleted}. Streak: ${streak} days. Recent categories: ${recentCategories.join(', ') || 'none'}.
+
           Return ONLY a JSON array of objects with these exact fields: title, description, impact (short string like "Save 2kg CO₂"), difficulty ("Easy"/"Medium"/"Hard"), category (energy/water/transport/food/waste/home), personalReason (why this is recommended for them specifically). No markdown, just the JSON array.`,
-          personality: 'eco_advisor',
-        }
-      });
+      }]);
+      if (result.error) throw new Error(result.error);
 
-      if (error) throw error;
-
-      const responseText = data?.response || data?.message || '';
+      const responseText = result.content;
       // Try to extract JSON array from response
       const jsonMatch = responseText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
@@ -53,14 +50,7 @@ const AISuggestions: React.FC<AISuggestionsProps> = ({ location, co2Saved, actio
       }
     } catch (err) {
       console.error('AI suggestion error:', err);
-      // Fallback suggestions
-      setSuggestions([
-        { title: 'Switch to LED Bulbs', description: 'Replace remaining incandescent bulbs with LED alternatives', impact: 'Save 5kg CO₂/month', difficulty: 'Easy', category: 'energy', personalReason: 'Quick win to boost your streak!' },
-        { title: 'Meatless Monday', description: 'Skip meat one day per week to reduce carbon footprint', impact: 'Save 3kg CO₂/week', difficulty: 'Easy', category: 'food', personalReason: 'Great for beginners with high impact' },
-        { title: 'Cold Water Wash', description: 'Wash clothes in cold water to save energy', impact: 'Save 0.5kWh/load', difficulty: 'Easy', category: 'energy', personalReason: 'Fits your home category focus' },
-        { title: 'Bike to Work', description: 'Replace one car commute per week with cycling', impact: 'Save 4kg CO₂/trip', difficulty: 'Medium', category: 'transport', personalReason: 'High EROI action for your level' },
-      ]);
-      toast.info('Using recommended suggestions');
+      toast.error(err instanceof Error ? err.message : 'Could not generate suggestions.');
     }
     setLoading(false);
   };

@@ -10,16 +10,12 @@ import { ChatMode } from "@/components/chat/ModeSelector";
 type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AiAccessOnboarding } from "@/components/chat/AiAccessOnboarding";
 import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { OnboardingChoiceModal } from "@/components/chat/OnboardingChoiceModal";
-import { LimitReachedModal } from "@/components/chat/LimitReachedModal";
-import { KeySettingsModal } from "@/components/chat/KeySettingsModal";
-import { useAIKeyContext } from "@/contexts/AIKeyContext";
-import { useDailyUsage } from "@/hooks/useDailyUsage";
 const AdBanner = (props: any) => null;
 const ShareWinBanner = (props: any) => null;
 const ShareResultDialog = (props: any) => null;
@@ -33,10 +29,7 @@ import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
-import { generateCloudImage, isCloudImageConfigured, generateImageWithFallback } from "@/lib/cloudImage";
-import { AIProviderRouter } from "@/ai/AIProviderRouter";
-import { stringifyChatBody } from "@/lib/chatRequest";
-import { buildChatProviderPayload } from "@/lib/chatProviderBridge";
+import { loadAiAccessMode } from "@/lib/aiAccessMode";
 
 import { ChatAmbientBackground } from "@/components/chat/ChatAmbientBackground";
 import { ChatEmptyState } from "@/components/chat/ChatEmptyState";
@@ -58,8 +51,6 @@ import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareInte
 
 // Removed broken imports
 import { useUserSettings } from "@/hooks/useUserSettings";
-import { loadCustomAiConfig, saveCustomAiConfig } from "@/lib/customApiKeys";
-import { turboComplete, resolveTurboKey } from "@/lib/turbo";
 import {
   getGuestArchivedIds,
   isConversationArchived,
@@ -82,7 +73,6 @@ const ChatUpgradeNudge = (props: any) => null;
 const UpgradePrompt = (props: any) => null;
 import { useSubscriptionNudge } from "@/hooks/useSubscriptionNudge";
 import { CHAT_LIMIT_TOAST } from "@/lib/conversionCopy";
-import { getDailyMessageCount, incrementDailyMessageCount } from "@/lib/dailyMessageCounter";
 import { openProjectInIde, saveIdePayload } from "@/lib/idePayloadStorage";
 import { detectAppBuilderIntent, generateAppProject } from "@/lib/appBuilder";
 import { useShadowTalkModel } from "@/hooks/useShadowTalkModel";
@@ -90,7 +80,6 @@ import { SEOHead } from "@/components/SEOHead";
 import { PAGE_SEO, getFounderHomeStructuredData, getChatbotFAQSchema, getSpeakableSchema, getWebSiteWithSearchSchema } from "@/lib/seo";
 
 import { BRAND } from "@/lib/brand";
-import { buildChatSystemPrompt } from "@/lib/shadowTalkPersona";
 import { recordSuccessfulChatSession, getSuccessfulSessionCount } from "@/lib/growth/sessionMilestones";
 import { markHasChatted, completeQuickPrompt, hasChattedBefore } from "@/lib/growth/firstVisit";
 import { recordFunnelEvent, recordChatbotView } from "@/lib/growth/funnelEvents";
@@ -159,7 +148,7 @@ function parseSseContentLines(
 const ChatbotPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, userPlan, signOut, checkSubscription, isAnonymous } = useAuth();
+  const { user, userPlan, signOut, checkSubscription, isAnonymous, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   // Hooks
@@ -202,8 +191,6 @@ const ChatbotPage = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [personality, setPersonality] = useState<Personality>("friendly");
   const [chatMode, setChatMode] = useState<ChatMode>("general");
-  const aiConfig = { useCustomKey: false, preferredProvider: null };
-  const keys: any[] = [];
   const { preferences: chatPreferences, isLoading: chatPrefsLoading } = useChatSettings();
   const [localModelReady, setLocalModelReady] = useState(false);
   const hasLocalDesktop = typeof window !== 'undefined' && (window as any).__TAURI__ && localModelReady;
@@ -226,29 +213,6 @@ const ChatbotPage = () => {
   // Modals
   const [showImageGenerator, setShowImageGenerator] = useState(false);
   const [showByok, setShowByok] = useState(false);
-  const [showKeySettings, setShowKeySettings] = useState(false);
-  const [showLimitReached, setShowLimitReached] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  // Hybrid API Key system — cohort + daily usage.
-  const {
-    hasCompletedOnboarding,
-    userCohort,
-    userApiKey,
-    maxDailyLimit,
-  } = useAIKeyContext();
-  const { checkAndIncrement, isLimited } = useDailyUsage();
-
-  // Sync the onboarding modal visibility with the context's onboarding flag.
-  // The modal shows when the user hasn't completed onboarding AND hasn't picked
-  // a cohort. It hides as soon as either condition is met.
-  useEffect(() => {
-    if (!hasCompletedOnboarding && !userCohort) {
-      setShowOnboarding(true);
-    } else {
-      setShowOnboarding(false);
-    }
-  }, [hasCompletedOnboarding, userCohort]);
   const [showMusicGenerator, setShowMusicGenerator] = useState(false);
   const [musicPrompt, setMusicPrompt] = useState("");
   const [musicAutoGenerate, setMusicAutoGenerate] = useState(false);
@@ -823,17 +787,6 @@ const ChatbotPage = () => {
         researchQuery?: string;
       },
     ): Promise<string | undefined> => {
-      // ── Hybrid API Key system: enforce 50/day limit for NON_TECH users ──
-      if (!checkAndIncrement()) {
-        setShowLimitReached(true);
-        toast({
-          title: "Daily limit reached",
-          description: `You've used all ${maxDailyLimit} free messages for today. Switch to BYOK mode for unlimited access.`,
-          variant: "destructive",
-        });
-        return undefined;
-      }
-
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -852,17 +805,12 @@ const ChatbotPage = () => {
         augmented = [{ role: "system", content: userMemoryContext }, ...augmented];
       }
 
-      // Only inject the publication-quality document directive when the user
-      // EXPLICITLY asks to create/write/generate a document. Previously this
-      // triggered on any mention of "report", "email", "article", etc. —
-      // which meant casual questions like "What is an email?" or "How do I
-      // write a report?" would force the AI into formal document mode.
-      const docRequestRegex = /\b(write|create|draft|generate|compose|make|build|produce)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:professional\s+|formal\s+|detailed\s+)?(document|report|proposal|whitepaper|business\s+plan|contract|essay|memo|sop|article|resume|cv|email|e-mail|letter|blog|press\s+release|case\s+study|thesis|dissertation|research\s+paper|book|chapter|story|novel)\b/i;
-      const isDocRequest = docRequestRegex.test(lastUser);
+      const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
+      const isDocRequest =
+        docTypeMatch ||
+        /\b(write|create|draft|generate|compose)\s+(a\s+|an\s+)?(document|report|proposal|whitepaper|business\s+plan|contract|essay|memo|sop|article|resume)\b/i.test(lastUser);
 
       if (isDocRequest) {
-        // Re-run the type inference only after we've confirmed it's a doc request.
-        const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
         const inferredType = docTypeMatch || "report";
         const docDirective = `[PUBLICATION-QUALITY DOCUMENT STANDARDS]
 You are generating a world-class, publication-grade ${inferredType}.
@@ -882,21 +830,10 @@ Structure and Content Guidelines:
 
 
 
-      const routerMessages = augmented.map((m) => {
-        // Preserve multimodal content (image_url parts) instead of flattening to text.
-        if (Array.isArray(m.content)) {
-          return {
-            role: m.role as "user" | "assistant" | "system",
-            content: m.content,
-          };
-        }
-        return {
-          role: m.role as "user" | "assistant" | "system",
-          content: typeof m.content === "string"
-            ? m.content
-            : (m.content.find((p) => p.type === "text") as { text?: string } | undefined)?.text ?? "",
-        };
-      });
+      const routerMessages = augmented.map((m) => ({
+        role: m.role as "user" | "assistant" | "system",
+        content: m.content,
+      }));
 
       const shadowMatchInitial = lastUser.match(/@([a-zA-Z0-9_-]+)-shadow/i);
       if (shadowMatchInitial) {
@@ -992,32 +929,17 @@ Structure and Content Guidelines:
       const cloudMessages: CloudChatMessage[] = [
         {
           role: 'system',
-          content: buildChatSystemPrompt({
-            personality,
-            businessMemory,
-          }),
+          content:
+            `You are ShadowTalk AI. Be ${personality || 'friendly'} and helpful. Use markdown formatting. Current date: ${new Date().toISOString().split('T')[0]}.` +
+            (businessMemory ? `\n\nUser context:\n${businessMemory.slice(0, 1200)}` : ''),
         },
         ...trimmedRouterMessages.map((m) => ({
           role: (m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user') as CloudChatMessage['role'],
-          // Preserve multimodal content arrays (image_url parts) — don't flatten to string.
-          content: m.content,
+          content: m.content as CloudChatMessage['content'],
         })),
       ];
 
-      let provider;
-      try {
-        provider = await AIProviderRouter.getBestProvider();
-      } catch (err: any) {
-        if (err?.message === "offline_not_provisioned") {
-          const errMsg = "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.";
-          pushAssistant(errMsg);
-          finalizeAssistant();
-          return errMsg;
-        }
-        throw err;
-      }
-
-      const { content: streamedContent, error: cloudError } = await provider.streamChat(cloudMessages, {
+      const { content: streamedContent, error: cloudError } = await streamCloudChat(cloudMessages, {
         signal: controller.signal,
         temperature: 0.7,
         onDelta: (accumulated) => pushAssistant(accumulated),
@@ -1044,7 +966,7 @@ Structure and Content Guidelines:
       }
       return assistantContent || undefined;
     },
-    [aiConfig, keys, chatMode, personality, user, getChatDefaults, getMemoryContext, checkAndIncrement, maxDailyLimit, toast],
+    [chatMode, personality, user, getChatDefaults, getMemoryContext],
   );
 
   const handleStopGeneration = () => {
@@ -1127,93 +1049,39 @@ Structure and Content Guidelines:
     const msgContent = (overrideText ?? message).trim();
     if ((!msgContent && !selectedFile) || isLoading) return;
 
-    // ── Command interception: /image <prompt> OR natural language image requests ──
-    // Routes to the image generation system instead of sending to the text AI.
-    // Matches:
-    //   /image <prompt>                    — explicit slash command
-    //   generate an image of <prompt>      — natural language
-    //   generate a image of <prompt>       — natural language (common typo)
-    //   create an image of <prompt>        — natural language
-    //   draw <prompt>                      — natural language
-    //   make an image of <prompt>          — natural language
-    const imageCommandMatch = msgContent.match(/^\/image\s+(.+)/i);
-    const nlImageMatch = !imageCommandMatch && msgContent.match(/^(?:please\s+)?(?:generate|create|draw|make)\s+(?:me\s+)?(?:a\s+|an\s+)?image\s+(?:of\s+|showing\s+|with\s+)?(.+)/i);
-
-    if (imageCommandMatch || nlImageMatch) {
-      const imagePrompt = (imageCommandMatch?.[1] || nlImageMatch?.[1] || "").trim();
-      if (!imagePrompt) {
-        toast({ title: "Image command", description: "Please provide a prompt after /image. Example: /image a red dragon flying over mountains", variant: "destructive" });
-        return;
-      }
-
-      // Add user message to chat
-      const userMsg: Message = {
-        id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'img-user-' + Date.now()),
-        type: "user",
-        content: msgContent,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, userMsg]);
-      if (!overrideText) setMessage("");
-      setIsLoading(true);
-
-      // Add a placeholder AI message that will be updated with the image
-      const aiMsgId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'img-ai-' + Date.now());
-      setMessages((prev) => [...prev, {
-        id: aiMsgId,
-        type: "ai",
-        content: "Generating image...",
-        timestamp: new Date(),
-      }]);
-
-      try {
-        // Check if cloud image generation is configured
-        if (!isCloudImageConfigured()) {
-          throw new Error("Image generation is not configured. Set VITE_SUPABASE_URL or use BYOK mode.");
-        }
-
-        const imageUrl = await generateImageWithFallback(imagePrompt, {
-          userApiKey: userCohort === 'TECH' ? userApiKey : undefined,
-          onFrame: (dataUrl, isFinal) => {
-            // Update the AI message with progressive preview frames
-            setMessages((prev) => prev.map((m) =>
-              m.id === aiMsgId
-                ? { ...m, content: isFinal ? `Here's your generated image for: **${imagePrompt}**` : "Generating image...", imageUrl: dataUrl }
-                : m
-            ));
-          },
-        });
-
-        // Final update with the completed image
-        setMessages((prev) => prev.map((m) =>
-          m.id === aiMsgId
-            ? { ...m, content: `Here's your generated image for: **${imagePrompt}**`, imageUrl }
-            : m
-        ));
-
-        // Persist to conversation if user is logged in
-        if (user) {
-          const conversationId = await resolveConversationId().catch(() => null);
-          if (conversationId) {
-            void saveMessage(msgContent, "user", conversationId).catch(() => {});
-            void saveMessage(`Generated image for: ${imagePrompt}`, "assistant", conversationId).catch(() => {});
-          }
-        }
-
-        markHasChatted();
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : "Image generation failed. Please try again.";
-        setMessages((prev) => prev.map((m) =>
-          m.id === aiMsgId
-            ? { ...m, content: `I couldn't generate that image. ${errMsg}`, imageUrl: undefined }
-            : m
-        ));
-        toast({ title: "Image generation failed", description: errMsg, variant: "destructive" });
-      } finally {
-        setIsLoading(false);
-      }
+    if (authLoading) {
+      toast({ title: "Restoring your session", description: "Wait a moment, then send your message again." });
       return;
     }
+    if (!user) {
+      toast({
+        title: "Sign in to use ShadowTalk AI",
+        description: "Your AI access choice and daily usage are tied to your account.",
+        variant: "destructive",
+      });
+      navigate(`/auth?q=${encodeURIComponent(msgContent)}`);
+      return;
+    }
+
+    try {
+      const accessMode = await loadAiAccessMode(user.id);
+      if (!accessMode) {
+        toast({
+          title: "Choose your AI access",
+          description: "Complete the setup dialog before sending your message.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Could not load AI setup",
+        description: error instanceof Error ? error.message : "Check your connection and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
 
 
     if (chatMode === "swarm") {
@@ -1272,67 +1140,18 @@ Structure and Content Guidelines:
       content: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
     }> = messages
       .filter((m) => m.id !== "welcome")
-      .map((m) => {
-        // Preserve multimodal content for messages that had image attachments.
-        if (m.attachment?.type === 'image' && m.attachment.data) {
-          return {
-            role: m.type === "user" ? "user" : "assistant",
-            content: [
-              { type: "text", text: m.content || "What's in this image?" },
-              { type: "image_url", image_url: { url: m.attachment.data } },
-            ],
-          };
-        }
-        // For file attachments, the text was already inlined into m.content
-        // at send time (see handleSendMessage), so just use the content string.
-        return {
-          role: m.type === "user" ? "user" : "assistant",
-          content: m.content,
-        };
-      });
-
-    // Build the current user message with multimodal content if there's an attachment.
-    let currentUserContent: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
-
-    if (userMessage.attachment?.type === 'image' && userMessage.attachment.data) {
-      // Image attachment → send as multimodal content (image_url part).
-      currentUserContent = [
-        { type: "text", text: msgContent || "What's in this image?" },
-        { type: "image_url", image_url: { url: userMessage.attachment.data } },
+      .map((m) => ({
+        role: m.type === "user" ? "user" : "assistant",
+        content: m.content,
+      }));
+    chatMessages.push({ role: "user", content: msgContent });
+    if (userMessage.attachment?.type === "image") {
+      const imageData = userMessage.attachment.data;
+      chatMessages[chatMessages.length - 1].content = [
+        { type: "text", text: msgContent || "Analyze this image." },
+        { type: "image_url", image_url: { url: imageData } },
       ];
-    } else if (userMessage.attachment?.type === 'file' && userMessage.attachment.data) {
-      // File attachment (text/code/pdf) → decode base64 and inline the text content
-      // so the AI can actually read and analyze it.
-      let fileText = "";
-      try {
-        const dataUrl = userMessage.attachment.data;
-        const base64Index = dataUrl.indexOf(',');
-        if (base64Index > 0) {
-          const base64 = dataUrl.substring(base64Index + 1);
-          // Decode base64 to text (works for text/code/markdown files).
-          fileText = atob(base64);
-        } else {
-          // Desktop bridge returns raw text content (not a data URL).
-          fileText = dataUrl;
-        }
-      } catch {
-        // Binary files (PDFs, images misclassified, etc.) can't be decoded as text.
-        fileText = `[Binary file: ${userMessage.attachment.name} (${userMessage.attachment.mimeType}) — content not extractable as text]`;
-      }
-
-      // Truncate very large files to avoid token explosion (max ~12K chars ≈ 3K tokens).
-      const maxFileChars = 12000;
-      const truncated = fileText.length > maxFileChars
-        ? fileText.substring(0, maxFileChars) + "\n\n[... file truncated ...]"
-        : fileText;
-
-      const fileContext = `[Attached file: ${userMessage.attachment.name}]\n--- FILE CONTENT START ---\n${truncated}\n--- FILE CONTENT END ---\n\n${msgContent || "Please analyze this file."}`;
-      currentUserContent = fileContext;
-    } else {
-      currentUserContent = msgContent;
     }
-
-    chatMessages.push({ role: "user", content: currentUserContent });
 
 
     void captureChatSend(msgContent, chatMode, personality, Boolean(userMessage.attachment));
@@ -1772,7 +1591,7 @@ Structure and Content Guidelines:
           onOpenSettings={() => navigate("/settings")}
         />
         <ChatMainPanel>
-          <div className="sticky top-0 z-30 shrink-0 border-b border-white/[0.06]">
+          <div className="sticky top-0 z-30 shrink-0 bg-background/85 backdrop-blur-md border-b border-border/30">
             <ChatHeader
               variant="minimal"
               userPlan={userPlan}
@@ -1790,7 +1609,6 @@ Structure and Content Guidelines:
               toolsMenuOpen={toolsMenuOpen}
               onToolsMenuOpenChange={setToolsMenuOpen}
               onOpenByok={() => setShowByok(true)}
-              onOpenKeySettings={() => setShowKeySettings(true)}
             />
           </div>
           {hasActiveChat && (
@@ -1973,26 +1791,7 @@ Structure and Content Guidelines:
           </DialogContent>
         </Dialog>
 
-        {/* ── Hybrid API Key System Modals ── */}
-
-        {/* One-time onboarding choice — appears when user hasn't picked a cohort yet. */}
-        <OnboardingChoiceModal
-          open={showOnboarding}
-          onOpenChange={setShowOnboarding}
-        />
-
-        {/* Daily limit reached — shown when NON_TECH users hit the 50/day cap. */}
-        <LimitReachedModal
-          open={showLimitReached}
-          onOpenChange={setShowLimitReached}
-        />
-
-        {/* Key settings — switch cohorts, update keys, reset onboarding. */}
-        <KeySettingsModal
-          open={showKeySettings}
-          onOpenChange={setShowKeySettings}
-        />
-
+        {user && <AiAccessOnboarding userId={user.id} />}
 
       
 
@@ -2002,8 +1801,4 @@ Structure and Content Guidelines:
   );
 };
 export default ChatbotPage;
-
-
-
-
 

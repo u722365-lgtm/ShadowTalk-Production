@@ -1,3 +1,5 @@
+import { getCachedAiAccessMode } from "@/lib/aiAccessMode";
+
 /**
  * Turbo Provider Configuration — Key resolution & provider constants.
  *
@@ -30,44 +32,31 @@ export const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 /** OpenAI model */
 export const TURBO_MODEL_OPENAI = 'gpt-4o';
 
-// ---- Embedded Platform Key ----
-// Powers ShadowTalk for all free-tier users (bypasses broken ShadowTalk edge function).
-const _K = ['gsk_oqo0','ziSXZ4dP','gkFD8BMj','WGdyb3FY','Gm9foOab','DlsTC8pE','lPq3GRXn'];
-const PLATFORM_GROQ_KEY = _K.join('');
-
 // ---- Key Resolution ----
 
 /**
- * Resolve the Turbo API key from multiple sources.
- * Non-reactive — safe to call from any context (React hooks, forge/execute libs).
- *
- *
- * Priority:
- *   0. Environment variable (VITE_GROQ_API_KEY)
- *   1. localStorage (shadowtalk_custom_ai_keys — if provider is groq or turbo)
- *   2. sessionStorage (shadowtalk_turbo_groq_key — set by settings page)
- *   3. Embedded platform Groq key (always available — powers free tier)
+ * Resolve a user-supplied key only. Shared provider credentials must remain
+ * server-side and are never bundled into the browser.
  */
 export function resolveTurboKey(): string | null {
-  // 0. Check environment variables (.env file)
-  const envKey = import.meta.env.VITE_GROQ_API_KEY;
-  if (envKey && envKey.startsWith('gsk_')) {
-    return envKey;
+  if (typeof window === "undefined" || getCachedAiAccessMode() !== "byok") return null;
+  try {
+    const stored = localStorage.getItem("shadowtalk.byok.v1");
+    if (!stored) return null;
+    const config = JSON.parse(stored) as { apiKey?: unknown };
+    return typeof config.apiKey === "string" && config.apiKey.trim()
+      ? config.apiKey.trim()
+      : null;
+  } catch {
+    return null;
   }
-
-
-  // 3. Platform embedded key — always available for free-tier users
-  return PLATFORM_GROQ_KEY;
 }
 
 /**
- * Resolve the OpenAI API key.
+ * Client-side provider API keys are configured through the BYOK settings UI,
+ * not Vite environment variables.
  */
 export function resolveOpenAIKey(): string | null {
-  const envKey = import.meta.env.VITE_OPENAI_API_KEY;
-  if (envKey && envKey.startsWith('sk-')) {
-    return envKey;
-  }
   return null;
 }
 

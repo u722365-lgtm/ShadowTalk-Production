@@ -3,7 +3,7 @@ import { Brain, ChevronDown, ChevronUp, Loader2, CheckCircle, Lightbulb, Search,
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import { backend } from "@/integrations/local/client";
+import { streamCloudChat, type CloudChatMessage } from "@/lib/cloudChat";
 
 // =============================================================================
 // THINKING TRANSPARENCY - Claude-style reasoning display
@@ -297,8 +297,9 @@ export const useThinkingSteps = () => {
         { role: 'user', content: query }
       ];
       
-      const response = await backend.functions.invoke('chat', { body: { messages } });
-      let result = response.data?.choices?.[0]?.message?.content || response.data?.generatedText || "[]";
+      const response = await streamCloudChat(messages as CloudChatMessage[]);
+      if (response.error) throw new Error(response.error);
+      let result = response.content || "[]";
       result = result.replace(/^```[a-z]*\n/, "").replace(/```$/, "").trim();
       
       try {

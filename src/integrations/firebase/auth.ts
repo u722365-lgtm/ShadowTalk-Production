@@ -11,7 +11,6 @@ import {
   sendPasswordResetEmail,
   signInAnonymously as fbSignInAnonymously,
   signInWithEmailAndPassword,
-  signInWithPopup,
   signInWithRedirect,
   signOut as fbSignOut,
   updateEmail,
@@ -124,6 +123,9 @@ function currentUser(): Promise<FbUser | null> {
 }
 
 export function createAuthAdapter() {
+  let redirectResultHandled = false;
+  const oauthRedirectPendingKey = 'shadowtalk_auth_redirect_pending';
+
   return {
     async getSession() {
       try {
@@ -214,56 +216,18 @@ export function createAuthAdapter() {
           p = new OAuthProvider(provider.includes('.') ? provider : `${provider}.com`);
         }
 
-        // Detect cross-origin isolation (COOP=same-origin). When active,
-        // signInWithPopup is broken because the popup's window.opener is null
-        // and the credential cannot be posted back to the opener.
-        // Always use signInWithRedirect in that case.
-        //
-        // window.crossOriginIsolated is the standard API: it's true only when
-        // both COOP=same-origin and COEP are set.
-        const isCrossOriginIsolated =
-          typeof window !== 'undefined' && window.crossOriginIsolated === true;
-
-        if (!isCrossOriginIsolated) {
-          // Try popup first (better UX) — fall back to redirect on any
-          // popup-related error, not just auth/popup-blocked.
-          try {
-            const cred = await signInWithPopup(fbAuth(), p as any);
-            return {
-              data: {
-                provider,
-                url: window.location.href,
-                user: toAdapterUser(cred.user),
-                session: await toAdapterSession(cred.user),
-              },
-              error: null,
-            };
-          } catch (popupErr: any) {
-            const code = popupErr?.code || '';
-            const isPopupFailure =
-              code === 'auth/popup-blocked' ||
-              code === 'auth/popup-closed-by-user' ||
-              code === 'auth/cancelled-popup-request' ||
-              code === 'auth/network-request-failed' ||
-              code === 'auth/web-storage-unsupported';
-
-            // Only fall back to redirect for popup-specific failures and only
-            // in the top-level window (not inside iframes).
-            if (isPopupFailure && window.self === window.top) {
-              // Fall through to redirect below.
-            } else {
-              throw popupErr;
-            }
-          }
-        }
-
-        // Redirect-based sign-in (used when COOP is active or popup failed).
-        await signInWithRedirect(fbAuth(), p as any);
+        window.sessionStorage.setItem(oauthRedirectPendingKey, '1');
+        await signInWithRedirect(fbAuth(), p);
         return {
           data: { provider, url: window.location.href, user: null, session: null },
           error: null,
         };
       } catch (error: any) {
+        try {
+          window.sessionStorage.removeItem(oauthRedirectPendingKey);
+        } catch {
+          // Keep the authentication error as the primary failure.
+        }
         return { data: { provider, url: '', user: null, session: null }, error: friendlyError(error) };
       }
     },
@@ -319,37 +283,38 @@ export function createAuthAdapter() {
     },
 
     onAuthStateChange(callback: (event: string, session: AdapterSession | null) => void) {
-      // Process any pending redirect sign-in result on first subscription.
-      // This must be awaited for OAuth redirect flows to complete properly —
-      // onAuthStateChanged will fire with the signed-in user regardless, but
-      // getRedirectResult also surfaces additional OAuth credentials (e.g.
-      // Google access tokens) and clears the redirect state from the URL.
-      if (typeof window !== 'undefined') {
-        getRedirectResult(fbAuth())
-          .then((result) => {
-            if (result) {
-              // OAuth redirect completed — the user is now signed in.
-              // onAuthStateChanged below will fire with the user and emit
-              // the SIGNED_IN event. We just log for observability.
-              const provider = result.user?.providerData?.[0]?.providerId || 'oauth';
-              console.info('[Firebase Auth] OAuth redirect completed:', provider);
-            }
+      const auth = fbAuth();
+      const subscription = onAuthStateChanged(auth, async (u) => {
+        const session = await toAdapterSession(u);
+        callback(!u ? 'SIGNED_OUT' : 'SIGNED_IN', session);
+      });
+
+      if (typeof window !== 'undefined' && !redirectResultHandled) {
+        redirectResultHandled = true;
+        void getRedirectResult(auth)
+          .then(async (result) => {
+            if (!result?.user) return;
+            const session = await toAdapterSession(result.user);
+            callback('SIGNED_IN', session);
           })
-          .catch((err) => {
-            console.warn('[Firebase Auth] getRedirectResult error:', err?.code || err?.message);
+          .catch((error: unknown) => {
+            const message = friendlyError(error).message;
+            console.error('[Firebase Auth] OAuth redirect sign-in failed:', error);
+            try {
+              window.sessionStorage.removeItem(oauthRedirectPendingKey);
+              window.sessionStorage.setItem('shadowtalk.firebase-auth-redirect-error', message);
+            } catch {
+              // The console error remains available if browser storage is disabled.
+            }
+            window.dispatchEvent(
+              new CustomEvent('shadowtalk:firebase-auth-redirect-error', { detail: message }),
+            );
           });
       }
-      let first = true;
-      const unsub = onAuthStateChanged(fbAuth(), async (u) => {
-        const session = await toAdapterSession(u);
-        // Skip the very first callback when it matches the session we already
-        // resolved via getSession() in the bootstrap — prevents double-hydration
-        // (double syncProfile / checkSubscription calls) in the AuthProvider.
-        const event = !u ? 'SIGNED_OUT' : first ? 'INITIAL_SESSION' : 'SIGNED_IN';
-        first = false;
-        callback(event, session);
-      });
-      return { data: { subscription: { unsubscribe: unsub, id: 'firebase-auth' } }, error: null };
+      return {
+        data: { subscription: { unsubscribe: subscription, id: 'firebase-auth' } },
+        error: null,
+      };
     },
 
     async linkIdentity() {

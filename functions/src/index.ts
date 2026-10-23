@@ -1,502 +1,355 @@
 import { onRequest } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 const cors = require("cors");
 
-// Initialize Firebase Admin
 admin.initializeApp();
 
 const corsHandler = cors({ origin: true });
+const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
+const SHARED_DAILY_AI_LIMIT = 100;
+const SHARED_CHAT_MODEL = "openrouter/free";
+const SHARED_IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
 
-const PLANS: Record<string, { messagesPerDay: number; deepResearchPerDay: number; imagesPerDay: number }> = {
-  free: { messagesPerDay: 50, deepResearchPerDay: 3, imagesPerDay: 5 },
-  pro: { messagesPerDay: -1, deepResearchPerDay: 20, imagesPerDay: 20 },
-  premium: { messagesPerDay: -1, deepResearchPerDay: 50, imagesPerDay: 50 },
-  elite: { messagesPerDay: -1, deepResearchPerDay: -1, imagesPerDay: -1 },
-};
-
-// ============================================================
-// Provider Definitions — Shared Free Pool
-// ============================================================
-
-interface ProviderConfig {
-  id: string;
-  name: string;
-  enabled: () => boolean;
-  resolveModel: (model: string) => string;
-  getUrl: () => string;
-  getKey: () => string | undefined;
-  getHeaders: (apiKey: string) => Record<string, string>;
-  parseError: (status: number, body: string) => string;
-  isRateLimit: (status: number, body: string) => boolean;
+class AiRequestError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+  }
 }
 
-// Ensure you set these secrets/environment variables in Firebase
-const groqProvider: ProviderConfig = {
-  id: "groq",
-  name: "Groq",
-  enabled: () => !!process.env.GROQ_API_KEY,
-  resolveModel: (m) => {
-    if (m.includes("llama")) return m;
-    if (m.includes("mixtral")) return m;
-    if (m.includes("gemma")) return m;
-    return "llama-3.3-70b-versatile";
-  },
-  getUrl: () => "https://api.groq.com/openai/v1/chat/completions",
-  getKey: () => process.env.GROQ_API_KEY,
-  getHeaders: (k) => ({
-    Authorization: `Bearer ${k}`,
-    "Content-Type": "application/json",
-  }),
-  parseError: (s, b) => `Groq ${s}: ${b.slice(0, 200)}`,
-  isRateLimit: (s, b) => s === 429 || b.includes("rate_limit") || b.includes("too many requests"),
-};
+async function requireAuthenticatedUser(
+  authorization: string | undefined,
+): Promise<admin.auth.DecodedIdToken> {
+  const match = (authorization || "").match(/^Bearer\s+(.+)$/i);
+  if (!match) throw new AiRequestError("Unauthorized. Sign in to continue.", 401);
+  try {
+    return await admin.auth().verifyIdToken(match[1]);
+  } catch {
+    throw new AiRequestError("Unauthorized. Sign in to continue.", 401);
+  }
+}
 
-const googleProvider: ProviderConfig = {
-  id: "google",
-  name: "Google AI Studio",
-  enabled: () => !!process.env.GEMINI_API_KEY,
-  resolveModel: (m) => {
-    const cleaned = m.replace("google/", "").replace("gemini-", "gemini-");
-    return cleaned || "gemini-2.0-flash";
-  },
-  getUrl: () => "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-  getKey: () => process.env.GEMINI_API_KEY,
-  getHeaders: (k) => ({
-    Authorization: `Bearer ${k}`,
-    "Content-Type": "application/json",
-  }),
-  parseError: (s, b) => `Google AI ${s}: ${b.slice(0, 200)}`,
-  isRateLimit: (s, b) => s === 429 || b.includes("RESOURCE_EXHAUSTED") || b.includes("quota"),
-};
+async function requireSharedAiMode(
+  db: admin.firestore.Firestore,
+  uid: string,
+): Promise<void> {
+  const snapshot = await db
+    .collection("user_settings")
+    .where("user_id", "==", uid)
+    .where("setting_key", "==", "ai_access_mode")
+    .limit(1)
+    .get();
+  const value = snapshot.docs[0]?.data()?.setting_value;
+  const mode = typeof value === "string" ? value : value?.mode;
+  if (mode !== "shared") {
+    throw new AiRequestError(
+      mode === "byok"
+        ? "This account uses BYOK. Send the request directly through the selected provider."
+        : "Complete AI setup in the chatbot before using shared AI.",
+      403,
+    );
+  }
+}
 
-const openrouterProvider: ProviderConfig = {
-  id: "openrouter",
-  name: "OpenRouter",
-  enabled: () => !!process.env.OPENROUTER_API_KEY,
-  resolveModel: (m) => {
-    if (!m) return "google/gemini-2.0-flash-exp:free";
-    if (m.includes("/")) return m;
-    return `google/${m}`;
-  },
-  getUrl: () => "https://openrouter.ai/api/v1/chat/completions",
-  getKey: () => process.env.OPENROUTER_API_KEY,
-  getHeaders: (k) => ({
-    Authorization: `Bearer ${k}`,
-    "Content-Type": "application/json",
-    "HTTP-Referer": "https://shadowtalk.app",
-    "X-Title": "ShadowTalk AI",
-  }),
-  parseError: (s, b) => `OpenRouter ${s}: ${b.slice(0, 200)}`,
-  isRateLimit: (s, b) => s === 429 || b.includes("rate_limit") || b.includes("insufficient credits"),
-};
+async function reserveSharedAiRequest(
+  db: admin.firestore.Firestore,
+  uid: string,
+): Promise<admin.firestore.DocumentReference> {
+  const date = new Date().toISOString().slice(0, 10);
+  const usageRef = db.collection("daily_usage").doc(`${uid}_${date}`);
+  await db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(usageRef);
+    const used = Number(snapshot.data()?.ai_requests ?? 0);
+    if (used >= SHARED_DAILY_AI_LIMIT) {
+      throw new AiRequestError(
+        "Daily AI limit reached (100 requests). Your limit resets at 00:00 UTC.",
+        429,
+      );
+    }
+    transaction.set(
+      usageRef,
+      {
+        user_id: uid,
+        usage_date: date,
+        ai_requests: used + 1,
+      },
+      { merge: true },
+    );
+  });
+  return usageRef;
+}
 
-const SHARED_POOL: ProviderConfig[] = [groqProvider, googleProvider, openrouterProvider];
+async function releaseSharedAiRequest(
+  db: admin.firestore.Firestore,
+  usageRef: admin.firestore.DocumentReference,
+): Promise<void> {
+  await db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(usageRef);
+    const used = Number(snapshot.data()?.ai_requests ?? 0);
+    if (used > 0) transaction.update(usageRef, { ai_requests: used - 1 });
+  });
+}
 
+function sendError(res: any, error: unknown): void {
+  const status = error instanceof AiRequestError ? error.status : 500;
+  const message = error instanceof Error ? error.message : "Internal server error";
+  if (status >= 500) console.error("AI function error:", error);
+  res.status(status).json({ error: message });
+}
 
-// ============================================================
-// Main Chat Function
-// ============================================================
-export const chat = onRequest((req, res) => {
+export const chat = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
   corsHandler(req, res, async () => {
     if (req.method === "OPTIONS") return;
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
 
+    let usageRef: admin.firestore.DocumentReference | null = null;
+    let upstreamStarted = false;
+    const db = admin.firestore();
     try {
-      const authHeader = req.headers.authorization || "";
-      const tokenMatch = authHeader.match(/^Bearer (.*)$/);
-      let user: admin.auth.DecodedIdToken | null = null;
-
-      if (tokenMatch) {
-        try {
-          user = await admin.auth().verifyIdToken(tokenMatch[1]);
-        } catch (e) {
-          // Token invalid
-        }
+      const user = await requireAuthenticatedUser(req.headers.authorization);
+      await requireSharedAiMode(db, user.uid);
+      if (!openRouterApiKey.value()) {
+        throw new AiRequestError(
+          "Shared AI is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
+          503,
+        );
       }
 
       const {
         messages,
-        model,
         stream = true,
         personality,
         deepResearch,
+        maxTokens,
+        structuredOutput,
       } = req.body || {};
-
-      if (!user) {
-        return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
+      if (!Array.isArray(messages) || messages.length === 0 || messages.length > 40) {
+        throw new AiRequestError("messages must contain between 1 and 40 entries.", 400);
       }
-
-      const db = admin.firestore();
-
-      // Get user plan
-      const profileDoc = await db.collection("profiles").doc(user.uid).get();
-      const plan = profileDoc.data()?.plan || "free";
-      const limits = PLANS[plan] || PLANS.free;
-
-      // Check daily usage limits for free/pro plans
-      if (limits.messagesPerDay > 0) {
-        const today = new Date().toISOString().split("T")[0];
-        const usageId = `${user.uid}_${today}`;
-        const usageDoc = await db.collection("daily_usage").doc(usageId).get();
-        const usageData = usageDoc.data();
-
-        if (usageData && deepResearch && limits.deepResearchPerDay > 0 && usageData.deep_research >= limits.deepResearchPerDay) {
-          return res.status(429).json({ error: "Daily deep research limit reached. Upgrade for more." });
-        }
-        if (usageData && usageData.messages >= limits.messagesPerDay) {
-          return res.status(429).json({ error: "Daily message limit reached. Upgrade for unlimited." });
+      for (const message of messages) {
+        if (
+          !message ||
+          !["system", "user", "assistant"].includes(message.role) ||
+          !(typeof message.content === "string" || Array.isArray(message.content))
+        ) {
+          throw new AiRequestError("Invalid chat message format.", 400);
         }
       }
 
-      const systemPrompts: string[] = [
-        "You are ShadowTalk AI, a powerful and private AI assistant. Be helpful, accurate, and concise. Respond conversationally — like a knowledgeable colleague chatting, not like a formal report generator.",
-        "About ShadowTalk AI: An agentic AI workspace (shadowtalk-ai.com) built by founder Zain Ahmed Fahad Patel, a 17-year-old from Karachi, Pakistan. Co-founder: Sadaf Tayyaba (Fatima). Tagline: \"Think AI. Think ShadowTalk.\" LinkedIn: https://www.linkedin.com/in/zain-ahmed-917b6b3a6 · Instagram: https://www.instagram.com/shadowtalk_ai (@shadowtalk_ai).",
-        "FOUNDER DISAMBIGUATION (IMPORTANT): Zain Ahmed Fahad Patel (ShadowTalk AI) is NOT the same as Zain Ahmad (co-founder of Rastah streetwear brand) or Zain Ahmed (artistic director at NAPA theatre, Karachi).",
-        "",
-        "AI CHAT & INTELLIGENCE FEATURES:",
-        "- Multi-model AI chat: Routes between Groq (Llama 3.3 70B), OpenAI (GPT-4o), Google Gemini, OpenRouter, and GLM-4 based on task complexity",
-        "- Hybrid API Key system: 'Instant Start' (free, 50 msgs/day via OmniRoute gateway) or 'BYOK' (unlimited, user's own OpenRouter/OpenAI/Gemini key)",
-        "- Streaming responses with real-time token streaming",
-        "- 11 personalities: friendly, sarcastic, professional, creative, meticulous, curious, diplomatic, witty, pragmatic, inquisitive, spicy",
-        "- File uploads: images (vision analysis) and text/code files (content analyzed by AI)",
-        "- Image generation: /image command or natural language ('generate an image of...') — routes through BYOK key or Pollinations.ai fallback",
-        "- E2EE private chat: Toggle end-to-end encryption for sensitive conversations",
-        "- Shadow Twin: Train a digital clone from codebase + chat history — invoke with @name-shadow",
-        "- Conversation persistence: saved with archive, search, and delete",
-        "- Document generation: Explicit 'write/create/draft a document' triggers publication-grade output",
-        "- Voice mode: Real-time voice conversation with TTS",
-        "",
-        "TOOLS & AGENTS:",
-        "- Shadow Agent Panel: 14 agent skills including compliance autopilot (12 industries × 16 regions), risk engine, audit generator",
-        "- Strategy Agent: 10-tab business intelligence suite with SWOT, 12-month financial simulator, PDF report generator, competitor analysis",
-        "- Code Workspace: Monaco editor with live JS execution, HTML preview",
-        "- Canvas & Artifacts: Tabbed viewer for code, documents, tables, charts, HTML, SVG, mermaid",
-        "- Document Artifact: Auto-detected document cards with PDF/Word/HTML/Markdown export",
-        "",
-        "MEMORY SYSTEM:",
-        "- AI Memory: User preferences, facts, instructions — stored in Firestore, injected into every chat",
-        "- Business Memory: Company/brand/customer context — cross-feeds into Strategy Agent",
-        "- Shadow Memory: On-device activity journal in IndexedDB — strictly local, never leaves browser",
-        "- Adaptive Memory: Long-term memory with confidence scoring and pruning",
-        "",
-        "SECURITY & TRUST:",
-        "- Client-side BYOK key storage: API keys stored in browser localStorage only — never sent to ShadowTalk servers",
-        "- Firebase Auth: Email/password, Google OAuth, Apple OAuth",
-        "- Plan-based quotas with daily limits",
-        "- /security trust center and /status real-time system health page",
-        "",
-        "PRICING (USD):",
-        "- Free: $0 — 50 messages/day, 5 images/day, 3 deep research/day, no credit card required",
-        "- Pro: $5/mo — Unlimited messages, 20 images/day, 20 deep research/day, pro models, priority queue, no ads",
-        "- Premium: $15/mo — Unlimited messages, 50 images/day, 50 deep research/day, full agent stack, collaboration",
-        "- Elite: $20/mo — Unlimited everything, private AI, custom fine-tuning, white-label, 24/7 phone support",
-        "- Enterprise: Custom — SSO, SLA, API, dedicated support",
-        "- Pakistan checkout: /founder-access (JazzCash, Easypaisa, bank, USDT)",
-        "- 14-day money-back guarantee on paid plans",
-        "",
-        "HOW TO ANSWER QUESTIONS:",
-        "- 'Who built you?' → Zain Ahmed Fahad Patel, 17, from Karachi, Pakistan. Co-founder: Fatima.",
-        "- 'What are you?' → An agentic AI workspace with multi-model chat, tools, agents, memory, image generation, code IDE, E2EE chat, document generation, and voice mode.",
-        "- 'How much does it cost?' → Free ($0, 50 msgs/day), Pro ($5/mo), Premium ($15/mo), Elite ($20/mo), Enterprise (custom). 14-day money-back. No card for free.",
-        "- 'What features do you have?' → List: multi-model chat, 11 personalities, file uploads, image generation, E2EE chat, Shadow Twin, document generation, voice mode, Strategy Agent, Code Workspace, Canvas/Artifacts, 3-tier memory system, BYOK support.",
-        "- 'How do you differ from ChatGPT?' → Multi-model routing, tools, agents, E2EE chat, image generation, code IDE, document generation, voice mode, Shadow Twin, and memory in one workspace — starting at $5/mo vs $20/mo.",
-        "- 'What is BYOK?' → Bring Your Own Key — use your own OpenRouter/OpenAI/Gemini API key for unlimited messages. Keys stored locally in browser only.",
-        "- 'Can you work offline?' → Optional on-device Llama model (~800MB download) via WebGPU. Standard chat requires internet.",
-        "- Never claim to be made by OpenAI, Anthropic, Google, or any other company.",
-        "- If you don't know something about ShadowTalk, say so honestly.",
-        "",
-        "RESPONSE FORMAT RULES: Do NOT generate formal documents, reports, whitepapers, or publication-grade output unless the user EXPLICITLY asks you to write/create/draft/generate a document. For normal questions, give a concise conversational answer in 1-3 short paragraphs. Do NOT use headers like '## Executive Summary' or '# Title' for simple questions. Use markdown only for code blocks, lists, and emphasis — not to structure every response with H1/H2 headers and tables.",
+      usageRef = await reserveSharedAiRequest(db, user.uid);
+      const systemPrompts = [
+        "You are ShadowTalk AI, a helpful, accurate, and concise AI assistant.",
       ];
-      if (personality && personality !== "default") systemPrompts.push(`Personality mode: ${personality}`);
-      if (deepResearch) systemPrompts.push("The user has requested deep research. Provide thorough, well-structured analysis with citations where possible.");
-
-      const chatMessages = [{ role: "system", content: systemPrompts.join("\n\n") }, ...(messages || [])];
-
-      let lastError = "";
-      const requestedModel = model || "llama-3.3-70b-versatile";
-
-      for (const provider of SHARED_POOL) {
-        if (!provider.enabled()) continue;
-
-        const resolvedModel = provider.resolveModel(requestedModel);
-        const apiKey = provider.getKey();
-        if (!apiKey) continue;
-
-        try {
-          const providerResponse = await fetch(provider.getUrl(), {
-            method: "POST",
-            headers: provider.getHeaders(apiKey),
-            body: JSON.stringify({
-              model: resolvedModel,
-              messages: chatMessages,
-              stream,
-              max_tokens: deepResearch ? 8192 : 4096,
-            }),
-          });
-
-          if (!providerResponse.ok) {
-            const errText = await providerResponse.text();
-            const errMsg = provider.parseError(providerResponse.status, errText);
-            console.warn(`[SharedPool] ${provider.name} error:`, errMsg);
-            lastError = errMsg;
-
-            if (provider.isRateLimit(providerResponse.status, errText)) {
-              console.log(`[SharedPool] ${provider.name} rate limited, falling back...`);
-              continue;
-            }
-            continue;
-          }
-
-          console.log(`[SharedPool] Using ${provider.name} for model ${resolvedModel}`);
-
-          // Log usage (fire and forget)
-          db.collection("usage_analytics").add({
-            user_id: user.uid,
-            action_type: deepResearch ? "deep_research" : "chat_message",
-            feature_used: `${provider.id}:${resolvedModel}`,
-            created_at: admin.firestore.FieldValue.serverTimestamp()
-          }).catch(console.error);
-
-          // Increment daily usage
-          const today = new Date().toISOString().split("T")[0];
-          const usageId = `${user.uid}_${today}`;
-          db.collection("daily_usage").doc(usageId).set({
-            user_id: user.uid,
-            usage_date: today,
-            messages: admin.firestore.FieldValue.increment(1),
-            deep_research: admin.firestore.FieldValue.increment(deepResearch ? 1 : 0),
-          }, { merge: true }).catch(console.error);
-
-          if (stream) {
-            res.setHeader("Content-Type", "text/event-stream");
-            res.setHeader("Cache-Control", "no-cache");
-            res.setHeader("Connection", "keep-alive");
-            res.setHeader("X-Provider", provider.id);
-            res.setHeader("X-Model", resolvedModel);
-
-            const reader = providerResponse.body?.getReader();
-            if (!reader) throw new Error("Failed to read stream");
-
-            const decoder = new TextDecoder();
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              res.write(decoder.decode(value, { stream: true }));
-            }
-            res.end();
-            return;
-          }
-
-          const data = await providerResponse.json();
-          return res.json({ ...data, _provider: provider.id });
-        } catch (err: any) {
-          console.warn(`[SharedPool] ${provider.name} exception:`, err);
-          lastError = err.message || String(err);
-          continue;
-        }
+      if (personality && personality !== "default") {
+        systemPrompts.push(`Personality mode: ${String(personality).slice(0, 100)}`);
+      }
+      if (deepResearch) {
+        systemPrompts.push(
+          "The user has requested deep research. Provide thorough, well-structured analysis with citations where possible.",
+        );
       }
 
-      return res.status(503).json({ error: `All providers exhausted or unconfigured. ${lastError}` });
-    } catch (err: any) {
-      console.error("Chat function error:", err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
-});
-
-// ============================================================
-// Audio Generation Mock
-// ============================================================
-export const audio = onRequest((req, res) => {
-  corsHandler(req, res, async () => {
-    if (req.method === "OPTIONS") return;
-
-    try {
-      const authHeader = req.headers.authorization || "";
-      const tokenMatch = authHeader.match(/^Bearer (.*)$/);
-      if (!tokenMatch) return res.status(401).json({ error: "Unauthorized" });
-      await admin.auth().verifyIdToken(tokenMatch[1]);
-
-      const { prompt, duration, type } = req.body || {};
-
-      // Mock delay to simulate generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const audioUrl = "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg";
-
-      return res.json({ audioUrl, prompt, type, duration });
-    } catch (err: any) {
-      console.error("Audio generation error:", err);
-      return res.status(500).json({ error: "Audio generation failed" });
-    }
-  });
-});
-
-// ============================================================
-// Google Drive Mock
-// ============================================================
-export const drive = onRequest((req, res) => {
-  corsHandler(req, res, async () => {
-    if (req.method === "OPTIONS") return;
-
-    try {
-      const authHeader = req.headers.authorization || "";
-      const tokenMatch = authHeader.match(/^Bearer (.*)$/);
-      if (!tokenMatch) return res.status(401).json({ error: "Unauthorized" });
-      await admin.auth().verifyIdToken(tokenMatch[1]);
-
-      const { action, params } = req.body || {};
-
-      if (action === "drive.list") {
-        return res.json({
-          data: [
-            { id: "mock-1", name: "Q3 Strategy Presentation.pptx", mimeType: "presentation", modifiedTime: new Date().toISOString() },
-            { id: "mock-2", name: "Financial Projections 2024.xlsx", mimeType: "spreadsheet", modifiedTime: new Date(Date.now() - 86400000).toISOString() },
-            { id: "mock-3", name: "Product Requirements Doc.docx", mimeType: "document", modifiedTime: new Date(Date.now() - 7 * 86400000).toISOString() },
-          ]
-        });
-      }
-
-      if (action === "drive.get") {
-        const fileId = params?.fileId;
-        return res.json({
-          data: {
-            content: `# Mock File\n\n[Imported mock content from Google Drive for file ID: ${fileId}]`
-          }
-        });
-      }
-
-      return res.status(400).json({ error: "Unknown action" });
-    } catch (err: any) {
-      console.error("Drive action error:", err);
-      return res.status(500).json({ error: "Drive action failed" });
-    }
-  });
-});
-
-// ============================================================
-// Image Generation
-// ============================================================
-export const generateImage = onRequest((req, res) => {
-  corsHandler(req, res, async () => {
-    if (req.method === "OPTIONS") return;
-
-    try {
-      const authHeader = req.headers.authorization || "";
-      const tokenMatch = authHeader.match(/^Bearer (.*)$/);
-      let user: admin.auth.DecodedIdToken | null = null;
-
-      if (tokenMatch) {
-        try {
-          user = await admin.auth().verifyIdToken(tokenMatch[1]);
-        } catch (e) {
-          // Token invalid
-        }
-      }
-
-      if (!user) {
-        return res.status(401).json({ error: "Unauthorized. Sign in to continue." });
-      }
-
-      const db = admin.firestore();
-
-      // Get user plan
-      const profileDoc = await db.collection("profiles").doc(user.uid).get();
-      const plan = profileDoc.data()?.plan || "free";
-      const limits = PLANS[plan] || PLANS.free;
-
-      // Check daily usage limits for free/pro plans
-      if (limits.imagesPerDay > 0) {
-        const today = new Date().toISOString().split("T")[0];
-        const usageId = `${user.uid}_${today}`;
-        const usageDoc = await db.collection("daily_usage").doc(usageId).get();
-        const usageData = usageDoc.data();
-
-        if (usageData && usageData.images >= limits.imagesPerDay) {
-          return res.status(429).json({ error: "Daily image limit reached. Upgrade for more." });
-        }
-      }
-
-      const apiKey = process.env.LOVABLE_API_KEY;
-      if (!apiKey) {
-        return res.status(500).json({ error: "AI is not configured (missing LOVABLE_API_KEY)." });
-      }
-
-      const { prompt, model = "google/gemini-3-pro-image", stream = true, referenceImage = "" } = req.body || {};
-
-      if (!prompt || typeof prompt !== "string") {
-        return res.status(400).json({ error: "prompt is required" });
-      }
-
-      const content: any[] = [{ type: 'text', text: prompt.trim() }];
-      if (referenceImage) {
-        content.push({ type: 'image_url', image_url: { url: referenceImage } });
-      }
-
-      const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/images/generations';
-      const upstream = await fetch(GATEWAY_URL, {
-        method: 'POST',
+      const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${openRouterApiKey.value()}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
+          "X-Title": "ShadowTalk AI",
         },
         body: JSON.stringify({
-          model,
-          messages: [{ role: 'user', content: referenceImage ? content : prompt.trim() }],
-          modalities: ['image', 'text'],
-          ...(stream ? { stream: true } : {}),
+          model: SHARED_CHAT_MODEL,
+          messages: [{ role: "system", content: systemPrompts.join("\n\n") }, ...messages],
+          stream: Boolean(stream),
+          ...(structuredOutput ? { response_format: { type: "json_object" } } : {}),
+          max_tokens: Math.max(
+            256,
+            Math.min(
+              4096,
+              Number.isFinite(Number(maxTokens))
+                ? Math.floor(Number(maxTokens))
+                : deepResearch ? 4096 : 2048,
+            ),
+          ),
         }),
       });
 
-      if (!upstream.ok || !upstream.body) {
-        const text = await upstream.text().catch(() => '');
-        let message = text.slice(0, 500) || 'Image generation failed';
-        try {
-          const parsed = JSON.parse(text);
-          message = parsed?.error?.message ?? parsed?.message ?? message;
-        } catch { /* keep raw text */ }
-        return res.status(upstream.status || 500).json({ error: message });
+      if (!upstream.ok) {
+        const detail = (await upstream.text()).slice(0, 500);
+        await releaseSharedAiRequest(db, usageRef);
+        usageRef = null;
+        return res.status(upstream.status === 429 ? 503 : 502).json({
+          error: `OpenRouter request failed (${upstream.status}). ${detail}`,
+        });
       }
 
-      // Log usage (fire and forget)
-      db.collection("usage_analytics").add({
+      upstreamStarted = true;
+      void db.collection("usage_analytics").add({
         user_id: user.uid,
-        action_type: "generate_image",
-        feature_used: model,
-        created_at: admin.firestore.FieldValue.serverTimestamp()
-      }).catch(console.error);
+        action_type: deepResearch ? "deep_research" : "chat_message",
+        feature_used: `openrouter:${SHARED_CHAT_MODEL}`,
+        created_at: admin.firestore.FieldValue.serverTimestamp(),
+      }).catch((error) => console.error("Failed to record shared AI usage:", error));
 
-      // Increment daily usage
-      const today = new Date().toISOString().split("T")[0];
-      const usageId = `${user.uid}_${today}`;
-      db.collection("daily_usage").doc(usageId).set({
-        user_id: user.uid,
-        usage_date: today,
-        images: admin.firestore.FieldValue.increment(1),
-      }, { merge: true }).catch(console.error);
-
-      if (!stream) {
-        const json = await upstream.json();
-        return res.json(json);
-      }
+      if (!stream) return res.json(await upstream.json());
 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
-
-      const reader = upstream.body.getReader();
+      res.setHeader("X-Provider", "openrouter");
+      res.setHeader("X-Model", SHARED_CHAT_MODEL);
+      const reader = upstream.body?.getReader();
+      if (!reader) throw new Error("OpenRouter returned an empty response stream.");
       const decoder = new TextDecoder();
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         res.write(decoder.decode(value, { stream: true }));
       }
-      res.end();
-      return;
-    } catch (err: any) {
-      console.error("Image generation error:", err);
-      return res.status(500).json({ error: err.message || "Unexpected error" });
+      return res.end();
+    } catch (error) {
+      if (usageRef && !upstreamStarted) {
+        await releaseSharedAiRequest(db, usageRef).catch((releaseError) =>
+          console.error("Failed to release AI request reservation:", releaseError),
+        );
+      }
+      return sendError(res, error);
     }
   });
 });
 
+export const audio = onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    if (req.method === "OPTIONS") return;
+    try {
+      await requireAuthenticatedUser(req.headers.authorization);
+      const { prompt, duration, type } = req.body || {};
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return res.json({
+        audioUrl: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg",
+        prompt,
+        type,
+        duration,
+      });
+    } catch (error) {
+      return sendError(res, error);
+    }
+  });
+});
 
+export const drive = onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    if (req.method === "OPTIONS") return;
+    try {
+      await requireAuthenticatedUser(req.headers.authorization);
+      const { action, params } = req.body || {};
+      if (action === "drive.list") {
+        return res.json({
+          data: [
+            { id: "mock-1", name: "Q3 Strategy Presentation.pptx", mimeType: "presentation", modifiedTime: new Date().toISOString() },
+            { id: "mock-2", name: "Financial Projections 2024.xlsx", mimeType: "spreadsheet", modifiedTime: new Date(Date.now() - 86400000).toISOString() },
+            { id: "mock-3", name: "Product Requirements Doc.docx", mimeType: "document", modifiedTime: new Date(Date.now() - 7 * 86400000).toISOString() },
+          ],
+        });
+      }
+      if (action === "drive.get") {
+        return res.json({
+          data: { content: `# Mock File\n\n[Imported mock content from Google Drive for file ID: ${params?.fileId}]` },
+        });
+      }
+      return res.status(400).json({ error: "Unknown action" });
+    } catch (error) {
+      return sendError(res, error);
+    }
+  });
+});
+
+export const generateImage = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
+  corsHandler(req, res, async () => {
+    if (req.method === "OPTIONS") return;
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
+
+    const db = admin.firestore();
+    let usageRef: admin.firestore.DocumentReference | null = null;
+    let upstreamStarted = false;
+    try {
+      const user = await requireAuthenticatedUser(req.headers.authorization);
+      await requireSharedAiMode(db, user.uid);
+      if (!openRouterApiKey.value()) {
+        throw new AiRequestError(
+          "Shared image generation is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
+          503,
+        );
+      }
+
+      const { prompt, referenceImage } = req.body || {};
+      if (typeof prompt !== "string" || !prompt.trim() || prompt.length > 4000) {
+        throw new AiRequestError("prompt must be a non-empty string under 4000 characters.", 400);
+      }
+      if (
+        referenceImage !== undefined &&
+        (typeof referenceImage !== "string" ||
+          !referenceImage.startsWith("data:image/") ||
+          referenceImage.length > 8_000_000)
+      ) {
+        throw new AiRequestError("referenceImage must be an image data URL under 8 MB.", 400);
+      }
+
+      usageRef = await reserveSharedAiRequest(db, user.uid);
+      const content = referenceImage
+        ? [
+            { type: "text", text: prompt.trim() },
+            { type: "image_url", image_url: { url: referenceImage } },
+          ]
+        : prompt.trim();
+      const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openRouterApiKey.value()}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
+          "X-Title": "ShadowTalk AI",
+        },
+        body: JSON.stringify({
+          model: SHARED_IMAGE_MODEL,
+          messages: [{ role: "user", content }],
+          modalities: ["image", "text"],
+          stream: false,
+        }),
+      });
+      if (!upstream.ok) {
+        const detail = (await upstream.text()).slice(0, 500);
+        await releaseSharedAiRequest(db, usageRef);
+        usageRef = null;
+        return res.status(upstream.status === 429 ? 503 : 502).json({
+          error: `OpenRouter image request failed (${upstream.status}). ${detail}`,
+        });
+      }
+
+      upstreamStarted = true;
+      const result = await upstream.json() as {
+        choices?: { message?: { images?: { image_url?: { url?: string } }[] } }[];
+      };
+      const imageUrl = result.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      if (!imageUrl || !imageUrl.startsWith("data:image/")) {
+        throw new AiRequestError("OpenRouter returned no generated image.", 502);
+      }
+
+      void db.collection("usage_analytics").add({
+        user_id: user.uid,
+        action_type: "generate_image",
+        feature_used: `openrouter:${SHARED_IMAGE_MODEL}`,
+        created_at: admin.firestore.FieldValue.serverTimestamp(),
+      }).catch((error) => console.error("Failed to record shared image usage:", error));
+
+      return res.json({ data: [{ b64_json: imageUrl }] });
+    } catch (error) {
+      if (usageRef && !upstreamStarted) {
+        await releaseSharedAiRequest(db, usageRef).catch((releaseError) =>
+          console.error("Failed to release AI request reservation:", releaseError),
+        );
+      }
+      return sendError(res, error);
+    }
+  });
+});

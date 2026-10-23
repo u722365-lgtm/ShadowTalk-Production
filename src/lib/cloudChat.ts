@@ -5,9 +5,9 @@
  * `stream: true`, and yields incremental text through `onDelta`.
  */
 
-import { cloudAnonKey, cloudFunctionUrl } from "@/lib/cloudConfig";
-import { fbAuth } from "@/integrations/firebase/app";
+import { fbAuth, functionsBaseUrl } from "@/integrations/firebase/app";
 import { getByokConfig, streamByokChat } from "@/lib/byok";
+import { getCachedAiAccessMode } from "@/lib/aiAccessMode";
 
 export type CloudChatContent =
   | string
@@ -44,36 +44,32 @@ export interface CloudChatResult {
 }
 
 export function isCloudChatConfigured(): boolean {
-  return Boolean(cloudFunctionUrl("chat"));
+  return Boolean(functionsBaseUrl);
 }
 
 function getFunctionsUrl(): string {
-  return cloudFunctionUrl("chat");
+  return `${functionsBaseUrl}/chat`;
 }
 
 /**
- * Stream a chat reply. Uses the user's own key (BYOK) when set to "always";
- * otherwise uses ShadowTalk's AI and falls back to the user's key on failure.
+ * Stream a chat reply through the provider selected during account onboarding.
  */
 export async function streamCloudChat(
   messages: CloudChatMessage[],
   opts: CloudChatOptions = {},
 ): Promise<CloudChatResult> {
-  const byok = getByokConfig();
-  if (byok?.mode === "always") return streamByokChat(byok, messages, opts);
-
-  let primary: CloudChatResult;
-  try {
-    primary = await streamBuiltInChat(messages, opts);
-  } catch (err) {
-    if ((err as Error)?.name === "AbortError" || !byok) throw err;
-    primary = { content: "", error: "Network error" };
+  const accessMode = getCachedAiAccessMode();
+  if (accessMode === "byok") {
+    const byok = getByokConfig();
+    if (!byok?.apiKey) {
+      return { content: "", error: "Your API key is not available on this device. Re-enter it in AI settings." };
+    }
+    return streamByokChat(byok, messages, opts);
   }
-  if (byok && primary.error && !primary.content && !opts.signal?.aborted) {
-    const fallback = await streamByokChat(byok, messages, opts);
-    return fallback.content ? fallback : { ...fallback, error: `${primary.error} — and your own key also failed: ${fallback.error}` };
+  if (accessMode !== "shared") {
+    return { content: "", error: "Choose Tech-User or Non-Tech-Users in the chatbot setup before using AI." };
   }
-  return primary;
+  return streamBuiltInChat(messages, opts);
 }
 
 async function streamBuiltInChat(
@@ -82,12 +78,13 @@ async function streamBuiltInChat(
 ): Promise<CloudChatResult> {
   const url = getFunctionsUrl();
   if (!url) {
-    return { content: "", error: "Lovable Cloud AI is not configured." };
+    return { content: "", error: "Firebase Cloud Functions are not configured." };
   }
 
-  // Get Firebase ID token for authorization against Firebase Functions
   const idToken = await fbAuth().currentUser?.getIdToken().catch(() => null);
-  const authHeader = idToken ? `Bearer ${idToken}` : `Bearer ${cloudAnonKey()}`;
+  if (!idToken) {
+    return { content: "", error: "Sign in to use ShadowTalk AI." };
+  }
 
   const maxRetries = 1;
   let attempt = 0;
@@ -99,12 +96,15 @@ async function streamBuiltInChat(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: authHeader,
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           messages,
           ...(opts.model ? { model: opts.model } : {}),
           ...(typeof opts.temperature === "number" ? { temperature: opts.temperature } : {}),
+          ...(typeof opts.maxTokens === "number" ? { maxTokens: opts.maxTokens } : {}),
+          ...(opts.structuredOutput ? { structuredOutput: true } : {}),
+          stream: true,
         }),
         signal: opts.signal,
       });

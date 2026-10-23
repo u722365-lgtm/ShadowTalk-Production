@@ -1,431 +1,75 @@
-/**
- * ShadowTalk-Turbo Engine — Forge & Execute fast-path.
- *
- * Self-contained: does NOT depend on turboPipeline.ts.
- * Provides a simple Promise<string> API for forge/execute:
- *
- *   turboComplete(systemPrompt, userContent, opts) → TurboEngineResult
- *
- * Used by:
- *   - generateExecutionPlan.ts  → plan generation
- *   - synthesizeDeliverable.ts   → non-strategy synthesis
- *   - unifiedDocumentPipeline.ts → drafting phase
- *
- * Falls back to the standard edge-function path if no Turbo key is available.
- */
-
-import { resolveTurboKey, resolveOpenAIKey, TURBO_MODEL_GROQ, TURBO_MODEL_CHAT, GROQ_API_URL, OPENROUTER_API_URL, OPENAI_API_URL, TURBO_MODEL_OPENROUTER, TURBO_MODEL_OPENAI } from './turboProviders';
-import { isSovereignAgentsEnabled } from '@/lib/desktop/sovereignAgentMode';
-import { localComplete, isWebGPUSupported, WEBGPU_MODEL } from '@/lib/webgpu/localEngine';
-
-import { trackAiMetrics, estimateTokens } from '@/lib/telemetry/agenticMetrics';
-import { AIProviderRouter } from "@/ai/AIProviderRouter";
-import { routeTask } from './modelRouter';
-
-// ---- Public Types ----
+import { streamCloudChat } from "@/lib/cloudChat";
+import { getCachedAiAccessMode } from "@/lib/aiAccessMode";
+import { getByokConfig } from "@/lib/byok";
+import { trackAiMetrics, estimateTokens } from "@/lib/telemetry/agenticMetrics";
 
 export interface TurboEngineOptions {
-  /** Model override. Default: llama-3.3-70b-versatile */
   model?: string;
-  /** Max tokens. Default: 4096 */
   maxTokens?: number;
-  /** Temperature. Default: 0.5 */
   temperature?: number;
-  /** AbortSignal */
   signal?: AbortSignal;
-  /** Stream callback (optional — for live UI updates) */
   onDelta?: (accumulated: string) => void;
-  /** Task complexity for intelligent model routing. Default: 'high' */
-  taskComplexity?: 'low' | 'medium' | 'high';
+  taskComplexity?: "low" | "medium" | "high";
 }
 
 export interface TurboEngineResult {
   content: string;
-  source: 'turbo-groq' | 'turbo-openrouter' | 'turbo-openai' | 'webgpu-local' | 'cloud' | 'fallback';
+  source: "cloud" | "byok";
   modelUsed?: string;
   ttftMs?: number;
   totalMs?: number;
 }
 
-// ---- SSE Parser ----
-
-function parseSseLine(line: string): string | null {
-  if (!line.startsWith('data: ') || line === 'data: [DONE]') return null;
-  try {
-    const data = JSON.parse(line.slice(6));
-    return data.choices?.[0]?.delta?.content ?? null;
-  } catch {
-    return null;
-  }
-}
-
-// ---- Connection Pre-warming ----
-
-let lastPrewarmAt = 0;
-const PREWARM_INTERVAL_MS = 45_000;
-
-function prewarmGroqConnection(apiKey: string): void {
-  const now = Date.now();
-  if (now - lastPrewarmAt < PREWARM_INTERVAL_MS) return;
-  lastPrewarmAt = now;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-
-  fetch(GROQ_API_URL, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: TURBO_MODEL_GROQ, messages: [{ role: 'user', content: '.' }], max_tokens: 1, stream: false }),
-    signal: controller.signal,
-  }).catch(() => {}).finally(() => clearTimeout(timeout));
-}
-
-// ---- Stream from Groq ----
-
-async function streamGroq(
-  apiKey: string,
-  systemPrompt: string,
-  userContent: string,
-  opts: TurboEngineOptions,
-): Promise<TurboEngineResult> {
-  const startMs = performance.now();
-  const controller = new AbortController();
-  if (opts.signal) opts.signal.addEventListener('abort', () => controller.abort(), { once: true });
-
-  const modelToUse = opts.model || TURBO_MODEL_GROQ;
-
-  const maxRetries = 3;
-  let attempt = 0;
-  let resp: Response | null = null;
-
-  while (attempt <= maxRetries) {
-    try {
-      resp = await fetch(GROQ_API_URL, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: modelToUse,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userContent },
-          ],
-          max_tokens: opts.maxTokens || 4096,
-          temperature: opts.temperature ?? 0.5,
-          stream: true,
-        }),
-        signal: controller.signal,
-      });
-
-      if (resp.ok || (resp.status !== 502 && resp.status !== 503 && resp.status !== 504)) {
-        break;
-      }
-    } catch (err) {
-      if (attempt === maxRetries) throw err;
-    }
-    
-    attempt++;
-    if (attempt <= maxRetries) {
-      await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, attempt), 10000)));
-    }
-  }
-
-  if (!resp || !resp.ok) {
-    const errText = await resp?.text().catch(() => '') || 'Network Error';
-    throw new Error(`Groq ${resp?.status || 'Unknown'}: ${errText.slice(0, 200)}`);
-  }
-
-  const reader = resp.body?.getReader();
-  if (!reader) throw new Error('No response body from Groq');
-
-  const decoder = new TextDecoder();
-  let content = '';
-  let lineBuffer = '';
-  let ttftRecorded = false;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    lineBuffer += decoder.decode(value, { stream: true });
-    const lines = lineBuffer.split('\n');
-    lineBuffer = lines.pop() ?? '';
-    for (const line of lines) {
-      const token = parseSseLine(line);
-      if (token) {
-        if (!ttftRecorded) ttftRecorded = true;
-        content += token;
-        opts.onDelta?.(content);
-      }
-    }
-  }
-
-  return {
-    content,
-    source: 'turbo-groq',
-    modelUsed: modelToUse,
-    ttftMs: ttftRecorded ? performance.now() - startMs : undefined,
-    totalMs: performance.now() - startMs,
-  };
-}
-
-// ---- Stream from OpenRouter (fallback) ----
-
-async function streamOpenRouter(
-  apiKey: string,
-  systemPrompt: string,
-  userContent: string,
-  opts: TurboEngineOptions,
-): Promise<TurboEngineResult> {
-  const startMs = performance.now();
-
-  const resp = await fetch(OPENROUTER_API_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://shadowtalk.app',
-      'X-Title': 'ShadowTalk Turbo',
-    },
-    body: JSON.stringify({
-      model: TURBO_MODEL_OPENROUTER,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent },
-      ],
-      max_tokens: opts.maxTokens || 4096,
-      stream: true,
-    }),
-    signal: opts.signal,
-  });
-
-  if (!resp.ok) throw new Error(`OpenRouter ${resp.status}`);
-
-  const reader = resp.body?.getReader();
-  if (!reader) throw new Error('No response body from OpenRouter');
-
-  const decoder = new TextDecoder();
-  let content = '';
-  let lineBuffer = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    lineBuffer += decoder.decode(value, { stream: true });
-    const lines = lineBuffer.split('\n');
-    lineBuffer = lines.pop() ?? '';
-    for (const line of lines) {
-      const token = parseSseLine(line);
-      if (token) {
-        content += token;
-        opts.onDelta?.(content);
-      }
-    }
-  }
-
-  return { content, source: 'turbo-openrouter', modelUsed: TURBO_MODEL_OPENROUTER, totalMs: performance.now() - startMs };
-}
-
-// ---- Stream from OpenAI ----
-
-async function streamOpenAI(
-  apiKey: string,
-  systemPrompt: string,
-  userContent: string,
-  opts: TurboEngineOptions,
-): Promise<TurboEngineResult> {
-  const startMs = performance.now();
-  let ttftRecorded = false;
-
-  const resp = await fetch(OPENAI_API_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: opts.model || TURBO_MODEL_OPENAI,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent },
-      ],
-      max_tokens: opts.maxTokens || 4096,
-      stream: true,
-    }),
-    signal: opts.signal,
-  });
-
-  if (!resp.ok) throw new Error(`OpenAI ${resp.status}`);
-
-  const reader = resp.body?.getReader();
-  if (!reader) throw new Error('No response body from OpenAI');
-
-  const decoder = new TextDecoder();
-  let content = '';
-  let lineBuffer = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    lineBuffer += decoder.decode(value, { stream: true });
-    const lines = lineBuffer.split('\n');
-    lineBuffer = lines.pop() ?? '';
-    for (const line of lines) {
-      const token = parseSseLine(line);
-      if (token) {
-        if (!ttftRecorded) ttftRecorded = true;
-        content += token;
-        opts.onDelta?.(content);
-      }
-    }
-  }
-
-  return { 
-    content, 
-    source: 'turbo-openai', 
-    modelUsed: opts.model || TURBO_MODEL_OPENAI, 
-    ttftMs: ttftRecorded ? performance.now() - startMs : undefined,
-    totalMs: performance.now() - startMs 
-  };
-}
-
-// ---- Main Entry Point ----
-
-/**
- * Send a system+user prompt through Turbo and get back the full text.
- * Flow: resolve key → prewarm → Groq → OpenRouter fallback → { fallback } if no key.
- */
 export async function turboComplete(
   systemPrompt: string,
   userContent: string,
   opts: TurboEngineOptions = {},
 ): Promise<TurboEngineResult> {
-  const startMs = performance.now();
-  const apiKey = resolveTurboKey();
+  const startedAt = performance.now();
+  const accessMode = getCachedAiAccessMode();
+  const byok = accessMode === "byok" ? getByokConfig() : null;
 
-  const routing = routeTask(opts.taskComplexity, !!apiKey);
-  
-  if (routing.target === 'local') {
-    try {
-      const content = await localComplete(systemPrompt, userContent, opts.onDelta);
-      const totalMs = performance.now() - startMs;
-      trackAiMetrics('llm_completion', {
-        source: 'webgpu-local',
-        model: routing.model,
-        totalMs,
-        inputTokens: estimateTokens(systemPrompt + userContent),
-        outputTokens: estimateTokens(content),
-      });
-      return { content, source: 'webgpu-local', modelUsed: routing.model, totalMs };
-    } catch (localErr) {
-      console.warn('[TurboEngine] WebGPU local execution failed:', localErr);
-    }
+  if (!accessMode) {
+    throw new Error("Choose Tech-User or Non-Tech-Users in the chatbot setup before using AI.");
+  }
+  if (accessMode === "byok" && !byok?.apiKey) {
+    throw new Error("Your API key is not available on this device. Re-enter it in AI settings.");
   }
 
-  if (routing.target === 'cloud' || (!apiKey && !resolveOpenAIKey())) {
-    return cloudFallback(systemPrompt, userContent, opts, startMs);
-  }
+  const result = await streamCloudChat(
+    [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userContent },
+    ],
+    {
+      model: opts.model || byok?.model,
+      maxTokens: opts.maxTokens,
+      temperature: opts.temperature,
+      signal: opts.signal,
+      onDelta: opts.onDelta,
+    },
+  );
 
-  const openAiKey = resolveOpenAIKey();
-  if (routing.target === 'openai' && openAiKey) {
-    try {
-      opts.model = routing.model;
-      const result = await streamOpenAI(openAiKey, systemPrompt, userContent, opts);
-      trackAiMetrics('llm_completion', {
-        source: 'turbo-openai',
-        model: result.modelUsed,
-        ttftMs: result.ttftMs,
-        totalMs: result.totalMs,
-        inputTokens: estimateTokens(systemPrompt + userContent),
-        outputTokens: estimateTokens(result.content),
-      });
-      return result;
-    } catch (openAiErr) {
-      console.warn('[TurboEngine] OpenAI failed, falling back:', openAiErr);
-    }
-  }
+  if (result.error) throw new Error(result.error);
 
-  if (apiKey) {
-    prewarmGroqConnection(apiKey);
-  }
+  const totalMs = performance.now() - startedAt;
+  trackAiMetrics("llm_completion", {
+    source: accessMode === "byok" ? `byok-${byok?.provider}` : "shared-openrouter",
+    model: result.modelUsed || opts.model || byok?.model,
+    totalMs,
+    inputTokens: estimateTokens(systemPrompt + userContent),
+    outputTokens: estimateTokens(result.content),
+  });
 
-  if (routing.target === 'groq') {
-    try {
-      opts.model = routing.model;
-      const result = await streamGroq(apiKey, systemPrompt, userContent, opts);
-      trackAiMetrics('llm_completion', {
-        source: 'turbo-groq',
-        model: result.modelUsed,
-        ttftMs: result.ttftMs,
-        totalMs: result.totalMs,
-        inputTokens: estimateTokens(systemPrompt + userContent),
-        outputTokens: estimateTokens(result.content),
-      });
-      return result;
-    } catch (groqErr) {
-      console.warn('[TurboEngine] Groq failed, falling back to openrouter:', groqErr);
-    }
-  }
-
-  // Try OpenRouter fallback
-  if (apiKey.startsWith('sk-or-') || routing.target === 'openrouter') {
-    try {
-      opts.model = routing.model || TURBO_MODEL_OPENROUTER;
-      const result = await streamOpenRouter(apiKey, systemPrompt, userContent, opts);
-      trackAiMetrics('llm_completion', {
-        source: 'turbo-openrouter',
-        model: result.modelUsed,
-        ttftMs: result.ttftMs,
-        totalMs: result.totalMs,
-        inputTokens: estimateTokens(systemPrompt + userContent),
-        outputTokens: estimateTokens(result.content),
-      });
-      return result;
-    } catch (orErr) {
-      console.warn('[TurboEngine] OpenRouter fallback failed:', orErr);
-    }
-  }
-
-  return cloudFallback(systemPrompt, userContent, opts, startMs);
+  return {
+    content: result.content,
+    source: accessMode === "byok" ? "byok" : "cloud",
+    modelUsed: result.modelUsed || opts.model || byok?.model,
+    totalMs,
+  };
 }
 
-/** Lovable Cloud AI streaming fallback (used when no Turbo key works). */
-async function cloudFallback(
-  systemPrompt: string,
-  userContent: string,
-  opts: TurboEngineOptions,
-  startMs: number,
-): Promise<TurboEngineResult> {
-  try {
-    const cloudMessages = [
-      { role: 'system' as const, content: systemPrompt },
-      { role: 'user' as const, content: userContent },
-    ];
-    const provider = await AIProviderRouter.getBestProvider();
-    const { content, error } = await provider.streamChat(
-      cloudMessages,
-      {
-        temperature: opts.temperature,
-        signal: opts.signal,
-        onDelta: opts.onDelta,
-      },
-    );
-    if (error) console.warn('[TurboEngine] Cloud AI failed:', error);
-    return { content, source: 'cloud', totalMs: performance.now() - startMs };
-  } catch (err: any) {
-    if (err?.message === "offline_not_provisioned") {
-      return { 
-        content: "I'm offline and Local AI is not installed. Please connect to the internet or install Local AI in Settings.", 
-        source: 'fallback', 
-        totalMs: performance.now() - startMs 
-      };
-    }
-    console.warn('[TurboEngine] Cloud AI failed:', err);
-    return { content: '', source: 'fallback', totalMs: performance.now() - startMs };
-  }
-}
-
-/**
- * Check if Turbo is available (has a valid API key).
- * Non-reactive — safe to call from any context.
- */
 export function isTurboAvailable(): boolean {
-  return !!resolveTurboKey();
+  const mode = getCachedAiAccessMode();
+  return mode === "shared" || (mode === "byok" && Boolean(getByokConfig()?.apiKey));
 }

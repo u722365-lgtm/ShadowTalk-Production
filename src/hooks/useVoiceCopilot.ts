@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
-import { backend } from "@/integrations/local/client";
 import { useToast } from "@/hooks/use-toast";
+import { streamCloudChat } from "@/lib/cloudChat";
 
 interface VoiceCopilotMessage {
   role: "user" | "assistant";
@@ -25,6 +25,19 @@ export const useVoiceCopilot = (options: UseVoiceCopilotOptions = {}) => {
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  const speak = useCallback((text: string) => {
+    if (!("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.05;
+    utterance.pitch = 1;
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    synthRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   const processTranscript = useCallback(async (transcript: string) => {
     if (!transcript.trim()) return;
 
@@ -36,47 +49,45 @@ export const useVoiceCopilot = (options: UseVoiceCopilotOptions = {}) => {
     setConversationHistory(prev => [...prev, userMsg]);
 
     try {
-      const { data, error } = await backend.functions.invoke("voice-copilot", {
-        body: {
-          transcript,
-          conversationHistory: conversationHistory.slice(-6).map(m => ({
-            role: m.role, content: m.content,
-          })),
-          mode: "auto",
+      const result = await streamCloudChat([
+        {
+          role: "system",
+          content: "You are ShadowTalk's voice copilot. Answer spoken requests clearly and concisely. Do not claim to have performed an external action or used a tool unless a tool result is explicitly provided.",
         },
-      });
-
-      if (error) throw error;
+        ...conversationHistory.slice(-6).map((message) => ({
+          role: message.role,
+          content: message.content,
+        })),
+        { role: "user", content: transcript },
+      ]);
+      if (result.error) throw new Error(result.error);
 
       const assistantMsg: VoiceCopilotMessage = {
         role: "assistant",
-        content: data.response,
-        toolsExecuted: data.tools_executed,
+        content: result.content,
+        toolsExecuted: [],
         timestamp: Date.now(),
       };
       setConversationHistory(prev => [...prev, assistantMsg]);
 
-      options.onResponse?.(data.response);
-      if (data.tools_executed?.length) {
-        options.onToolExecution?.(data.tools_executed);
-      }
+      options.onResponse?.(result.content);
 
       // Auto-speak response
       if (options.autoSpeak !== false && "speechSynthesis" in window) {
-        speak(data.response);
+        speak(result.content);
       }
 
     } catch (err) {
       console.error("[VoiceCopilot] Error:", err);
       toast({
         title: "Voice Copilot Error",
-        description: "Failed to process voice input. Please try again.",
+        description: err instanceof Error ? err.message : "Failed to process voice input.",
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
     }
-  }, [conversationHistory, options, toast]);
+  }, [conversationHistory, options, speak, toast]);
 
   const startListening = useCallback(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -117,19 +128,6 @@ export const useVoiceCopilot = (options: UseVoiceCopilotOptions = {}) => {
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
     setIsListening(false);
-  }, []);
-
-  const speak = useCallback((text: string) => {
-    if (!("speechSynthesis" in window)) return;
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.05;
-    utterance.pitch = 1;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    synthRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
   }, []);
 
   const stopSpeaking = useCallback(() => {

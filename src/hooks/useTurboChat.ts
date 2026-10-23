@@ -33,7 +33,7 @@ export interface TurboChatHookOptions {
 
 export interface TurboChatResult {
   content: string;
-  source: "turbo-groq" | "turbo-openai" | "turbo-openrouter" | "webgpu-local" | "standard-cloud" | "standard-offline" | "error";
+  source: "turbo-groq" | "turbo-openai" | "turbo-openrouter" | "webgpu-local" | "standard-cloud" | "standard-offline" | "byok" | "error";
   ttftMs?: number;
   totalMs?: number;
 }
@@ -121,21 +121,10 @@ export function useTurboChat(): UseTurboChatReturn {
 
         setLastResult(result);
 
-        if (result.source === "fallback") {
-          // Turbo key resolved but both providers failed → fall back to standard
-          const std = await globalChat.send(messages, {
-            systemPrompt: opts.systemPrompt,
-            onDelta: opts.onDelta,
-            signal: controller.signal,
-          });
-          setIsLoading(false);
-          return { content: std.content, source: "standard-cloud" };
-        }
-
         setIsLoading(false);
         return {
           content: result.content,
-          source: result.source === "cloud" ? "standard-cloud" : result.source,
+          source: result.source === "cloud" ? "standard-cloud" : "byok",
           ttftMs: result.ttftMs,
           totalMs: result.totalMs,
         };

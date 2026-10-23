@@ -6,7 +6,7 @@
  * the UI still has something useful to render.
  */
 import { useCallback, useState } from "react";
-import { backend } from "@/integrations/local/client";
+import { streamCloudChat } from "@/lib/cloudChat";
 import { saveStrategyReport } from "@/lib/strategy/strategyReports";
 import type {
   BusinessIdea,
@@ -23,31 +23,11 @@ export interface StrategyRunOutput {
 }
 
 const PLAN: Array<{ id: string; action: string; tool_name: string }> = [
-  { id: "market", action: "Research market size and trends", tool_name: "web_search" },
-  { id: "competitors", action: "Map key competitors", tool_name: "web_search" },
-  { id: "costs", action: "Estimate startup and running costs", tool_name: "deep_research" },
+  { id: "market", action: "Estimate market size and trends", tool_name: "reasoning" },
+  { id: "competitors", action: "Assess the competitor landscape", tool_name: "reasoning" },
+  { id: "costs", action: "Estimate startup and running costs", tool_name: "reasoning" },
   { id: "synthesis", action: "Synthesize strategy and financials", tool_name: "reasoning" },
 ];
-
-function emptyResult(idea: BusinessIdea): StrategyResult {
-  return {
-    executiveSummary: `${idea.name} targets the ${idea.industry} market in ${idea.location}. This report is an estimated baseline — rerun to pull live web-backed research.`,
-    swot: { strengths: [], weaknesses: [], opportunities: [], threats: [] },
-    research: {
-      competitors: [],
-      marketTrends: [],
-      regulations: [],
-      costs: [],
-      opportunities: [],
-      threats: [],
-      sources: [],
-    },
-    financialProjections: [],
-    recommendations: [],
-    riskAssessment: "Risk assessment unavailable — the research backend could not be reached.",
-    implementationPlan: [],
-  };
-}
 
 export function useStrategyRunner() {
   const [phase, setPhase] = useState<StrategyPhase>("idle");
@@ -112,19 +92,31 @@ export function useStrategyRunner() {
         setPhase("synthesizing");
         setProgress(80);
 
-        let strategy: StrategyResult | null = null;
-        let fallback = false;
-
-        const { data, error: fnError } = await backend.functions.invoke("strategy-agent", {
-          body: { businessIdea: idea },
-        });
-
-        if (fnError || !data?.result) {
-          fallback = true;
-          strategy = emptyResult(idea);
-        } else {
-          strategy = data.result as StrategyResult;
+        const result = await streamCloudChat([
+          {
+            role: "system",
+            content: [
+              "Create a practical business strategy report as valid JSON only.",
+              "Do not claim to have performed live web research and do not invent sources, market-share figures, or regulatory citations.",
+              "Use clearly labeled estimates where exact data is unavailable and return an empty sources array unless the user supplied sources.",
+              "Match this schema: { executiveSummary: string, swot: { strengths: string[], weaknesses: string[], opportunities: string[], threats: string[] }, research: { competitors: { name: string, marketShare: number, pricing: string, strengths: string, weaknesses: string }[], marketTrends: string[], regulations: string[], costs: { item: string, cost: number, notes: string }[], opportunities: string[], threats: string[], sources: { title: string, url: string }[] }, financialProjections: { month: string, revenue: number, expenses: number, profit: number }[], recommendations: string[], riskAssessment: string, implementationPlan: string[] }.",
+            ].join(" "),
+          },
+          { role: "user", content: JSON.stringify(idea) },
+        ], { structuredOutput: true });
+        if (result.error) throw new Error(result.error);
+        const json = result.content.match(/\{[\s\S]*\}/)?.[0];
+        if (!json) throw new Error("The strategy provider did not return a valid JSON report.");
+        const strategy = JSON.parse(json) as StrategyResult;
+        if (
+          typeof strategy.executiveSummary !== "string" ||
+          !Array.isArray(strategy.recommendations) ||
+          !strategy.swot ||
+          !strategy.research
+        ) {
+          throw new Error("The strategy provider returned an incomplete report.");
         }
+        const fallback = false;
 
         const reportId = await saveStrategyReport({
           user_id: userId,

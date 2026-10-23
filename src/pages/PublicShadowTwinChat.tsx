@@ -1,14 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Send, Sparkles, User, Loader2 } from 'lucide-react';
+import { Send, Bot, Sparkles, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { PageTransition } from '@/components/PageTransition';
-import { streamCloudChat } from '@/lib/cloudChat';
-import { buildShadowTalkPersonaBlock } from '@/lib/shadowTalkPersona';
-import { SEOHead } from '@/components/SEOHead';
-import type { CloudChatMessage } from '@/lib/cloudChat';
+import { AIProviderRouter } from '@/ai/AIProviderRouter';
 
 interface Message {
   id: string;
@@ -54,22 +51,21 @@ export default function PublicShadowTwinChat() {
     ]);
 
     try {
-      const chatHistory: CloudChatMessage[] = messages.map(m => ({
-        role: m.role === 'user' ? 'user' : 'assistant',
-        content: m.content,
-      }));
-      chatHistory.push({ role: 'user', content: userMessage.content });
+      const chatMessages = messages.map(m => ({ role: m.role as 'user' | 'assistant' | 'system', content: m.content }));
+      chatMessages.push({ role: 'user', content: userMessage.content });
 
-      const systemPrompt = `${buildShadowTalkPersonaBlock()}\n\n## Current Role\nYou are acting as the Shadow Twin for ${username}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI. Keep your answers concise.\n\nNote: You are still ShadowTalk AI under the hood — if asked about the platform, pricing, or founder, answer accurately using the knowledge above.`;
+      const systemPrompt = `You are acting as the Shadow Twin for ${username}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI. Keep your answers concise.`;
 
-      const augmented: CloudChatMessage[] = [
-        { role: 'system', content: systemPrompt },
-        ...chatHistory,
+      const augmented = [
+        { role: 'system' as const, content: systemPrompt },
+        ...chatMessages
       ];
+      
 
       const abortController = new AbortController();
-
-      await streamCloudChat(augmented, {
+      
+      const provider = await AIProviderRouter.getBestProvider();
+      const result = await provider.streamChat(augmented, {
         onDelta: (accumulated) => {
           assistantContent = accumulated;
           setMessages((prev) =>
@@ -78,6 +74,7 @@ export default function PublicShadowTwinChat() {
         },
         signal: abortController.signal,
       });
+      if (result.error) throw new Error(result.error);
 
     } catch (error: any) {
       if (error?.message === "offline_not_provisioned") {
@@ -101,17 +98,6 @@ export default function PublicShadowTwinChat() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SEOHead
-        meta={{
-          title: `${username}'s Shadow Twin — ShadowTalk AI`,
-          description: `Chat with ${username}'s Shadow Twin — an autonomous AI clone that represents their knowledge and style 24/7.`,
-          canonical: `${window.location.origin}/t/${username}`,
-          keywords: ['shadow twin', 'AI clone', 'digital twin'],
-          ogType: 'website',
-          twitterCard: 'summary',
-          noIndex: false,
-        }}
-      />
       <PageTransition>
         <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto px-4 py-6">
           

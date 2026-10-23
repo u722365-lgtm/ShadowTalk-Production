@@ -1,5 +1,4 @@
-import { buildChatRequestBody } from "@/lib/chatRequest";
-import { backend } from "@/integrations/local/client";
+import { streamCloudChat } from "@/lib/cloudChat";
 import type { PresentationData } from "@/components/presentation/types";
 import type { ThemeKey } from "@/components/presentation/types";
 import { THEMES as THEME_MAP } from "@/components/presentation/types";
@@ -50,25 +49,31 @@ export async function generateKimiPresentation(
 ): Promise<PresentationData> {
   const { topic, slideCount = 10, style = "corporate", mode = "adaptive", additionalContext, sourceDocument } = options;
 
-  const { data, error } = await backend.functions.invoke("generate-presentation", {
-    body: buildChatRequestBody({
-      topic,
-      slideCount,
-      style,
-      mode,
-      additionalContext,
-      sourceDocument,
-    }),
-  });
-
-  if (error) {
-    const errMsg = data?.error || (error instanceof Error ? error.message : "Generation failed");
-    throw new Error(errMsg);
+  const safeSlideCount = Math.max(3, Math.min(30, Math.floor(slideCount)));
+  const prompt = [
+    `Create a ${safeSlideCount}-slide ${mode} presentation about: ${topic}.`,
+    `Use the ${style} visual theme.`,
+    additionalContext ? `Additional context:\n${additionalContext}` : "",
+    sourceDocument ? `Source document:\n${sourceDocument}` : "",
+    "Return valid JSON only with shape { title: string, subtitle: string, slides: [{ title: string, subtitle?: string, layout: string, html: string, speakerNotes?: string, content?: object }] }.",
+    "Make each slide self-contained, concise, visually distinct, and based only on the supplied context and established general knowledge. Do not fabricate citations or claim live research.",
+  ].filter(Boolean).join("\n\n");
+  const result = await streamCloudChat([
+    { role: "system", content: "You create clear, accurate presentation decks. Return only the requested JSON object." },
+    { role: "user", content: prompt },
+  ], { structuredOutput: true, maxTokens: 6000 });
+  if (result.error) throw new Error(result.error);
+  const json = result.content.match(/\{[\s\S]*\}/)?.[0];
+  if (!json) throw new Error("The presentation provider did not return valid slide data.");
+  const presentation = JSON.parse(json) as PresentationData;
+  if (
+    typeof presentation.title !== "string" ||
+    !Array.isArray(presentation.slides) ||
+    presentation.slides.length === 0 ||
+    presentation.slides.some((slide) => typeof slide.title !== "string" || typeof slide.html !== "string")
+  ) {
+    throw new Error("The presentation provider returned incomplete slide data.");
   }
-  if (data?.error) throw new Error(data.error);
-  if (!data?.slides?.length) throw new Error("No slides were generated. Try again.");
-
-  const presentation = data as PresentationData;
   const themeColors = THEME_MAP[style] || THEME_MAP.corporate;
   postProcessPresentation(presentation as unknown as { slides: import("@/lib/presentation/slideQuality").SlideLike[] }, {
     bg: themeColors.bg,

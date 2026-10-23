@@ -1,9 +1,9 @@
 /**
  * BYOK (Bring Your Own Key) — the user's own AI provider key, stored only on
- * their device and used directly from the browser when ShadowTalk's built-in
- * AI is unavailable (or always, if the user chooses).
+ * their device and used directly from the browser for the signed-in account.
  */
 import type { CloudChatMessage, CloudChatOptions, CloudChatResult } from "@/lib/cloudChat";
+import { fbAuth } from "@/integrations/firebase/app";
 
 export type ByokProvider = "openai" | "groq" | "openrouter" | "gemini";
 export type ByokMode = "fallback" | "always";
@@ -22,11 +22,18 @@ export const BYOK_PROVIDERS: Record<ByokProvider, { label: string; url: string; 
   gemini: { label: "Google Gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", defaultModel: "gemini-2.0-flash", keyHint: "AIza..." },
 };
 
-const STORAGE_KEY = "shadowtalk.byok.v1";
+const STORAGE_KEY_PREFIX = "shadowtalk.byok.v2.";
+
+function getStorageKey(): string | null {
+  const uid = fbAuth().currentUser?.uid;
+  return uid ? `${STORAGE_KEY_PREFIX}${uid}` : null;
+}
 
 export function getByokConfig(): ByokConfig | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = getStorageKey();
+    if (!key) return null;
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const cfg = JSON.parse(raw) as ByokConfig;
     if (!cfg?.apiKey || !BYOK_PROVIDERS[cfg.provider]) return null;
@@ -37,11 +44,14 @@ export function getByokConfig(): ByokConfig | null {
 }
 
 export function saveByokConfig(cfg: ByokConfig): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...cfg, apiKey: cfg.apiKey.trim() }));
+  const key = getStorageKey();
+  if (!key) throw new Error("Sign in before saving a provider key.");
+  localStorage.setItem(key, JSON.stringify({ ...cfg, apiKey: cfg.apiKey.trim() }));
 }
 
 export function clearByokConfig(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  const key = getStorageKey();
+  if (key) localStorage.removeItem(key);
 }
 
 function toPlainMessages(messages: CloudChatMessage[]) {
@@ -61,10 +71,12 @@ export async function streamByokChat(
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${cfg.apiKey}` },
       body: JSON.stringify({
-        model: cfg.model || provider.defaultModel,
+        model: opts.model || cfg.model || provider.defaultModel,
         messages: toPlainMessages(messages),
         stream: true,
         ...(typeof opts.temperature === "number" ? { temperature: opts.temperature } : {}),
+        ...(typeof opts.maxTokens === "number" ? { max_tokens: opts.maxTokens } : {}),
+        ...(opts.structuredOutput ? { response_format: { type: "json_object" } } : {}),
       }),
       signal: opts.signal,
     });

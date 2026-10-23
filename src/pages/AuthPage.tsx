@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { saveLocalUser, clearExplicitSignOut, consumeReturnPath } from "@/lib/persistentAuth";
+import { saveLocalUser, clearExplicitSignOut } from "@/lib/persistentAuth";
 import { backend } from "@/integrations/local/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Input } from "@/components/ui/input";
@@ -74,6 +74,11 @@ const passwordRules = [
   { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "One special character" },
 ];
 
+function getChatbotPath(searchParams: URLSearchParams): string {
+  const prompt = searchParams.get("q")?.trim();
+  return prompt ? `/chatbot?q=${encodeURIComponent(prompt)}` : "/chatbot";
+}
+
 const AuthPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -103,10 +108,9 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (user) {
-      const returnPath = consumeReturnPath() || "/chatbot";
-      navigate(returnPath, { replace: true });
+      navigate(getChatbotPath(searchParams), { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, searchParams]);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -119,6 +123,39 @@ const AuthPage = () => {
       });
     }
   }, [searchParams, toast]);
+
+  useEffect(() => {
+    const storageKey = "shadowtalk.firebase-auth-redirect-error";
+    const showError = (message: string) => {
+      toast({
+        title: "Authentication Failed",
+        description: message,
+        variant: "destructive",
+      });
+    };
+
+    try {
+      const storedError = sessionStorage.getItem(storageKey);
+      if (storedError) {
+        sessionStorage.removeItem(storageKey);
+        showError(storedError);
+      }
+    } catch {
+      // Redirect errors are also delivered through the window event below.
+    }
+
+    const onRedirectError = (event: Event) => {
+      const message = (event as CustomEvent<string>).detail;
+      if (typeof message === "string" && message) showError(message);
+      try {
+        sessionStorage.removeItem(storageKey);
+      } catch {
+        // Ignore storage cleanup failure after displaying the error.
+      }
+    };
+    window.addEventListener("shadowtalk:firebase-auth-redirect-error", onRedirectError);
+    return () => window.removeEventListener("shadowtalk:firebase-auth-redirect-error", onRedirectError);
+  }, [toast]);
 
   const sanitizeInput = (input: string) => input.trim().slice(0, 255);
 
@@ -241,9 +278,8 @@ const AuthPage = () => {
         clearExplicitSignOut();
         toast({ title: "Welcome back!", description: "Logged in securely to ShadowTalk AI." });
         setLoading(false);
-        await playWelcomeVoice(cleanEmail);
-        const returnPath = consumeReturnPath() || "/chatbot";
-        navigate(returnPath, { replace: true });
+        navigate(getChatbotPath(searchParams), { replace: true });
+        void playWelcomeVoice(cleanEmail);
       } else {
         const { data, error } = await backend.auth.signUp({
           email: cleanEmail,
@@ -254,9 +290,8 @@ const AuthPage = () => {
         clearExplicitSignOut();
         toast({ title: "Account Created!", description: "Welcome to your sovereign AI fortress." });
         setLoading(false);
-        await playWelcomeVoice(cleanEmail);
-        const returnPath = consumeReturnPath() || "/chatbot";
-        navigate(returnPath, { replace: true });
+        navigate(getChatbotPath(searchParams), { replace: true });
+        void playWelcomeVoice(cleanEmail);
       }
     } catch (error: any) {
       toast({
@@ -276,7 +311,7 @@ const AuthPage = () => {
       const { data, error } = await backend.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/chatbot`,
+          redirectTo: `${window.location.origin}${getChatbotPath(searchParams)}`,
         },
       });
       if (error) throw error;
@@ -285,7 +320,7 @@ const AuthPage = () => {
         clearExplicitSignOut();
         toast({ title: "Success", description: "Logged in via Single Sign-On!" });
         await playWelcomeVoice(data.user.email || "User");
-        navigate("/chatbot", { replace: true });
+        navigate(getChatbotPath(searchParams), { replace: true });
       }
     } catch (err: any) {
       toast({

@@ -1,5 +1,6 @@
 import { buildWorkspacePrompt } from "@/lib/jules/buildWorkspacePrompt";
 import type { JulesWorkspaceFile } from "@/lib/jules/types";
+import { turboComplete } from "@/lib/turbo/turboEngine";
 
 export async function runLocalIdeAssist(
   instruction: string,
@@ -16,31 +17,10 @@ export async function runLocalIdeAssist(
       ? buildWorkspacePrompt(instruction, files, activeFileName)
       : `${instruction}\n\n${files[0]?.content ?? ""}`;
 
-  const messages = [
-    { role: "system" as const, content: systemPrompt },
-    { role: "user" as const, content: userContent },
-  ];
-
-  const groqApiKey = import.meta.env.VITE_GROQ_API_KEY || "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";
-  
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${groqApiKey}`,
-    },
-    body: JSON.stringify({
-      model: "llama-3.1-70b-versatile",
-      messages,
-      temperature: 0.2,
-      max_tokens: 2048,
-    }),
+  const result = await turboComplete(systemPrompt, userContent, {
+    temperature: 0.2,
+    maxTokens: 2048,
+    taskComplexity: "medium",
   });
-
-  if (!res.ok) {
-    throw new Error(`IDE Assist failed: ${res.statusText}`);
-  }
-
-  const json = await res.json();
-  return json.choices?.[0]?.message?.content || "";
+  return result.content;
 }

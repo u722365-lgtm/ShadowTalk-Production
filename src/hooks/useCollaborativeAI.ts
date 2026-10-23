@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { backend } from "@/integrations/local/client";
+import { streamCloudChat } from "@/lib/cloudChat";
 import { privateRealtimeChannel } from "@/lib/realtimeChannel";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -79,19 +80,9 @@ export const useCollaborativeAI = ({ roomId, enabled = true }: UseCollaborativeA
 
     try {
       // Call chat function
-      const { data, error } = await backend.functions.invoke("chat", {
-        body: {
-          messages: [{ role: "user", content: query }],
-          personality: "default",
-          sessionType: "collaborative",
-        },
-      });
-
-      if (error) throw error;
-
-      const responseText = typeof data === "string"
-        ? data
-        : data?.choices?.[0]?.message?.content || data?.response || "No response.";
+      const result = await streamCloudChat([{ role: "user", content: query }]);
+      if (result.error) throw new Error(result.error);
+      const responseText = result.content || "No response.";
 
       const aiMsg: SharedAIMessage = {
         id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); })),

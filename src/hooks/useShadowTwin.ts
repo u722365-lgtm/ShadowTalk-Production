@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Project, FileNode } from './useWorkspaces';
 import { backend } from "@/integrations/local/client";
+import { streamCloudChat, type CloudChatMessage } from "@/lib/cloudChat";
 
 export type TwinState = 'idle' | 'ingesting' | 'training' | 'ready';
 
@@ -59,11 +60,9 @@ export function useShadowTwin(activeProject?: Project) {
 
       setProgress(60);
 
-      const response = await backend.functions.invoke("chat", { body: { messages } });
-      
-      let vector = response.data?.choices?.[0]?.message?.content || 
-                   response.data?.generatedText || 
-                   "";
+      const response = await streamCloudChat(messages as CloudChatMessage[]);
+      if (response.error) throw new Error(response.error);
+      const vector = response.content || "";
 
       if (!vector) throw new Error("Failed to generate style vector.");
 
