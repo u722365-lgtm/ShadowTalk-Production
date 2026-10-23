@@ -35,11 +35,21 @@ const ROUTES_TO_PRERENDER = [
 // Simple static file server
 const server = http.createServer((req, res) => {
   let reqPath = req.url === '/' ? '/index.html' : req.url;
+  // Strip query strings
+  reqPath = reqPath.split('?')[0];
   let filePath = path.join(DIST_DIR, reqPath);
 
-  // SPA Fallback
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(DIST_DIR, 'index.html');
+  // If the path doesn't exist, or it's a directory, try serving index.html
+  // from that directory (SPA fallback). If that doesn't exist either, fall
+  // back to the root index.html.
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    // Try /directory/index.html first
+    const indexInDir = path.join(filePath, 'index.html');
+    if (fs.existsSync(indexInDir)) {
+      filePath = indexInDir;
+    } else {
+      filePath = path.join(DIST_DIR, 'index.html');
+    }
   }
 
   const ext = path.extname(filePath);
