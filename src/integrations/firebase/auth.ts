@@ -289,17 +289,45 @@ export function createAuthAdapter() {
         callback(!u ? 'SIGNED_OUT' : 'SIGNED_IN', session);
       });
 
+      // Handle OAuth redirect result. getRedirectResult() processes the
+      // redirect callback and clears the redirect state from the URL.
+      // Even if getRedirectResult fails (e.g., COOP interference),
+      // onAuthStateChanged above will still fire with the signed-in user
+      // because Firebase Auth persists the session in indexedDB.
       if (typeof window !== 'undefined' && !redirectResultHandled) {
         redirectResultHandled = true;
         void getRedirectResult(auth)
           .then(async (result) => {
-            if (!result?.user) return;
+            if (!result?.user) {
+              // No redirect result — but check if there's a pending OAuth
+              // flag AND the user is already signed in (Firebase may have
+              // completed the sign-in internally without getRedirectResult
+              // surfacing it).
+              const pending = window.sessionStorage.getItem(oauthRedirectPendingKey) === '1';
+              if (pending) {
+                window.sessionStorage.removeItem(oauthRedirectPendingKey);
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                  const session = await toAdapterSession(currentUser);
+                  callback('SIGNED_IN', session);
+                }
+              }
+              return;
+            }
             const session = await toAdapterSession(result.user);
             callback('SIGNED_IN', session);
           })
           .catch((error: unknown) => {
             const message = friendlyError(error).message;
             console.error('[Firebase Auth] OAuth redirect sign-in failed:', error);
+            // Even on error, try to recover — Firebase may have persisted
+            // the session despite the getRedirectResult failure.
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+              toAdapterSession(currentUser).then((session) => {
+                callback('SIGNED_IN', session);
+              });
+            }
             try {
               window.sessionStorage.removeItem(oauthRedirectPendingKey);
               window.sessionStorage.setItem('shadowtalk.firebase-auth-redirect-error', message);
