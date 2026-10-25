@@ -1592,7 +1592,7 @@ Structure and Content Guidelines:
           onOpenSettings={() => navigate("/settings")}
         />
         <ChatMainPanel>
-          <div className="sticky top-0 z-30 shrink-0 bg-background/85 backdrop-blur-md border-b border-border/30">
+          <div className="sticky top-0 z-30 shrink-0 ios-glass-nav border-b border-white/[0.06]">
             <ChatHeader
               variant="minimal"
               userPlan={userPlan}
