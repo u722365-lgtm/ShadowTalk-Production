@@ -20,9 +20,24 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAIKeyContext } from "@/contexts/AIKeyContext";
-import { streamCloudChat, type CloudChatMessage } from "@/lib/cloudChat";
+import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
 import { getByokConfig, streamByokChat } from "@/lib/byok";
 import { buildChatSystemPrompt } from "@/lib/shadowTalkPersona";
+
+// Fallback AI response when all providers fail
+function getFallbackResponse(userText: string): string {
+  const lower = userText.toLowerCase();
+  if (lower.includes("hello") || lower.includes("hi ") || lower.includes("hey")) {
+    return "Hello! I'm here and ready to talk. What's on your mind?";
+  }
+  if (lower.includes("how are you")) {
+    return "I'm doing great, thanks for asking! How about you?";
+  }
+  if (lower.includes("what can you do") || lower.includes("who are you")) {
+    return "I'm ShadowTalk AI, your voice assistant. I can chat, answer questions, and help you think through ideas. What would you like to talk about?";
+  }
+  return "I heard you, but I'm having trouble connecting to my AI backend right now. Please check your API key in Settings, or try again in a moment.";
+}
 
 interface LiveVoiceModeProps {
   open: boolean;
@@ -54,6 +69,7 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
   const conversationRef = useRef<VoiceMessage[]>([]);
   const shouldContinueRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const startListeningRef = useRef<() => void>(() => {});
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -116,13 +132,13 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
       setIsSpeaking(false);
       // Auto-resume listening after AI finishes speaking
       if (shouldContinueRef.current && open) {
-        setTimeout(() => startListening(), 300);
+        setTimeout(() => startListeningRef.current(), 300);
       }
     };
     utterance.onerror = () => {
       setIsSpeaking(false);
       if (shouldContinueRef.current && open) {
-        setTimeout(() => startListening(), 300);
+        setTimeout(() => startListeningRef.current(), 300);
       }
     };
 
@@ -154,30 +170,51 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
       ];
 
       let responseText = "";
+      let aiFailed = false;
 
       // Route based on cohort
-      if (userCohort === "TECH" && userApiKey) {
-        // BYOK mode — use user's API key directly
-        const byokConfig = getByokConfig();
-        const config = byokConfig || {
-          provider: "openrouter" as const,
-          apiKey: userApiKey,
-          model: "openai/gpt-4o-mini",
-          mode: "always" as const,
-        };
+      try {
+        if (userCohort === "TECH" && userApiKey) {
+          // BYOK mode — use user's API key directly
+          const byokConfig = getByokConfig();
+          const config = byokConfig || {
+            provider: "openrouter" as const,
+            apiKey: userApiKey,
+            model: "openai/gpt-4o-mini",
+            mode: "always" as const,
+          };
 
-        const result = await streamByokChat(
-          { ...config, apiKey: userApiKey },
-          chatMessages,
-          { temperature: 0.7 },
-        );
-        responseText = result.content || result.error || "I didn't catch that. Could you repeat?";
-      } else {
-        // NON_TECH mode — use cloud chat (OmniRoute / Supabase fallback)
-        const result = await streamCloudChat(chatMessages, {
-          temperature: 0.7,
-        });
-        responseText = result.content || result.error || "I didn't catch that. Could you repeat?";
+          const result = await streamByokChat(
+            { ...config, apiKey: userApiKey },
+            chatMessages,
+            { temperature: 0.7 },
+          );
+          responseText = result.content || "";
+          if (!responseText && result.error) {
+            console.warn("[VoiceMode] BYOK failed:", result.error);
+            aiFailed = true;
+          }
+        }
+
+        // If BYOK failed or NON_TECH, try cloud chat
+        if (!responseText && !aiFailed) {
+          const result = await streamCloudChat(chatMessages, {
+            temperature: 0.7,
+          });
+          responseText = result.content || "";
+          if (!responseText && result.error) {
+            console.warn("[VoiceMode] Cloud chat failed:", result.error);
+            aiFailed = true;
+          }
+        }
+      } catch (err: any) {
+        console.warn("[VoiceMode] AI request failed:", err?.message);
+        aiFailed = true;
+      }
+
+      // Fallback if all AI providers failed
+      if (!responseText) {
+        responseText = getFallbackResponse(userText);
       }
 
       // Add AI response to conversation
@@ -191,6 +228,13 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
 
       // Speak the response
       speak(responseText);
+
+      if (aiFailed) {
+        toast({
+          title: "AI connection issue",
+          description: "Using offline fallback. Check your API key or try again.",
+        });
+      }
     } catch (err: any) {
       const errMsg = err?.message || "Could not reach the AI. Please try again.";
       setError(errMsg);
@@ -290,6 +334,11 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
       console.warn("[VoiceMode] Failed to start recognition:", err);
     }
   }, [open, isProcessing, isSpeaking, sendToAI, stopListening, stopSpeaking, toast]);
+
+  // Keep the ref in sync so speak() can call it without a stale closure
+  useEffect(() => {
+    startListeningRef.current = startListening;
+  }, [startListening]);
 
   // Toggle listening
   const handleMicToggle = () => {

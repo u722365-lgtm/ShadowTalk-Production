@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback, useMemo } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // Removed broken imports
@@ -1794,6 +1794,16 @@ Structure and Content Guidelines:
         </Dialog>
 
         {user && <AiAccessOnboarding userId={user.id} />}
+
+        {/* Floating Live Voice button — visible on ALL screen sizes */}
+        <button
+          type="button"
+          onClick={handleToggleLiveVoice}
+          className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-[0_4px_24px_rgba(99,102,241,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
+          aria-label="Start live voice conversation"
+        >
+          <Phone className="w-6 h-6" />
+        </button>
 
         {/* Live Voice Mode overlay */}
         <LiveVoiceMode
