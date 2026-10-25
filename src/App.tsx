@@ -72,6 +72,7 @@ const AboutPage = lazy(() => import("./pages/AboutPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const StatusPage = lazy(() => import("./pages/StatusPage"));
 const DownloadPage = lazy(() => import("./pages/DownloadPage"));
+const TemplatesPage = lazy(() => import("./pages/TemplatesPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
@@ -163,6 +164,7 @@ const AnimatedRoutes = () => {
           <Route path="/missioncontrol" element={<Navigate to="/agentic-ai-workspace" replace />} />
           <Route path="/workspace" element={<Navigate to="/chatbot" replace />} />
           <Route path="/marketplace" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/templates" element={<PageTransition><TemplatesPage /></PageTransition>} />
           
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
