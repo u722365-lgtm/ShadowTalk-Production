@@ -36,7 +36,6 @@ import { PreferencesTab } from "@/components/profile/PreferencesTab";
 import { AiSettingsTab } from "@/components/profile/AiSettingsTab";
 import { NotificationsExtras } from "@/components/profile/NotificationsExtras";
 
-import { LinkedAccountsTab } from "@/components/profile/LinkedAccountsTab";
 
 import { AdminPanelLink } from "@/components/admin/AdminPanelLink";
 import {
@@ -75,7 +74,6 @@ const PROFILE_TABS = new Set([
   "activity",
   "notifications",
   "security",
-  "linked",
   "ai",
   "preferences",
   "billing",
@@ -86,7 +84,6 @@ const PROFILE_TAB_SECTIONS: readonly ProfileNavTab[] = [
   { id: "activity", label: "Activity", icon: Activity, desc: "Conversation history" },
   { id: "notifications", label: "Notifications", shortLabel: "Alerts", icon: Bell, desc: "Email & push" },
   { id: "security", label: "Security", icon: Shield, desc: "2FA, password, vault" },
-  { id: "linked", label: "Linked accounts", shortLabel: "Linked", icon: Link2, desc: "Google, GitHub, Slack" },
   { id: "ai", label: "AI", icon: Bot, desc: "Models & instructions" },
   { id: "preferences", label: "Preferences", shortLabel: "Prefs", icon: Settings, desc: "Appearance & UI" },
   { id: "billing", label: "Billing", icon: CreditCard, desc: "Plan & credits" },
@@ -542,9 +539,7 @@ const ProfilePage = () => {
             </motion.div>
                   )}
 
-                  {currentTab === "linked" && user && (
-                    <LinkedAccountsTab userId={user.id} email={user.email || ""} />
-                  )}
+
 
                   {currentTab === "ai" && <AiSettingsTab />}
 
