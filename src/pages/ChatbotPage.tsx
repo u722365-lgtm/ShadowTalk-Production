@@ -1638,6 +1638,7 @@ Structure and Content Guidelines:
             encryptionBusy={chatPrivate.busy}
             onEnableEncryption={handleEnableChatEncryption}
             onDisableEncryption={chatPrivate.disablePrivateMode}
+            onToggleLiveVoice={handleToggleLiveVoice}
           />
 
 

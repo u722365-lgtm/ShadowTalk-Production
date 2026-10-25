@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { MessageSquarePlus, History, Eraser, Trash2, Settings } from "lucide-react";
+import { MessageSquarePlus, History, Eraser, Trash2, Settings, Phone } from "lucide-react";
 import { ChatEncryptionToggle } from "@/components/chat/ChatEncryptionToggle";
 
 import { HardwareTurboBadge } from "@/components/chat/HardwareTurboBadge";
@@ -35,6 +35,7 @@ interface ChatToolbarProps {
   encryptionBusy?: boolean;
   onEnableEncryption?: () => void | Promise<void>;
   onDisableEncryption?: () => void;
+  onToggleLiveVoice?: () => void;
   className?: string;
 }
 
@@ -49,6 +50,7 @@ function ChatToolbarInner({
   encryptionBusy = false,
   onEnableEncryption,
   onDisableEncryption,
+  onToggleLiveVoice,
   className = "",
 }: ChatToolbarProps) {
   const navigate = useNavigate();
@@ -73,6 +75,24 @@ function ChatToolbarInner({
             onEnable={onEnableEncryption}
             onDisable={onDisableEncryption}
           />
+        )}
+
+        {onToggleLiveVoice && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onToggleLiveVoice}
+                className="h-8 gap-1.5 rounded-full text-xs font-medium text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 border border-transparent hover:border-purple-500/20"
+              >
+                <Phone className="h-4 w-4" />
+                <span className="hidden sm:inline">Live Voice</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Start live voice conversation</TooltipContent>
+          </Tooltip>
         )}
 
         <Tooltip>
