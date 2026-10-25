@@ -238,12 +238,15 @@ const ProfilePage = () => {
 
   const saveProfile = async () => {
     if (!user) return;
-    
-    if (avatarUrl && avatarUrl.length > 2048) {
-      toast({ 
-        title: "Avatar URL too long", 
-        description: "Please upload an image using the camera button instead of pasting a large data string.", 
-        variant: "destructive" 
+
+    // Allow data URLs (base64 images) up to 500KB in the avatar_url field.
+    // The avatar upload compresses to 200x200 JPEG (~10-50KB), which
+    // produces a data URL of ~15,000-70,000 characters.
+    if (avatarUrl && avatarUrl.length > 500_000) {
+      toast({
+        title: "Avatar too large",
+        description: "Please use a smaller image (under 5MB).",
+        variant: "destructive"
       });
       return;
     }
