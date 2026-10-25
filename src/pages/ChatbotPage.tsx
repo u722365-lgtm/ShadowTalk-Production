@@ -11,6 +11,7 @@ type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiAccessOnboarding } from "@/components/chat/AiAccessOnboarding";
+import { LiveVoiceMode } from "@/components/chat/LiveVoiceMode";
 import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
@@ -1792,6 +1793,13 @@ Structure and Content Guidelines:
         </Dialog>
 
         {user && <AiAccessOnboarding userId={user.id} />}
+
+        {/* Live Voice Mode overlay */}
+        <LiveVoiceMode
+          open={showShadowTalkLive}
+          onClose={() => setShowShadowTalkLive(false)}
+          personality={personality}
+        />
 
       
 
