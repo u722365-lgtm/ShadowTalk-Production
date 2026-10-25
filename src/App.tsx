@@ -72,6 +72,17 @@ const AboutPage = lazy(() => import("./pages/AboutPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const StatusPage = lazy(() => import("./pages/StatusPage"));
 const DownloadPage = lazy(() => import("./pages/DownloadPage"));
+const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
+const ComputerPage = lazy(() => import("./pages/ComputerPage"));
+const MissionControlPage = lazy(() => import("./pages/MissionControlPage"));
+const PersonalLlmPage = lazy(() => import("./pages/PersonalLlmPage"));
+const TemplatesPage = lazy(() => import("./pages/TemplatesPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+const ResearchPage = lazy(() => import("./pages/ResearchPage"));
+const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
+const EnterprisePage = lazy(() => import("./pages/EnterprisePage"));
+const ReferralPage = lazy(() => import("./pages/ReferralPage"));
+const SessionsPage = lazy(() => import("./pages/SessionsPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
@@ -174,7 +185,20 @@ const AnimatedRoutes = () => {
           <Route path="/cookies" element={<PageTransition><CookiePolicyPage /></PageTransition>} />
           <Route path="/terms" element={<PageTransition><TermsOfServicePage /></PageTransition>} />
           <Route path="/privacy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
-          
+
+          {/* Feature Pages */}
+          <Route path="/analytics" element={<PageTransition><AnalyticsPage /></PageTransition>} />
+          <Route path="/computer" element={<PageTransition><ComputerPage /></PageTransition>} />
+          <Route path="/mission-control" element={<PageTransition><MissionControlPage /></PageTransition>} />
+          <Route path="/personal-llm" element={<PageTransition><PersonalLlmPage /></PageTransition>} />
+          <Route path="/templates" element={<PageTransition><TemplatesPage /></PageTransition>} />
+          <Route path="/admin" element={<PageTransition><AdminPage /></PageTransition>} />
+          <Route path="/research" element={<PageTransition><ResearchPage /></PageTransition>} />
+          <Route path="/developers" element={<PageTransition><DevelopersPage /></PageTransition>} />
+          <Route path="/enterprise" element={<PageTransition><EnterprisePage /></PageTransition>} />
+          <Route path="/referral" element={<PageTransition><ReferralPage /></PageTransition>} />
+          <Route path="/sessions" element={<PageTransition><SessionsPage /></PageTransition>} />
+
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
