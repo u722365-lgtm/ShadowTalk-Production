@@ -127,6 +127,53 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       { category: "Best fit", shadowtalk: "Research-to-action workflows", competitor: "Search-first discovery" },
     ],
   },
+  {
+    slug: "typingmind",
+    competitor: "TypingMind",
+    title: "ShadowTalk AI vs TypingMind",
+    description:
+      "Compare ShadowTalk AI vs TypingMind for BYOK multi-model chat, agentic workflows, WebGPU local RAG, and privacy — for builders who want more than a UI shell.",
+    canonical: "https://www.shadowtalk-ai.com/compare/typingmind",
+    summary:
+      "TypingMind is a popular BYOK chat UI: bring your own API keys, pick models, and pay once for the interface. ShadowTalk AI goes further — agentic workflows, built-in tools (Deep Research, Code IDE, encrypted vault, Video Studio), WebGPU local inference, and a multi-model canvas for side-by-side comparison — at a lower entry price (free tier, $5/mo Pro).",
+    bestFor:
+      "Developers and power users who want a BYOK multi-model canvas plus agentic execution, not just a prettier chat shell.",
+    whyShadowTalkWins: [
+      "Agentic workflows run multi-step jobs with approval gates — TypingMind is single-turn chat.",
+      "Multi-model canvas: compare Claude vs GPT-4o vs Gemini side-by-side with live color-coded diffing.",
+      "WebGPU local inference + local vector RAG runs on-device via WebLLM — no provider roundtrip required.",
+      "Encrypted vault (PBKDF2 + AES-256-GCM, zero-knowledge) ships in-product; TypingMind has no equivalent.",
+      "Free tier with no card and lower paid entry ($5/mo Pro) vs TypingMind's one-time license fee.",
+    ],
+    faq: [
+      {
+        question: "Is ShadowTalk AI better than TypingMind?",
+        answer:
+          "It depends. TypingMind is a polished BYOK chat UI for users who already have API keys and want a clean interface. ShadowTalk AI is better for builders who want BYOK plus agentic workflows, a multi-model canvas, WebGPU local inference, local vector RAG, an encrypted vault, and built-in tools (Deep Research, Code IDE, Video Studio) in one product.",
+      },
+      {
+        question: "Is ShadowTalk AI BYOK (bring your own key)?",
+        answer:
+          "Yes. ShadowTalk AI is 100% BYOK: paste your OpenAI, Anthropic, Google, Groq, Together, Mistral, or OpenRouter API key and the workspace calls the provider directly. Your key is stored encrypted on your device and never transits ShadowTalk servers.",
+      },
+      {
+        question: "Does ShadowTalk AI cost less than TypingMind?",
+        answer:
+          "ShadowTalk has a free tier with no credit card and Pro from $5/month. TypingMind is a one-time license purchase for the interface (then BYOK provider costs on top). For builders who want execution + tools, not just chat UI, ShadowTalk includes more per dollar.",
+      },
+    ],
+    rows: [
+      { category: "Pricing model", shadowtalk: "Free tier + Pro $5/mo", competitor: "One-time license fee" },
+      { category: "BYOK support", shadowtalk: "100% BYOK — all major providers", competitor: "BYOK — all major providers" },
+      { category: "Multi-model canvas", shadowtalk: "Side-by-side with live diffing", competitor: "Single conversation at a time" },
+      { category: "Agentic workflows", shadowtalk: "Multi-step missions with approval gates", competitor: "Single-turn chat only" },
+      { category: "Built-in tools", shadowtalk: "Deep Research, Code IDE, Vault, Video Studio", competitor: "Plugins / extensions" },
+      { category: "Local inference", shadowtalk: "WebGPU + WebLLM on-device", competitor: "Cloud-only by default" },
+      { category: "Local vector RAG", shadowtalk: "On-device embeddings + retrieval", competitor: "No native local RAG" },
+      { category: "Privacy posture", shadowtalk: "E2EE, vault, zero-knowledge", competitor: "BYOK + localStorage" },
+      { category: "Best fit", shadowtalk: "Builders who want execution + BYOK", competitor: "Buyers who want a polished chat UI" },
+    ],
+  },
 ];
 
 export const COMPARISON_PAGE_BY_SLUG = Object.fromEntries(

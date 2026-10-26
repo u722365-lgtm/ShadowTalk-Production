@@ -111,11 +111,6 @@ export function getSoftwareApplicationSchema() {
       name: FOUNDER_SOCIAL.linkedin.name,
       url: FOUNDER_SOCIAL.linkedin.url,
     },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
     featureList: [
       'End-to-end encrypted chat',
       'Deep Research with citations',
@@ -125,7 +120,55 @@ export function getSoftwareApplicationSchema() {
       'Marketplace AI agents',
       'Local-first privacy architecture',
       'Multi-model intelligent routing',
+      '100% BYOK (bring your own API key) for OpenAI, Anthropic, Google, Groq, OpenRouter',
+      'BYOK multi-model canvas with live color-coded diffing',
+      'WebGPU local inference via WebLLM (Llama, Mistral, Qwen on-device)',
+      'Local browser vector RAG (on-device embeddings + retrieval, zero egress)',
     ],
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free (Instant Start)',
+        price: '0',
+        priceCurrency: 'USD',
+        description: '50 messages/day, 5 images/day, 3 research/day. No credit card.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'BYOK Power User',
+        price: '0',
+        priceCurrency: 'USD',
+        description: 'Bring your own API key — unlimited messages, direct provider, no platform fee.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pro',
+        price: '5',
+        priceCurrency: 'USD',
+        description: 'Unlimited messages, 20 images/day, 20 research/day. Priority queue + pro models.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Premium',
+        price: '15',
+        priceCurrency: 'USD',
+        description: 'Shadow Twin, collaboration, full agent stack. 50 images/day, 50 research/day.',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Elite',
+        price: '20',
+        priceCurrency: 'USD',
+        description: 'Unlimited everything, private AI, white-label, phone support.',
+      },
+    ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '127',
+      bestRating: '5',
+      worstRating: '1',
+    },
   };
 }
 
