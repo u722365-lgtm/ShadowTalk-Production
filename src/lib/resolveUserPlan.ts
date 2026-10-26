@@ -23,6 +23,7 @@ const SPECIAL_ACCESS_EMAILS = [
   "almadadali00@gmail.com",
   "zaim98269@gmail.com",
   "laibaanis345@gmail.com",
+  "talhaateeq112@gmail.com",  // Lifetime Elite — founder grant
 ];
 
 export function hasSpecialAccessEmail(email: string | null | undefined): boolean {

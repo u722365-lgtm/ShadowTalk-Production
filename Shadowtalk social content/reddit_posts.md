@@ -185,3 +185,41 @@ ShadowTalk AI runs entirely in your browser. No backend. No cloud. No account re
 
 ### Reply to any criticism
 > Fair point. I'm a solo dev and I'd rather hear this now than after I scale. What would you want to see changed before you'd consider trying it?
+
+---
+
+## BONUS POST — The 7-Minute Session Metric (r/SaaS / r/IndieHackers / r/Entrepreneur)
+
+**Title:** 100 visits/day, 7-minute average session. That's the only PMF signal I'm tracking right now.
+
+**Body:**
+
+Most early-stage SaaS founders obsess over traffic. I'm obsessing over session length instead.
+
+Here's the math:
+- Average SaaS landing page: 45-90 seconds
+- ShadowTalk AI average: **7 minutes (420 seconds)**
+
+That's not a landing page bounce. That's builders actively using the product — pasting API keys, comparing model outputs, setting up local RAG pipelines.
+
+When a 7-minute session happens organically (no onboarding flow forcing it), it means the visitor found the core value loop. They're not reading marketing copy — they're running prompts.
+
+**What I'm doing with this signal:**
+
+1. **In-session lead capture:** After 3 minutes OR 3 model calls, I prompt "Save your local session & encrypted key profile." High-attention window = high opt-in rate.
+
+2. **Pro waitlist trigger:** After 5 minutes, a non-intrusive modal offers waitlist access for the two unshipped flagship features (1-click Consensus Merging + WebGPU Local Vector RAG).
+
+3. **Viral loop on the consensus result:** A "Share Consensus" button exports the multi-model comparison as a PNG (with a "Powered by ShadowTalk AI" footer) or a shareable URL. Builders share their Claude vs GPT-4o diffs on Twitter/Reddit → new builders click → 7-minute cycle repeats.
+
+4. **Social proof in marketing:** Every Reddit post and Twitter thread now leads with "100 visits, 7-minute average session" instead of vanity metrics. The right builders self-select.
+
+**The takeaway for other founders:**
+
+Traffic is a vanity metric if your session length is 30 seconds. A 7-minute session with 100 visits/day is worth more than 10,000 visits/day at 30 seconds — because the 7-minute visitors are the ones who'll convert, refer, and stay.
+
+If you're early-stage, track session length before you track traffic. The former tells you if you have PMF. The latter just tells you if your SEO is working.
+
+**Demo (the thing causing the 7-min sessions):** [shadowtalk-ai.com/chatbot?demo=true](https://www.shadowtalk-ai.com/chatbot?demo=true)
+
+I'm Zain, 17, solo dev from Karachi. AMA about how I'm instrumenting this.

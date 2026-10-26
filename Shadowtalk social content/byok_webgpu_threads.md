@@ -418,3 +418,93 @@ Before posting, generate these assets (use the existing /tmp/my-project/animate_
    - Send a prompt — show "via your OpenAI key" badge
 
 Post these alongside the threads. Tweets with video get 10x the engagement of text-only.
+
+---
+
+## Thread 5: The 7-Minute Session Metric (Social Proof)
+
+**Tweet 1:**
+100 visits/day.
+
+7-minute average session length.
+
+That's the only metric I'm tracking right now. Here's why 👇🧵
+
+#BuildInPublic #IndieHackers
+
+**Tweet 2:**
+The average SaaS landing page has a 45-90 second session.
+
+ShadowTalk AI is at 7 minutes. 420 seconds.
+
+That's not a bounce. That's builders pasting API keys, comparing Claude vs GPT-4o, setting up local RAG.
+
+They're using the product.
+
+#BuildInPublic
+
+**Tweet 3:**
+Why session length > traffic for early-stage PMF:
+
+10,000 visits at 30 seconds = people reading marketing copy, leaving
+100 visits at 7 minutes = builders running real workflows, telling friends
+
+The second cohort compounds. The first doesn't.
+
+#IndieHackers
+
+**Tweet 4:**
+What a 7-minute session tells me:
+
+✅ The visitor found the core value loop (multi-model canvas + BYOK)
+✅ They're pasting their own API key (high intent)
+✅ They're running real prompts, not bouncing
+✅ They'll convert / refer / stay
+
+Traffic can't tell you any of that.
+
+#BuildInPublic
+
+**Tweet 5:**
+What I'm doing with the signal:
+
+1. After 3 min OR 3 model calls → "Save your session & key profile" prompt
+2. After 5 min → Pro Waitlist modal (Consensus Merging + WebGPU RAG)
+3. "Share Consensus" button → PNG export with "Powered by ShadowTalk" footer
+4. Every marketing post leads with "100 visits, 7-min session" not vanity
+
+#IndieHackers
+
+**Tweet 6:**
+The viral loop:
+
+7-min user shares a Claude vs GPT-4o diff PNG →
+Builder on Twitter sees it →
+Clicks shadowtalk-ai.com →
+Pastes their own API key →
+Hits 7-min session →
+Shares their own diff →
+
+Compounding.
+
+#BuildInPublic
+
+**Tweet 7:**
+Honest context:
+
+100 visits/day is small. But 7-min sessions mean those 100 are the RIGHT 100. Builders, not tire-kickers.
+
+If I scale to 1,000 visits/day at the same session length, that's a real business. Not a vanity chart.
+
+#IndieHackers
+
+**Tweet 8:**
+Try the thing causing the 7-min sessions:
+
+shadowtalk-ai.com/chatbot?demo=true
+
+No signup, no card. Paste your own API key, compare 3 models side-by-side with live diffing, or run a local Llama-3 on your GPU.
+
+I'm Zain, 17, solo from Karachi. RTs reach builders 🙏
+
+#BYOK #WebGPU #BuildInPublic
