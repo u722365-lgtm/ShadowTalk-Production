@@ -165,10 +165,10 @@ export const chat = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
           max_tokens: Math.max(
             256,
             Math.min(
-              4096,
+              16384,
               Number.isFinite(Number(maxTokens))
                 ? Math.floor(Number(maxTokens))
-                : deepResearch ? 4096 : 2048,
+                : deepResearch ? 8192 : 8192,
             ),
           ),
         }),

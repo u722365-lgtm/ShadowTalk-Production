@@ -53,6 +53,7 @@ Deno.serve(async (req) => {
             messages: messages.map((m) => ({ role: m.role, content: m.content })),
             stream: true,
             temperature: typeof body?.temperature === 'number' ? body.temperature : 0.7,
+            max_tokens: 8192,
           }),
         });
 
@@ -96,6 +97,8 @@ Deno.serve(async (req) => {
         // Latency-optimized: minimal thinking + priority serving tier.
         reasoning: { effort: 'low' },
         service_tier: 'priority',
+        // Ensure full-length responses — default may truncate documents.
+        max_output_tokens: 16384,
       }),
     });
 

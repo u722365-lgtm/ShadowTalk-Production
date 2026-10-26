@@ -930,9 +930,10 @@ Structure and Content Guidelines:
       const cloudMessages: CloudChatMessage[] = [
         {
           role: 'system',
-          content:
-            `You are ShadowTalk AI. Be ${personality || 'friendly'} and helpful. Use markdown formatting. Current date: ${new Date().toISOString().split('T')[0]}.` +
-            (businessMemory ? `\n\nUser context:\n${businessMemory.slice(0, 1200)}` : ''),
+          content: buildChatSystemPrompt({
+            personality,
+            businessMemory,
+          }),
         },
         ...trimmedRouterMessages.map((m) => ({
           role: (m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user') as CloudChatMessage['role'],
@@ -943,6 +944,7 @@ Structure and Content Guidelines:
       const { content: streamedContent, error: cloudError } = await streamCloudChat(cloudMessages, {
         signal: controller.signal,
         temperature: 0.7,
+        maxTokens: 8192,
         onDelta: (accumulated) => pushAssistant(accumulated),
       });
 
