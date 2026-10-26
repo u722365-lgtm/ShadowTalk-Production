@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { KeyRound, ShieldCheck, ShieldAlert, Loader2, ExternalLink, Copy } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,15 @@ import { toast } from "sonner";
 import {
   BYOK_PROVIDERS, type ByokProvider, clearByokConfig, getByokConfig, saveByokConfig, streamByokChat,
 } from "@/lib/byok";
+import { useApiKeyValidation } from "@/hooks/useApiKeyValidation";
+
+/** Direct deep-links to each provider's API key console. */
+const KEY_QUICK_LINKS: Record<ByokProvider, { label: string; url: string }> = {
+  openai: { label: "Get OpenAI Key", url: "https://platform.openai.com/api-keys" },
+  groq: { label: "Get Groq Key", url: "https://console.groq.com/keys" },
+  openrouter: { label: "Get OpenRouter Key", url: "https://openrouter.ai/keys" },
+  gemini: { label: "Get Gemini Key", url: "https://aistudio.google.com/app/apikey" },
+};
 
 export function SettingsByokCard() {
   const existing = getByokConfig();
@@ -17,6 +26,20 @@ export function SettingsByokCard() {
   const [model, setModel] = useState(existing?.model ?? BYOK_PROVIDERS.openai.defaultModel);
   const [testing, setTesting] = useState(false);
   const [saved, setSaved] = useState(Boolean(existing));
+  const validation = useApiKeyValidation();
+
+  // Trigger validation whenever the key or provider changes
+  const handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
+    validation.validate(provider, e.target.value);
+  };
+
+  const handleProviderChange = (v: string) => {
+    const p = v as ByokProvider;
+    setProvider(p);
+    setModel(BYOK_PROVIDERS[p].defaultModel);
+    if (apiKey) validation.validate(p, apiKey);
+  };
 
   const cfg = () => ({ provider, apiKey: apiKey.trim(), model: model.trim() || BYOK_PROVIDERS[provider].defaultModel, mode: "always" as const });
 
@@ -40,6 +63,7 @@ export function SettingsByokCard() {
     clearByokConfig();
     setApiKey("");
     setSaved(false);
+    validation.reset();
     toast.success("Your API key was removed.");
   };
 
@@ -55,7 +79,7 @@ export function SettingsByokCard() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Provider</Label>
-            <Select value={provider} onValueChange={(v) => { const p = v as ByokProvider; setProvider(p); setModel(BYOK_PROVIDERS[p].defaultModel); }}>
+            <Select value={provider} onValueChange={handleProviderChange}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {Object.entries(BYOK_PROVIDERS).map(([id, p]) => <SelectItem key={id} value={id}>{p.label}</SelectItem>)}
@@ -68,12 +92,63 @@ export function SettingsByokCard() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>API key</Label>
-          <Input type="password" autoComplete="off" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder={BYOK_PROVIDERS[provider].keyHint} />
+          <div className="flex items-center justify-between">
+            <Label>API key</Label>
+            {/* Validation badge — appears as user types */}
+            {validation.status === "validating" && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Verifying...
+              </span>
+            )}
+            {validation.status === "valid" && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-success font-medium" title={validation.detail}>
+                <ShieldCheck className="h-3 w-3" />
+                Validated {validation.detail ? `· ${validation.detail}` : ""}
+              </span>
+            )}
+            {validation.status === "invalid" && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-destructive font-medium" title={validation.detail}>
+                <ShieldAlert className="h-3 w-3" />
+                Invalid key
+              </span>
+            )}
+            {validation.status === "error" && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground" title={validation.detail}>
+                <ShieldAlert className="h-3 w-3" />
+                {validation.detail || "Can't verify"}
+              </span>
+            )}
+          </div>
+          <Input
+            type="password"
+            autoComplete="off"
+            value={apiKey}
+            onChange={handleKeyChange}
+            placeholder={BYOK_PROVIDERS[provider].keyHint}
+            className={validation.status === "valid" ? "border-success/50" : validation.status === "invalid" ? "border-destructive/50" : ""}
+          />
+          {/* Quick-link to provider's key console */}
+          <div className="flex items-center justify-between">
+            <a
+              href={KEY_QUICK_LINKS[provider].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+            >
+              <ExternalLink className="h-3 w-3" />
+              {KEY_QUICK_LINKS[provider].label}
+            </a>
+            {validation.lastChecked && (
+              <span className="text-[10px] text-muted-foreground/60">
+                Last checked {new Date(validation.lastChecked).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button onClick={save}>Save</Button>
-          <Button variant="outline" onClick={test} disabled={testing}>{testing ? "Testing…" : "Test key"}</Button>
+          <Button variant="outline" onClick={test} disabled={testing}>{testing ? "Testing..." : "Test key"}</Button>
           {saved && <Button variant="ghost" onClick={remove}>Remove</Button>}
         </div>
       </CardContent>

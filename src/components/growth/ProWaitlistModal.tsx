@@ -24,9 +24,18 @@ interface ProWaitlistModalProps {
   forceOpen?: boolean;
   /** Elapsed session time in ms. If not provided, the component tracks its own timer. */
   elapsedMs?: number;
+  /**
+   * Copy variant:
+   *   - "waitlist" (default): generic Pro Waitlist for Consensus Merging + WebGPU RAG.
+   *   - "consensus": shown when user clicks "Synthesize Consensus" — copy references
+   *     the Shadow Consensus Engine specifically and the "200+ power users" social proof.
+   *   - "rag": shown when user clicks "Upload Folder RAG" — copy references WebGPU
+   *     Local Vector RAG specifically.
+   */
+  variant?: "waitlist" | "consensus" | "rag";
 }
 
-export function ProWaitlistModal({ forceOpen = false, elapsedMs: externalElapsed }: ProWaitlistModalProps) {
+export function ProWaitlistModal({ forceOpen = false, elapsedMs: externalElapsed, variant = "waitlist" }: ProWaitlistModalProps) {
   const [internalElapsed, setInternalElapsed] = useState(0);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -117,11 +126,14 @@ export function ProWaitlistModal({ forceOpen = false, elapsedMs: externalElapsed
                 </span>
               </div>
               <h3 id="pro-waitlist-title" className="text-base font-bold text-foreground mb-1.5 leading-snug">
-                Want 1-click Consensus Merging &amp; WebGPU Local Vector RAG?
+                {variant === "consensus" && "Shadow Consensus Engine is in Early Access"}
+                {variant === "rag" && "WebGPU Local Vector RAG is in Early Access"}
+                {variant === "waitlist" && "Want 1-click Consensus Merging & WebGPU Local Vector RAG?"}
               </h3>
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Join the Pro Waitlist and get early access when these ship. No spam — one
-                email when the feature is live, then we delete your address.
+                {variant === "consensus" && "Join 200+ power users on the Pro Waitlist and get early access when 1-click Consensus Merging ships. No spam — one email when it's live, then we delete your address."}
+                {variant === "rag" && "Join 200+ power users on the Pro Waitlist and get early access when unlimited WebGPU Local Vector RAG (folder indexing) ships. No spam — one email when it's live, then we delete your address."}
+                {variant === "waitlist" && "Join the Pro Waitlist and get early access when these ship. No spam — one email when the feature is live, then we delete your address."}
               </p>
               <form onSubmit={handleSubmit} className="space-y-2">
                 <input
@@ -150,7 +162,10 @@ export function ProWaitlistModal({ forceOpen = false, elapsedMs: externalElapsed
               <h3 className="text-base font-bold text-foreground mb-1">You&apos;re on the list</h3>
               <p className="text-xs text-muted-foreground">
                 We&apos;ll email <span className="text-foreground font-medium">{email}</span> the moment
-                Consensus Merging &amp; WebGPU RAG ship. One email, then we delete your address.
+                {variant === "consensus" && " the Shadow Consensus Engine ships."}
+                {variant === "rag" && " WebGPU Local Vector RAG ships."}
+                {variant === "waitlist" && " Consensus Merging & WebGPU RAG ship."}
+                {" "}One email, then we delete your address.
               </p>
             </div>
           )}

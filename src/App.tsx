@@ -64,6 +64,7 @@ const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
+const BenchmarksPage = lazy(() => import("./pages/BenchmarksPage"));
 const GDPRPage = lazy(() => import("./pages/GDPRPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
@@ -180,6 +181,7 @@ const AnimatedRoutes = () => {
           <Route path="/help" element={<PageTransition><HelpCenterPage /></PageTransition>} />
           <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />
           <Route path="/blog" element={<PageTransition><BlogPage /></PageTransition>} />
+          <Route path="/benchmarks" element={<Suspense fallback={<PageLoader />}><PageTransition><BenchmarksPage /></PageTransition></Suspense>} />
           <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
           <Route path="/gdpr" element={<PageTransition><GDPRPage /></PageTransition>} />
           <Route path="/cookies" element={<PageTransition><CookiePolicyPage /></PageTransition>} />

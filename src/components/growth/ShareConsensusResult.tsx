@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Link as LinkIcon, Check, Image as ImageIcon } from "lucide-react";
+import { Share2, Download, Link as LinkIcon, Check, Image as ImageIcon, FileText, Github } from "lucide-react";
 import { buildConsensusSharePayload } from "@/lib/viralShare";
 
 /**
@@ -165,6 +165,59 @@ export function ShareConsensusResult({ payload, className = "", compact = false 
     }
   }, [payload]);
 
+  const [copiedMd, setCopiedMd] = useState(false);
+
+  const buildMarkdown = useCallback((p: ConsensusPayload): string => {
+    const lines: string[] = [];
+    lines.push(`# Multi-Model Consensus`);
+    lines.push(``);
+    lines.push(`> _Powered by [ShadowTalk AI](https://www.shadowtalk-ai.com) (Zero-Knowledge BYOK Canvas)_`);
+    lines.push(``);
+    lines.push(`## Prompt`);
+    lines.push(``);
+    lines.push(p.prompt);
+    lines.push(``);
+    lines.push(`## Responses`);
+    lines.push(``);
+    for (const r of p.responses) {
+      lines.push(`### ${r.model} (${r.provider})${r.latencyMs ? ` · ${(r.latencyMs / 1000).toFixed(1)}s` : ""}`);
+      lines.push(``);
+      lines.push(r.response);
+      lines.push(``);
+    }
+    lines.push(`---`);
+    lines.push(``);
+    lines.push(`_Compared with [ShadowTalk AI](https://www.shadowtalk-ai.com/chatbot?demo=true&utm_source=consensus-md) — 100% BYOK, WebGPU local inference, zero data leaves your device._`);
+    return lines.join("\n");
+  }, []);
+
+  const handleCopyMarkdown = useCallback(async () => {
+    const md = buildMarkdown(payload);
+    try {
+      await navigator.clipboard.writeText(md);
+      setCopiedMd(true);
+      window.setTimeout(() => setCopiedMd(false), 2000);
+    } catch {
+      // Fallback: open a data: URL
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  }, [payload, buildMarkdown]);
+
+  const handleExportGist = useCallback(() => {
+    const md = buildMarkdown(payload);
+    // Open GitHub Gist's "new gist" page with the markdown pre-filled via query param.
+    // GitHub doesn't support pre-filling via URL directly, so we open the new-gist
+    // page and copy the markdown to the clipboard so the user can paste it.
+    navigator.clipboard.writeText(md).catch(() => {});
+    window.open("https://gist.github.com/", "_blank");
+    // Brief toast-like feedback via the parent's existing UI
+    setCopiedMd(true);
+    window.setTimeout(() => setCopiedMd(false), 2500);
+  }, [payload, buildMarkdown]);
+
   return (
     <div className={`relative ${className}`} ref={popoverRef}>
       <Button
@@ -197,6 +250,26 @@ export function ShareConsensusResult({ payload, className = "", compact = false 
             </button>
             <button
               type="button"
+              onClick={handleCopyMarkdown}
+              className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left hover:bg-muted/60 transition-colors"
+            >
+              {copiedMd ? (
+                <Check className="h-4 w-4 text-success" />
+              ) : (
+                <FileText className="h-4 w-4 text-primary" />
+              )}
+              <span>{copiedMd ? "Copied!" : "Copy as Markdown"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExportGist}
+              className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left hover:bg-muted/60 transition-colors"
+            >
+              <Github className="h-4 w-4 text-primary" />
+              <span>Open as GitHub Gist</span>
+            </button>
+            <button
+              type="button"
               onClick={handleCopyLink}
               className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-left hover:bg-muted/60 transition-colors"
             >
@@ -209,7 +282,7 @@ export function ShareConsensusResult({ payload, className = "", compact = false 
             </button>
             <div className="px-3 py-2 mt-1 border-t border-border/40">
               <p className="text-[10px] text-muted-foreground/80 leading-relaxed">
-                PNG exports include a &quot;Powered by ShadowTalk AI&quot; footer.
+                PNG / Markdown / Gist exports all include a &quot;Powered by ShadowTalk AI&quot; footer.
                 Links are anonymous — your API key never leaves your browser.
               </p>
             </div>
