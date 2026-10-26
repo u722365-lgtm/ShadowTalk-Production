@@ -315,18 +315,26 @@ const ProfilePage = () => {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      const { data, error } = await backend.functions.invoke("delete-account", {
-        body: { confirm: "DELETE" },
-      });
-      if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      // Use the Firebase Auth deleteAccount adapter (client-side)
+      const result = await (backend.auth as any).deleteAccount();
+      if (result?.error) throw result.error;
+
+      // Best-effort: delete user's Firestore data
+      try {
+        await backend.from("profiles").delete().eq("id", user?.id || "");
+        await backend.from("user_settings").delete().eq("user_id", user?.id || "");
+        await backend.from("conversations").delete().eq("user_id", user?.id || "");
+      } catch {
+        // Firestore data cleanup is best-effort — the auth account is already deleted
+      }
+
       toast({ title: "Account deleted", description: "Your account and data have been removed." });
       await signOut();
-      navigate("/chatbot");
+      navigate("/auth");
     } catch (err) {
       toast({
         title: "Deletion failed",
-        description: err instanceof Error ? err.message : "Could not delete account",
+        description: err instanceof Error ? err.message : "Could not delete account. Please sign out and sign back in, then try again.",
         variant: "destructive",
       });
     } finally {

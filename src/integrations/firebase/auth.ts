@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInAnonymously as fbSignInAnonymously,
   signInWithEmailAndPassword,
@@ -16,6 +17,7 @@ import {
   updateEmail,
   updatePassword,
   updateProfile,
+  deleteUser,
   type User as FbUser,
 } from 'firebase/auth';
 import { fbAuth } from './app';
@@ -175,6 +177,17 @@ export function createAuthAdapter() {
           } catch {
             /* non-fatal */
           }
+        }
+        // Send email verification
+        try {
+          const actionCodeSettings = {
+            url: options?.emailRedirectTo || (typeof window !== 'undefined' ? `${window.location.origin}/chatbot` : undefined),
+            handleCodeInApp: false,
+          };
+          await sendEmailVerification(cred.user, actionCodeSettings);
+        } catch (verifyErr) {
+          console.warn('[Firebase Auth] Email verification send failed:', verifyErr);
+          // Non-fatal — user can still sign in, they just won't have a verified email
         }
         return {
           data: { user: toAdapterUser(cred.user), session: await toAdapterSession(cred.user) },
@@ -350,6 +363,46 @@ export function createAuthAdapter() {
     },
     async unlinkIdentity() {
       return { data: { user: null }, error: new Error('Identity linking is not available.') };
+    },
+
+    // Send (or resend) email verification to the current user.
+    async sendEmailVerification() {
+      const user = fbAuth().currentUser;
+      if (!user) return { data: null, error: new Error('Not signed in') };
+      try {
+        const actionCodeSettings = {
+          url: typeof window !== 'undefined' ? `${window.location.origin}/chatbot` : undefined,
+          handleCodeInApp: false,
+        };
+        await sendEmailVerification(user, actionCodeSettings);
+        return { data: null, error: null };
+      } catch (error: any) {
+        return { data: null, error: friendlyError(error) };
+      }
+    },
+
+    // Check if the current user's email is verified.
+    isEmailVerified(): boolean {
+      return fbAuth().currentUser?.emailVerified ?? false;
+    },
+
+    // Delete the current user's account. This permanently removes the
+    // Firebase Auth user. Firestore data should be cleaned up via
+    // a Cloud Function trigger (onDeleteUser).
+    async deleteAccount() {
+      const user = fbAuth().currentUser;
+      if (!user) return { error: new Error('Not signed in') };
+      try {
+        await deleteUser(user);
+        return { error: null };
+      } catch (error: any) {
+        // If the user hasn't signed in recently, Firebase requires re-auth.
+        // Return a specific error so the UI can prompt for re-auth.
+        if (error?.code === 'auth/requires-recent-login') {
+          return { error: new Error('For security, please sign out and sign back in before deleting your account.') };
+        }
+        return { error: friendlyError(error) };
+      }
     },
 
     // Firebase MFA is enrolled through its own flow; expose safe no-ops.

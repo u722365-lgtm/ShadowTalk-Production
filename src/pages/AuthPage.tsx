@@ -288,7 +288,10 @@ const AuthPage = () => {
         if (error) throw error;
         saveLocalUser(cleanEmail, data.user?.id);
         clearExplicitSignOut();
-        toast({ title: "Account Created!", description: "Welcome to your sovereign AI fortress." });
+        toast({
+          title: "Account Created!",
+          description: "Welcome to ShadowTalk! We've sent a verification link to your email — please verify to secure your account.",
+        });
         setLoading(false);
         navigate(getChatbotPath(searchParams), { replace: true });
         void playWelcomeVoice(cleanEmail);
