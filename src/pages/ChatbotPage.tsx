@@ -48,6 +48,10 @@ import { useAutoImproveContext } from "@/contexts/AutoImproveContext";
 
 
 import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareIntelligence";
+import { useTokenCostTracker } from "@/hooks/useTokenCostTracker";
+import { useSessionActivation } from "@/hooks/useSessionActivation";
+import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
+import { TokenCostBadge } from "@/components/chat/TokenCostBadge";
 
 
 // Removed broken imports
@@ -945,7 +949,11 @@ Structure and Content Guidelines:
         signal: controller.signal,
         temperature: 0.7,
         maxTokens: 8192,
-        onDelta: (accumulated) => pushAssistant(accumulated),
+        onDelta: (accumulated) => {
+          pushAssistant(accumulated);
+          // Fire token-cost tracker — one call per delta chunk
+          costTracker.onToken("gpt-4o-mini");
+        },
       });
 
       if (cloudError && !streamedContent) {
@@ -956,6 +964,11 @@ Structure and Content Guidelines:
       }
 
       finalizeAssistant();
+      // === Session monetization: record this model call + project cost ===
+      const _outputTokens = Math.ceil((streamedContent || assistantContent || "").length / 4);
+      const _inputTokens = Math.ceil(cloudMessages.reduce((n, m) => n + (typeof m.content === 'string' ? m.content.length : 0), 0) / 4);
+      costTracker.onRequestComplete("gpt-4o-mini", _inputTokens, _outputTokens);
+      session.recordModelCall();
       // SPEED: don't block UI on DB write — fire and forget.
       if (assistantContent && user) {
         void saveMessage(assistantContent, "assistant", conversationId).catch((e) =>
@@ -971,6 +984,21 @@ Structure and Content Guidelines:
     },
     [chatMode, personality, user, getChatDefaults, getMemoryContext],
   );
+
+  // === Session monetization + cost tracking (roadmap batch integration) ===
+  const costTracker = useTokenCostTracker();
+  const session = useSessionActivation();
+
+  // Wire global hotkeys — Cmd+Enter is already handled by ChatInput, but we
+  // expose the others via custom events the host can listen for.
+  useGlobalHotkeys({
+    onSynthesizeConsensus: () => {
+      window.dispatchEvent(new CustomEvent("shadowtalk:synthesize-consensus"));
+    },
+    onToggleSplitView: () => {
+      window.dispatchEvent(new CustomEvent("shadowtalk:toggle-split-view"));
+    },
+  });
 
   const handleStopGeneration = () => {
     abortControllerRef.current?.abort();
@@ -1758,6 +1786,17 @@ Structure and Content Guidelines:
                 className="shadowtalk-chat-input-dock shrink-0"
                 style={inputDockStyle}
               >
+                {costTracker.requestCount > 0 && (
+                  <div className="flex justify-center px-4 pb-1.5">
+                    <TokenCostBadge
+                      tokensPerSecond={costTracker.tokensPerSecond}
+                      lastRequestCost={costTracker.lastRequestCost}
+                      monthSpendUsd={costTracker.monthSpendUsd}
+                      savingsVsChatGptPlus={costTracker.savingsVsChatGptPlus}
+                      compact
+                    />
+                  </div>
+                )}
                 <div className="shadowtalk-chat-input-shell w-full">
                   <ChatInput {...chatInputProps} />
                 </div>

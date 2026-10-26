@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { SettingsGeneralSection } from "@/components/settings/SettingsGeneralSection";
 import { SettingsDefaultModelsCard } from "@/components/settings/SettingsDefaultModelsCard";
 import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
+import { WorkspaceExportImport } from "@/components/settings/WorkspaceExportImport";
 import { SettingsSectionHeader } from "@/components/settings/SettingsSectionHeader";
 import { SettingsStagger, SettingsStaggerItem } from "@/components/settings/SettingsStagger";
 import { CustomInstructionsProfileCard } from "@/components/profile/CustomInstructionsProfileCard";
@@ -24,6 +25,8 @@ import { ChatAIPreferencesCard } from "@/components/profile/ChatAIPreferencesCar
 
 import { ShadowTalkModelPanel } from "@/components/profile/ShadowTalkModelPanel";
 import { AutoImproveInsights } from "@/components/autoImprove/AutoImproveInsights";
+import { OfflineSetup } from "@/components/offline/OfflineSetup";
+import { LocalModelStatus } from "@/components/offline/LocalModelStatus";
 
 
 import { DesktopAppSettings } from "@/components/desktop/DesktopAppSettings";
@@ -190,13 +193,40 @@ export function SettingsSectionPanels({
             </SettingsShellCard>
           </AnimatedCard>
         </SettingsStaggerItem>
+        <SettingsStaggerItem>
+          <AnimatedCard>
+            <SettingsShellCard
+              title="Workspace export / import"
+              description="Sync your chats, templates, and RAG vectors across machines. API keys never leave your browser."
+              icon={Database}
+            >
+              <WorkspaceExportImport />
+            </SettingsShellCard>
+          </AnimatedCard>
+        </SettingsStaggerItem>
 
       </SettingsStagger>
     );
   }
 
   if (section === "offline") {
-    return null; // Offline section removed — not functional without WebGPU model download
+    return (
+      <SettingsStagger className="space-y-6">
+        <SettingsSectionHeader
+          icon={WifiOff}
+          title="Local AI (Offline)"
+          description="Provision and manage local models to run ShadowTalk fully offline."
+        />
+        <SettingsStaggerItem>
+          <AnimatedCard>
+            <div className="space-y-6">
+              <LocalModelStatus />
+              <OfflineSetup />
+            </div>
+          </AnimatedCard>
+        </SettingsStaggerItem>
+      </SettingsStagger>
+    );
   }
 
 

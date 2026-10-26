@@ -120,6 +120,12 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
             >
               Pricing
             </a>
+            <a
+              href="/benchmarks"
+              className="hidden md:inline-flex items-center text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 sm:px-3 py-1.5 rounded-md hover:bg-muted/40"
+            >
+              Benchmarks
+            </a>
             <div className="h-3 w-px bg-slate-700/60 shrink-0" />
             <a
               href="#contact"
