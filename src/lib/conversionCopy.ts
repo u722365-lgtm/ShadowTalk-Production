@@ -68,7 +68,7 @@ export const PROACTIVE_MARKETING = {
 
 export const CHAT_LIMIT_TOAST = {
   title: "Daily free limit reached",
-  description: `Premium ($${premium.price}/mo) — unlimited messages and the full tool stack. Limits reset at midnight UTC on Free.`,
+  description: `Premium ($${premium.price}/mo) — unlimited messages, 50 images/day, 50 research/day. Or use BYOK mode with your own API key for unlimited everything. Limits reset at midnight UTC on Free.`,
 } as const;
 
 export const PROOF_BAR_LABEL = "Verify before you buy:";

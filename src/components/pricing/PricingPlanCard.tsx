@@ -41,6 +41,7 @@ const PricingPlanCard = ({
       className={cn(
         "pricing-plan-card relative h-full outline-none",
         plan.recommended && "pricing-plan-card--recommended",
+        plan.id === "byok" && "pricing-plan-card--byok",
         isFocused && "pricing-plan-card--focused",
       )}
       transition={profile.reduced ? { duration: 0 } : pricingSpring.layout}

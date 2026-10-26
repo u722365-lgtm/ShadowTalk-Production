@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BookOpen, Coins, Gift, TrendingUp } from "lucide-react";
+import { BookOpen, Coins, Gift, KeyRound, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PRICING_ADDONS } from "@/lib/pricingCatalog";
@@ -46,8 +46,41 @@ const PricingAddonsSection = () => {
         <p className="text-muted-foreground text-sm sm:text-base">Pay only for what you need — or grow with us.</p>
       </motion.div>
 
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+        variants={variants.fadeSlideUp}
+        whileHover={profile.reduced ? undefined : hoverLift}
+        className="pricing-byok-highlight rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-12"
+      >
+        <div className="flex items-center gap-3 text-left">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-500/15 border border-purple-500/30">
+            <KeyRound className="h-5 w-5 text-purple-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm sm:text-base">
+              <span aria-hidden>💡</span> BYOK = Free Unlimited Access
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              Bring your own OpenRouter or OpenAI key. Zero platform fees, unlimited messages, images, and research.
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="shrink-0 border-purple-500/40 text-purple-600 hover:bg-purple-500/10"
+          onClick={() => navigate("/docs")}
+        >
+          Learn how
+        </Button>
+      </motion.div>
+
       <div className="grid sm:grid-cols-3 gap-4 mb-12">
-        {PRICING_ADDONS.map((item, i) => (
+        {PRICING_ADDONS.map((item, i) => {
+          const href = (item as { href?: string }).href ?? "/founder-access";
+          return (
           <motion.div
             key={item.title}
             custom={i}
@@ -62,11 +95,12 @@ const PricingAddonsSection = () => {
             <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
             <p className="text-xs text-muted-foreground mb-2">{item.desc}</p>
             <p className="text-lg font-bold gradient-text mb-4">{item.price}</p>
-            <Button variant="outline" size="sm" className="w-full" onClick={() => navigate("/founder-access")}>
+            <Button variant="outline" size="sm" className="w-full" onClick={() => navigate(href)}>
               Get started
             </Button>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
 
       <motion.div

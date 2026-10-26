@@ -1667,6 +1667,20 @@
     box-shadow: 0 24px 60px -20px hsl(var(--primary) / 0.35);
   }
 
+  .pricing-plan-card--byok .pricing-plan-inner {
+    border-color: rgb(168 85 247 / 0.55);
+    box-shadow: 0 24px 60px -22px rgb(168 85 247 / 0.4);
+  }
+
+  .pricing-plan-card--byok .pricing-plan-icon {
+    background: rgb(168 85 247 / 0.12);
+    border-color: rgb(168 85 247 / 0.35);
+  }
+
+  .pricing-plan-card--byok .pricing-plan-icon .text-primary {
+    color: rgb(168 85 247);
+  }
+
   .pricing-plan-card--focused {
     z-index: 2;
   }

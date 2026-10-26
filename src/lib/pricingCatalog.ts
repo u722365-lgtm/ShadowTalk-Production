@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Crown, Rocket, Star, Zap } from "lucide-react";
+import { Building2, Crown, KeyRound, Rocket, Star, Zap } from "lucide-react";
 import { PLAN_DETAILS } from "@/lib/stripe";
 import {
   dailyPrice,
@@ -7,7 +7,7 @@ import {
   RECOMMENDED_MONTHLY_PLAN,
 } from "@/lib/conversionPsychology";
 
-export type PricingPlanId = "free" | "pro" | "premium" | "elite";
+export type PricingPlanId = "free" | "byok" | "pro" | "premium" | "elite" | "enterprise";
 
 export type PricingPlan = {
   id: PricingPlanId;
@@ -41,6 +41,21 @@ export function buildMonthlyPlans(): PricingPlan[] {
       features: PLAN_DETAILS.free.features,
       comparison: PLAN_DETAILS.free.comparison,
       cta: "Start Free",
+      variant: "outline",
+    },
+    {
+      id: "byok",
+      name: "BYOK",
+      price: "$0",
+      priceValue: 0,
+      period: "platform fee",
+      description: "Bring your own key — unlimited everything",
+      icon: KeyRound,
+      popular: false,
+      recommended: false,
+      features: PLAN_DETAILS.byok.features,
+      comparison: getValueAnchorLine("byok"),
+      cta: "Use BYOK Mode",
       variant: "outline",
     },
     {
@@ -91,20 +106,38 @@ export function buildMonthlyPlans(): PricingPlan[] {
       cta: `Go Elite — $${PLAN_DETAILS.elite.price}/mo`,
       variant: "secondary",
     },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "Custom",
+      priceValue: 0,
+      period: "",
+      description: "For teams and organizations",
+      icon: Building2,
+      popular: false,
+      recommended: false,
+      features: PLAN_DETAILS.enterprise.features,
+      comparison: getValueAnchorLine("enterprise"),
+      cta: "Contact Sales",
+      variant: "outline",
+    },
   ];
 }
 
 export const PRICING_COMPARE_ROWS = [
+  { label: "ShadowTalk Free", price: "$0/mo", us: true },
   { label: "ChatGPT Plus", price: "$20/mo", us: false },
   { label: "ChatGPT Pro", price: "$200/mo", us: false },
   { label: "ShadowTalk Premium", price: "$15/mo", us: true },
   { label: "ShadowTalk Elite", price: "$20/mo", us: true },
+  { label: "ShadowTalk Enterprise", price: "Custom", us: true },
 ] as const;
 
 export const PRICING_ADDONS = [
   { emoji: "📄", title: "Document Generation", desc: "Contracts, NDAs, forms", price: "$5–$50" },
   { emoji: "🔍", title: "Document Review", desc: "Risk & compliance analysis", price: "$10–$75" },
   { emoji: "🌍", title: "Workflow Report", desc: "Multi-jurisdiction guidance", price: "$50–$200" },
+  { emoji: "🔑", title: "BYOK Setup", desc: "Use your own API key for unlimited access", price: "Free", href: "/docs" },
 ] as const;
 
 export const RECOMMENDED_PLAN_ID = RECOMMENDED_MONTHLY_PLAN;

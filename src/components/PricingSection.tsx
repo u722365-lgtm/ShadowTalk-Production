@@ -1,16 +1,14 @@
 import React from "react";
-import { Check, Star, Zap, Crown, Rocket, Gift, Coins, PlayCircle, TrendingUp, Sparkles, BookOpen } from "lucide-react";
+import { Check, Star, Gift, Coins, PlayCircle, TrendingUp, Sparkles, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
-import { PLAN_DETAILS } from "@/lib/stripe";
+import { buildMonthlyPlans, type PricingPlanId } from "@/lib/pricingCatalog";
 import {
-  dailyPrice,
   getRiskReversalBullets,
   getSocialProofLine,
-  getValueAnchorLine,
 } from "@/lib/conversionPsychology";
 import { usePlatformMetrics } from "@/hooks/usePlatformMetrics";
 import { motion, useInView } from "framer-motion";
@@ -45,21 +43,20 @@ const PricingSection = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   const { hoverLift, variants, viewport, isMobile } = useLandingMotion();
 
-  const handleSubscription = (planName: string) => {
-    if (planName === "Free") { navigate('/chatbot'); return; }
-    const planId = planName.toLowerCase();
-    navigate(planId === "free" ? "/founder-access" : `/founder-access?plan=${planId}`);
+  const handleSubscription = (planId: PricingPlanId) => {
+    if (planId === "free") { navigate('/chatbot'); return; }
+    if (planId === "byok") { navigate('/docs'); return; }
+    if (planId === "enterprise") {
+      window.location.href = "mailto:shadowtalk@shadowtalk-ai.com?subject=ShadowTalk%20Enterprise%20inquiry";
+      return;
+    }
+    navigate(`/founder-access?plan=${planId}`);
   };
 
-  const plans = [
-    { name: "Free", price: "$0", period: "", daily: "", description: "Try everything — no card required", icon: Zap, popular: false, highlight: false, features: PLAN_DETAILS.free.features, comparison: "ChatGPT Free blocks tools. We don't.", cta: "Start Free", variant: "outline" as const },
-    { name: "Pro", price: `$${PLAN_DETAILS.pro.price}`, period: "/month", daily: dailyPrice(PLAN_DETAILS.pro.price), description: "Unlimited messages · best for daily drivers", icon: Star, popular: false, highlight: false, features: PLAN_DETAILS.pro.features, comparison: getValueAnchorLine("pro"), cta: "Get Pro — $5/mo", variant: "outline" as const },
-    { name: "Premium", price: `$${PLAN_DETAILS.premium.price}`, period: "/month", daily: dailyPrice(PLAN_DETAILS.premium.price), description: "Most teams pick this · agentic workflows included", icon: Rocket, popular: true, highlight: true, features: PLAN_DETAILS.premium.features, comparison: getValueAnchorLine("premium"), cta: "Get Premium — $15/mo", variant: "default" as const },
-    { name: "Elite", price: `$${PLAN_DETAILS.elite.price}`, period: "/month", daily: dailyPrice(PLAN_DETAILS.elite.price), description: "Everything + white-label & phone support", icon: Crown, popular: false, highlight: false, features: PLAN_DETAILS.elite.features, comparison: getValueAnchorLine("elite"), cta: "Get Elite — $20/mo", variant: "secondary" as const },
-  ];
+  const plans = buildMonthlyPlans();
 
-  const getCurrentPlanBadge = (planName: string) => {
-    if (userPlan === planName.toLowerCase()) {
+  const getCurrentPlanBadge = (planId: PricingPlanId) => {
+    if (userPlan === planId) {
       return <Badge className="absolute -top-3 right-4 bg-success text-success-foreground">Your Plan</Badge>;
     }
     return null;
@@ -121,29 +118,32 @@ const PricingSection = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto" style={{ perspective: "1200px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto" style={{ perspective: "1200px" }}>
           {plans.map((plan, index) => (
-            <LandingInteractiveCard key={index} index={index} className="h-full">
+            <LandingInteractiveCard key={plan.id} index={index} className="h-full">
               <Card className={`relative h-full border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.15)] overflow-hidden ${
-                plan.highlight ? 'ring-2 ring-primary/50 lg:scale-105' : ''
-              }`}>
+                plan.recommended ? 'ring-2 ring-primary/50 lg:scale-105' : ''
+              } ${plan.id === 'byok' ? 'ring-2 ring-purple-500/50' : ''}`}>
                 {/* Top glow */}
-                {plan.highlight && <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />}
+                {plan.recommended && <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent" />}
+                {plan.id === 'byok' && <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent" />}
                 
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground shadow-lg">
                     Most Popular
                   </Badge>
                 )}
-                {getCurrentPlanBadge(plan.name)}
+                {getCurrentPlanBadge(plan.id)}
 
                 <CardHeader className="text-center pb-4">
                   <motion.div
                     whileHover={{ rotate: [0, -10, 10, 0], scale: 1.15 }}
                     transition={{ duration: 0.5 }}
-                    className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-muted/60 mb-4 mx-auto"
+                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 mx-auto ${
+                      plan.id === 'byok' ? 'bg-purple-500/10 border border-purple-500/30' : 'bg-muted/60'
+                    }`}
                   >
-                    <plan.icon className="h-6 w-6 text-primary" />
+                    <plan.icon className={`h-6 w-6 ${plan.id === 'byok' ? 'text-purple-500' : 'text-primary'}`} />
                   </motion.div>
                   <h3 className="text-xl font-bold">{plan.name}</h3>
                   <p className="text-xs text-muted-foreground">{plan.description}</p>
@@ -155,7 +155,7 @@ const PricingSection = () => {
                       <span className="text-3xl font-bold gradient-text">{plan.price}</span>
                       <span className="text-muted-foreground ml-1 text-sm">{plan.period}</span>
                     </div>
-                    {"daily" in plan && plan.daily && (
+                    {plan.daily && (
                       <p className="text-[11px] text-primary mt-1 font-medium">{plan.daily}/day</p>
                     )}
                   </div>
@@ -201,13 +201,13 @@ const PricingSection = () => {
                   )}
 
                   <Button
-                    className={`w-full ${plan.highlight ? 'btn-glow' : ''}`}
+                    className={`w-full ${plan.recommended ? 'btn-glow' : ''}`}
                     variant={plan.variant as any}
                     size="sm"
-                    onClick={() => handleSubscription(plan.name)}
-                    disabled={userPlan === plan.name.toLowerCase()}
+                    onClick={() => handleSubscription(plan.id)}
+                    disabled={userPlan === plan.id}
                   >
-                    {userPlan === plan.name.toLowerCase() ? 'Current Plan' : plan.cta}
+                    {userPlan === plan.id ? 'Current Plan' : plan.cta}
                   </Button>
                 </CardContent>
               </Card>
@@ -296,7 +296,7 @@ const PricingSection = () => {
           className="text-center mt-12"
         >
           <p className="text-sm text-muted-foreground mb-4">
-            Most builders choose <span className="text-foreground font-medium">Premium ($15/mo)</span> for unlimited messages + Deep Research
+            Most builders choose <span className="text-foreground font-medium">Premium ($15/mo)</span> for unlimited messages
           </p>
           <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 text-xs text-muted-foreground">
             {getRiskReversalBullets().map((label, i) => (

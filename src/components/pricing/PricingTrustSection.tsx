@@ -18,7 +18,8 @@ const PricingTrustSection = () => {
       >
         <p className="text-lg sm:text-xl font-semibold mb-2">
           Most builders choose{" "}
-          <span className="gradient-text">Premium ($15/mo)</span>
+          <span className="gradient-text">Premium ($15/mo)</span>{" "}
+          or <span className="gradient-text">BYOK</span> (free with your own key)
         </p>
         <p className="text-sm text-muted-foreground mb-8">
           Real payments, real activation. No Stripe required — pay via JazzCash, Easypaisa, bank, or USDT and get activated within 24h.
