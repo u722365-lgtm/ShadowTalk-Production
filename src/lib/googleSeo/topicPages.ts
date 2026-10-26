@@ -335,6 +335,112 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       { label: "AEO Q&A", href: "/aeo-answers.html" },
     ],
   },
+  {
+    slug: "best-byok-multi-model-canvas-2026",
+    title: "Best BYOK Multi-Model AI Canvas 2026 — ShadowTalk AI",
+    metaDescription:
+      "Best BYOK multi-model AI canvas in 2026: ShadowTalk AI side-by-side Claude vs GPT-4o vs Gemini with live diffing, on-device WebGPU inference, and local vector RAG. Free start, no card.",
+    h1: "Best BYOK multi-model AI canvas in 2026",
+    snippet:
+      "The best BYOK multi-model AI canvas in 2026 is ShadowTalk AI: bring your own OpenAI, Anthropic, Google, Groq, or OpenRouter key; compare Claude vs GPT-4o vs Gemini side-by-side with live color-coded diffing; run WebGPU local inference for on-device prompts; and keep all data in your browser with zero-knowledge encryption.",
+    sections: [
+      {
+        heading: "What is a BYOK multi-model canvas?",
+        paragraphs: [
+          "A BYOK (bring-your-own-key) multi-model canvas lets you paste your own API keys for OpenAI, Anthropic, Google, and others — then route prompts to any model from one workspace, without paying the platform a markup on tokens. You only pay the provider.",
+          "A multi-model canvas goes one step further: it shows responses from two or more models side-by-side in a single view, so you can compare Claude's reasoning against GPT-4o's coding against Gemini's context in real time — without copy-pasting between tabs.",
+          "ShadowTalk AI is the first workspace to ship a true multi-model canvas with live color-coded diffing, on top of 100% BYOK and WebGPU local inference.",
+        ],
+      },
+      {
+        heading: "Why ShadowTalk ranks #1 for BYOK canvas",
+        paragraphs: [
+          "Side-by-side multi-model view with live diffing: every model output is highlighted green/red where it differs from the others, so you can pick the best answer in seconds.",
+          "100% BYOK: keys are stored encrypted in your browser (PBKDF2 + AES-256-GCM) and never transit ShadowTalk servers. The workspace calls providers directly.",
+          "WebGPU local inference: install an on-device model (Llama, Mistral, Qwen) and route prompts to your GPU — no provider, no token cost, no data leaving your device.",
+          "Local vector RAG: drop PDFs, code, or notes into the workspace and ShadowTalk builds a vector index in your browser for retrieval-augmented generation — entirely on-device.",
+          "Agentic workflows on top of BYOK: chain multiple models into a single mission with approval gates between steps.",
+        ],
+      },
+      {
+        heading: "Founder",
+        paragraphs: [
+          "ShadowTalk AI was founded by Zain Ahmed Fahad Patel, a 17-year-old AI solutions engineer from Karachi, Pakistan. Official profile: shadowtalk-ai.com/zain-ahmed-fahad-patel.html.",
+        ],
+      },
+    ],
+    keywords: [
+      "BYOK multi-model canvas",
+      "best BYOK AI 2026",
+      "bring your own key AI",
+      "multi-model AI comparison",
+      "BYOK chat workspace",
+      "ShadowTalk AI",
+    ],
+    relatedLinks: [
+      { label: "Try the canvas free", href: "/chatbot" },
+      { label: "BYOK vs TypingMind", href: "/compare/typingmind" },
+      { label: "Local RAG guide", href: "/learn/local-browser-rag-webgpu-chatbot.html" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
+  {
+    slug: "local-browser-rag-webgpu-chatbot",
+    title: "Local Browser RAG With WebGPU — On-Device Chatbot | ShadowTalk",
+    metaDescription:
+      "Local browser RAG with WebGPU: ShadowTalk runs on-device inference and vector retrieval in your browser — no server, no token cost, no data egress. Free start, no card.",
+    h1: "Local browser RAG with WebGPU (on-device chatbot)",
+    snippet:
+      "ShadowTalk AI runs local browser RAG with WebGPU: install an on-device LLM via WebLLM, drop documents into the workspace, and ShadowTalk builds a vector index in your browser using WebGPU-accelerated embeddings — then answers retrieval-augmented questions entirely on-device, with zero network calls.",
+    sections: [
+      {
+        heading: "How WebGPU local RAG works in ShadowTalk",
+        paragraphs: [
+          "WebGPU is the browser API that exposes your GPU to JavaScript, enabling on-device LLM inference without a native install. ShadowTalk uses WebLLM to load quantized models (Llama-3.2-1B, Mistral-7B, Qwen-2.5) into your browser cache — first load is ~800MB, subsequent sessions are instant.",
+          "Once the model is cached, ShadowTalk builds a local vector index from your documents (PDFs, code, notes, Markdown) using WebGPU-accelerated embeddings. Retrieval happens entirely in your browser — no chunk of your document ever leaves your device.",
+          "This means you can ask 'summarize this contract' or 'what does this codebase do?' with full confidence that the document, the question, and the answer all stay on your machine. Perfect for NDAs, source code, medical records, or any sensitive material.",
+        ],
+      },
+      {
+        heading: "Why local RAG matters in 2026",
+        paragraphs: [
+          "Cloud RAG (OpenAI Assistants, Anthropic's file uploads, Pinecone + LangChain) is powerful but every chunk of your document transits a third-party server. For sensitive workflows — legal contracts, source code, medical records, internal memos — that's a non-starter.",
+          "Local browser RAG removes the server entirely. Your document is split, embedded, indexed, stored, and retrieved all in your browser's IndexedDB. The only network call is the one-time model download from Hugging Face.",
+          "ShadowTalk is the first workspace to ship production-grade local RAG with WebGPU acceleration, no install, and no signup — open the page, install the model once, and you have a private retrieval-augmented chatbot in under 60 seconds.",
+        ],
+      },
+      {
+        heading: "ShadowTalk vs cloud RAG alternatives",
+        paragraphs: [
+          "vs ChatGPT file upload: ChatGPT sends your file to OpenAI servers for processing. ShadowTalk keeps it on your device.",
+          "vs Claude Projects: Claude stores your files in Anthropic's cloud. ShadowTalk keeps them in your IndexedDB.",
+          "vs LangChain + Pinecone: that stack requires a Python backend, a Pinecone account, and a vector database. ShadowTalk ships the same workflow with zero backend — pure browser, pure WebGPU.",
+          "Trade-off: cloud RAG supports larger models (GPT-4o, Claude Opus). Local RAG is best for privacy-sensitive workflows where a quantized 7B–13B model is sufficient.",
+        ],
+      },
+      {
+        heading: "Try it",
+        paragraphs: [
+          "Open shadowtalk-ai.com/chatbot, click 'Install local model' in Settings, drop a PDF or codebase into the workspace, and ask questions. Everything runs in your browser. Free, no card, no signup.",
+        ],
+      },
+    ],
+    keywords: [
+      "local browser RAG",
+      "WebGPU chatbot",
+      "on-device AI RAG",
+      "private RAG",
+      "browser vector database",
+      "WebLLM RAG",
+      "ShadowTalk local AI",
+    ],
+    relatedLinks: [
+      { label: "Try free", href: "/chatbot" },
+      { label: "BYOK multi-model canvas", href: "/learn/best-byok-multi-model-canvas-2026.html" },
+      { label: "Private AI hub", href: "/private-ai" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
 ];
 
 export const GOOGLE_SEO_HUB = {
