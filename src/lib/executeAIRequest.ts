@@ -386,7 +386,7 @@ async function executeSharedRequest(
     }
   }
 
-  // ── Fallback 2: streamCloudChat (Supabase edge function / Lovable gateway) ──
+  // ── Fallback 2: Firebase Cloud Functions (streamCloudChat) ──
   // This ensures the app works out-of-the-box even without OmniRoute or shared key env vars.
   try {
     const result = await streamCloudChat(messages, options);
