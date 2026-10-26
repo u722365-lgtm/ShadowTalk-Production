@@ -30,6 +30,7 @@ import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
+import { buildChatSystemPrompt } from "@/lib/shadowTalkPersona";
 import { loadAiAccessMode } from "@/lib/aiAccessMode";
 
 import { ChatAmbientBackground } from "@/components/chat/ChatAmbientBackground";

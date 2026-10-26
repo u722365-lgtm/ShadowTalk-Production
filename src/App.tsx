@@ -86,7 +86,6 @@ const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const SessionsPage = lazy(() => import("./pages/SessionsPage"));
 
 const AutoImproveEngine = lazy(() => import("@/components/autoImprove/AutoImproveEngine"));
-const CookieConsent = lazy(() => import("./components/CookieConsent"));
 const CustomerSupportWidget = lazy(() => import("./components/CustomerSupportWidget"));
 const ShadowMemoryTracker = lazy(() => import("./components/ShadowMemoryTracker"));
 const JourneyTracker = lazy(() => import("./components/JourneyTracker").then(m => ({ default: m.JourneyTracker })));
@@ -282,7 +281,6 @@ const App = () => {
                        <ShadowMemoryTracker />
                        <JourneyTracker />
                        <AutoImproveEngine />
-                       <CookieConsent />
                        <CustomerSupportWidget />
                      </Suspense>
                    )}
