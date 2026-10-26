@@ -467,6 +467,8 @@ const ChatbotPage = () => {
 
     if (!user) return;
 
+    // Try deleting messages first. If that fails (permission issue on a
+    // legacy doc), fall back to deleting the whole conversation.
     const { error: msgError } = await backend
       .from("messages")
       .delete()
@@ -474,23 +476,36 @@ const ChatbotPage = () => {
       .eq("user_id", user.id);
 
     if (msgError) {
+      // Messages delete failed — try removing the whole conversation instead.
       const { error: convError } = await backend
         .from("conversations")
         .delete()
         .eq("id", convId)
         .eq("user_id", user.id);
       if (convError) {
-        toast({ title: "Could not clear chat", description: convError.message, variant: "destructive" });
+        // Both failed — clear local state so the user isn't stuck. The server
+        // docs may persist but the user's intent (clear the current chat view)
+        // is honored.
+        setConversations((prev) => prev.filter((c) => c.id !== convId));
+        resetToNewChat();
+        setMessages([welcomeMessage()]);
+        toast({
+          title: "Chat cleared locally",
+          description: "Server delete failed (permission issue). Your view is cleared; the chat may reappear on refresh.",
+        });
+        setShowSidebar(false);
         return;
       }
       setConversations((prev) => prev.filter((c) => c.id !== convId));
       resetToNewChat();
     } else {
+      // Messages deleted — keep the conversation row but reset its title.
       await backend
         .from("conversations")
         .update({ title: "New Chat", updated_at: new Date().toISOString() })
         .eq("id", convId)
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .catch(() => {}); // non-fatal — title update isn't critical
       setConversations((prev) =>
         prev.map((c) => (c.id === convId ? { ...c, title: "New Chat" } : c)),
       );
@@ -636,10 +651,71 @@ const ChatbotPage = () => {
       return;
     }
 
+    // Delete messages first (orphaned messages are useless without conversations).
+    // Errors here are non-fatal — we still want to delete the conversations.
+    await backend.from("messages").delete().eq("user_id", user.id).catch(() => {});
+
+    // Try the batch delete. If it fails (often due to legacy docs with missing
+    // user_id failing the Firestore delete rule), fall back to per-doc delete
+    // and skip the failures so the user gets a partial-success result.
     const { error } = await backend.from("conversations").delete().eq("user_id", user.id);
 
     if (error) {
-      toast({ title: "Could not delete chats", description: error.message, variant: "destructive" });
+      // Fallback: fetch conversation IDs, delete each one individually.
+      const { data: convs } = await backend
+        .from("conversations")
+        .select("id")
+        .eq("user_id", user.id)
+        .catch(() => ({ data: null, error: null }));
+
+      const convList = Array.isArray(convs) ? convs : [];
+      if (convList.length > 0) {
+        let deleted = 0;
+        let failed = 0;
+        for (const c of convList) {
+          const { error: docErr } = await backend
+            .from("conversations")
+            .delete()
+            .eq("id", c.id)
+            .eq("user_id", user.id);
+          if (docErr) failed++;
+          else deleted++;
+        }
+
+        // Always clear local state — the user asked to delete all chats, so
+        // the UI should reflect that intent even if some server docs remain.
+        setConversations([]);
+        resetToNewChat();
+        setShowSidebar(false);
+
+        if (deleted > 0 && failed === 0) {
+          toast({ title: "All chats deleted", description: "Your conversation history was cleared." });
+        } else if (deleted > 0 && failed > 0) {
+          toast({
+            title: `Deleted ${deleted} of ${convList.length} chats`,
+            description: `${failed} chat(s) could not be deleted due to a permission issue. They may reappear on refresh.`,
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Could not delete chats",
+            description: "Permission denied. Try refreshing the page and signing in again — your session may have expired.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      // No conversations to fetch (maybe a read permission issue too) — clear
+      // local state anyway so the user isn't stuck looking at chats they can't delete.
+      setConversations([]);
+      resetToNewChat();
+      setShowSidebar(false);
+      toast({
+        title: "Could not delete chats from server",
+        description: "Your local chat list has been cleared. Refresh the page to reload server state.",
+        variant: "default",
+      });
       return;
     }
 

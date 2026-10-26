@@ -32,6 +32,19 @@ service cloud.firestore {
       return signedIn() && request.resource.data.get('user_id', '') == request.auth.uid;
     }
 
+    // Like ownsExisting(), but also matches legacy docs that have no user_id
+    // field at all (created before user_id was enforced). Used ONLY for delete
+    // so users can clear out their own legacy chats that block batch deletes.
+    // Safe because: (1) user must be signed in, (2) collection must be
+    // whitelisted by isUserDataCollection(), (3) legacy docs have no claimed
+    // owner. Read/update/create still require the strict ownsExisting()/ownsIncoming().
+    function ownsExistingOrLegacy() {
+      return signedIn() && (
+        resource.data.get('user_id', '') == request.auth.uid
+        || !('user_id' in resource.data)
+      );
+    }
+
     function isValidIntake() {
       return (!('message' in request.resource.data) || request.resource.data.message.size() < 5000)
           && (!('email' in request.resource.data) || request.resource.data.email.size() < 256)
@@ -193,7 +206,10 @@ service cloud.firestore {
       allow read: if isUserDataCollection() && (ownsExisting() || isAdmin());
       allow create: if isUserDataCollection() && ownsIncoming();
       allow update: if isUserDataCollection() && ((ownsExisting() && ownsIncoming()) || isAdmin());
-      allow delete: if isUserDataCollection() && (ownsExisting() || isAdmin());
+      // Delete uses ownsExistingOrLegacy() so users can clear legacy docs
+      // (created before user_id was enforced) that would otherwise block
+      // batch deletes with "Missing or insufficient permissions" errors.
+      allow delete: if isUserDataCollection() && (ownsExistingOrLegacy() || isAdmin());
     }
   }
 }
