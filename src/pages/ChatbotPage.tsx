@@ -52,6 +52,9 @@ import { prewarmFastestLocalPath, warmHardwareProfile } from "@/lib/hardwareInte
 import { useTokenCostTracker } from "@/hooks/useTokenCostTracker";
 import { useSessionActivation } from "@/hooks/useSessionActivation";
 import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
+import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
+import { executeShadowTool } from "@/lib/shadowTools/executeShadowTool";
+import { generateCloudImage } from "@/lib/cloudImage";
 import { TokenCostBadge } from "@/components/chat/TokenCostBadge";
 
 
@@ -281,6 +284,8 @@ const ChatbotPage = () => {
   }, [savedUserContext, userContextLoading]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const messagesRef = useRef<Message[]>([]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1077,6 +1082,12 @@ Structure and Content Guidelines:
     },
   });
 
+  // Tool detection — intercepts messages like "/image <prompt>" or
+  // "generate an image of..." and routes them to the right executor
+  // (image generation, web search, calculator, etc.) instead of sending
+  // them to the text completion API.
+  const { detectTool } = useToolOrchestrator();
+
   const handleStopGeneration = () => {
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
@@ -1224,6 +1235,120 @@ Structure and Content Guidelines:
 
     // Yield briefly to allow the browser to paint the optimistic updates
     await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // === Tool interception ===
+    // Check if the message triggers a tool (image generation, web search, etc.)
+    // before sending it to the text completion API. Strip slash-command prefixes
+    // like "/image " so the tool detector sees the actual prompt.
+    const strippedForTools = msgContent.replace(/^\/(image|img|draw|picture)\s+/i, "").trim();
+    const toolResult = detectTool(strippedForTools);
+
+    if (toolResult.tool && toolResult.autoExecute) {
+      const toolMessageId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ai-${Date.now()}`);
+      const toolAiMessage: Message = {
+        id: toolMessageId,
+        type: "ai",
+        content: "",
+        timestamp: new Date(),
+        toolExecution: { tool: toolResult.tool, status: "running", params: toolResult.params },
+      };
+      setMessages((prev) => [...prev, toolAiMessage]);
+      setIsLoading(true);
+
+      try {
+        // Image generation — use generateCloudImage (BYOK key or shared pool)
+        // for better quality than the Pollinations.ai fallback.
+        if (toolResult.tool === "image_generator") {
+          const imgPrompt = toolResult.params?.prompt || strippedForTools;
+          try {
+            const imageUrl = await generateCloudImage(imgPrompt, { watermark: true });
+            setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+              ...m,
+              content: `Generated image for: *${imgPrompt}*`,
+              imageUrl,
+              toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+            } : m));
+            // Record model call for cost tracker + session activation
+            costTracker.onRequestComplete("gemini-2.0-flash", 0, 0);
+            session.recordModelCall();
+          } catch (imgErr) {
+            // Cloud image generation failed — fall back to executeShadowTool
+            // which uses Pollinations.ai (free, no key needed)
+            console.warn("[chat] cloud image gen failed, trying fallback:", imgErr);
+            const fallback = await executeShadowTool(
+              toolResult.tool,
+              toolResult.params,
+              strippedForTools,
+              { personality, mode: chatMode, attachment: selectedFile || undefined },
+            );
+            if (fallback.kind === "inline" && fallback.imageUrl) {
+              setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+                ...m,
+                content: fallback.content,
+                imageUrl: fallback.imageUrl,
+                toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+              } : m));
+            } else {
+              throw new Error(fallback.kind === "inline" ? fallback.content : "Image generation failed.");
+            }
+          }
+        } else {
+          // Other auto-execute tools (calculator, web_search, deep_research, etc.)
+          const result = await executeShadowTool(
+            toolResult.tool,
+            toolResult.params,
+            strippedForTools,
+            { personality, mode: chatMode, attachment: selectedFile || undefined },
+          );
+          if (result.kind === "inline") {
+            setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+              ...m,
+              content: result.content,
+              imageUrl: result.imageUrl,
+              toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+            } : m));
+          } else if (result.kind === "ui" && result.path) {
+            setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+              ...m,
+              content: result.message || `Opening ${result.path}...`,
+              toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+            } : m));
+            navigate(result.path);
+          } else {
+            // chat_flags or none — render a generic confirmation
+            setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+              ...m,
+              content: `Tool ${toolResult.tool} executed.`,
+              toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+            } : m));
+          }
+          session.recordModelCall();
+        }
+
+        // Save the tool execution as an assistant message
+        if (user) {
+          const finalMsg = messagesRef.current.find((m) => m.id === toolMessageId);
+          if (finalMsg) {
+            void saveMessage(finalMsg.content, "assistant", conversationId || "").catch(() => {});
+          }
+        }
+        recordSuccessfulChatSession();
+        recordFunnelEvent("first_reply");
+        markHasChatted();
+        setIsLoading(false);
+        return; // Don't proceed to streamCloudChat — tool handled it
+      } catch (toolErr) {
+        const errMsg = toolErr instanceof Error ? toolErr.message : "Tool execution failed.";
+        setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+          ...m,
+          content: `⚠️ ${errMsg}`,
+          toolExecution: { tool: toolResult.tool, status: "failed", params: toolResult.params },
+        } : m));
+        setIsLoading(false);
+        return;
+      }
+    }
+    // === End tool interception — if no tool matched, fall through to streamCloudChat ===
 
     const conversationId = await resolveConversationId();
     if (!conversationId) {
