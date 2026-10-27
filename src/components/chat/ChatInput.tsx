@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/tooltip";
 
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { SlashCommandMenu } from "@/components/chat/SlashCommandMenu";
+import type { SlashCommand } from "@/lib/slashCommands";
 import { usePromptAutocomplete } from "@/hooks/usePromptAutocomplete";
 import { buildInAppSharePayload, getViralShareLinks } from "@/lib/viralShare";
 import { ViralShareButton } from "@/components/chat/ViralShareButton";
@@ -76,6 +78,21 @@ const ChatInputInner = ({
   onSuggestionChange,
 }: ChatInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [slashMenuOpen, setSlashMenuOpen] = useState(false);
+
+  // Show the slash menu when the input starts with '/'
+  useEffect(() => {
+    const trimmed = message.trimStart();
+    setSlashMenuOpen(trimmed.startsWith("/") && !trimmed.includes("\n"));
+  }, [message]);
+
+  const handleSlashSelect = (cmd: SlashCommand) => {
+    // Insert the command + a space, ready for the user to type their prompt
+    onMessageChange(cmd.command + " ");
+    setSlashMenuOpen(false);
+    // Focus back to the textarea so the user can keep typing
+    setTimeout(() => textareaRef.current?.focus(), 50);
+  };
   const { play } = useSoundEffects();
 
   const [isMultiLine, setIsMultiLine] = useState(false);
@@ -193,6 +210,12 @@ const ChatInputInner = ({
         {voiceBanner}
         <div className={isEmptyState ? "w-full" : "w-full px-0 py-0"}>
           <div className="ios-glass-input shadowtalk-composer group relative flex flex-col justify-between w-full rounded-2xl sm:rounded-3xl backdrop-blur-2xl transition-all duration-200">
+            <SlashCommandMenu
+              query={message}
+              open={slashMenuOpen}
+              onSelect={handleSlashSelect}
+              onClose={() => setSlashMenuOpen(false)}
+            />
             {selectedFile && (
               <div className="p-3 pb-0">
                 <FileUpload
