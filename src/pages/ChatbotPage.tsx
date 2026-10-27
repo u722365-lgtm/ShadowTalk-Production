@@ -1421,9 +1421,13 @@ Structure and Content Guidelines:
           }
         : null);
 
+    // Document generator — only opens on explicit slash command (/doc, /draft)
+    // or explicit "open document studio" phrasing. Casual mentions of
+    // "document" or "report" no longer trigger this (autoExecute is now false).
     if (
       toolDetection.tool === "document_generator" &&
-      /\b(open|launch|show)\s+(the\s+)?(document\s+(studio|generator|creator)|doc\s+(studio|generator))\b/i.test(msgContent)
+      (/^\/(doc|draft|write|document)\b/i.test(msgContent) ||
+       /\b(open|launch|show)\s+(the\s+)?(document\s+(studio|generator|creator)|doc\s+(studio|generator))\b/i.test(msgContent))
     ) {
       if (toolDetection.params?.topic) {
         setDocumentTopic(String(toolDetection.params.topic));

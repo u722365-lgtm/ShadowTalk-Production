@@ -119,16 +119,20 @@ const TOOL_PATTERNS: Array<{
   },
   {
     tool: 'document_generator',
+    // Only trigger on EXPLICIT slash commands — not casual mentions of
+    // "document" or "report" in natural language. This stops the unwanted
+    // auto-generation of documents when users are just chatting.
+    // Slash commands: /doc, /draft, /write, /document
     patterns: [
-      /\b(open|launch|show)\s+(document\s*studio|doc\s*generator|document\s*generator)/i,
-      /\b(generate|create|write|draft|compose)\s+(a\s+|an\s+)?(document|formal\s+report|whitepaper|business\s+plan|contract|proposal|sop|memo)\b/i,
-      /\bdocument\s+(studio|forge|generator)\b/i,
+      /^\/(doc|draft|write|document)\b/i,
+      /\b(open|launch|show)\s+(the\s+)?(document\s+(studio|generator|creator)|doc\s+(studio|generator))\b/i,
     ],
     priority: 9,
-    autoExecute: true,
+    autoExecute: false,  // was: true — caused unwanted document generation
     extractParams: (msg) => {
       const cleaned = msg
-        .replace(/^(open|launch|show|generate|create|write|draft|compose)\s+(me\s+)?(a\s+|an\s+)?(document|formal\s+report|report|whitepaper|business\s+plan|contract|proposal|sop|memo)?\s*(about|for|on|regarding)?\s*/i, '')
+        .replace(/^\/(doc|draft|write|document)\s*/i, '')
+        .replace(/^(open|launch|show)\s+(me\s+)?(the\s+)?(document\s+(studio|generator|creator)|doc\s+(studio|generator))?\s*/i, '')
         .trim();
       return { topic: cleaned || msg, prompt: cleaned || msg };
     },

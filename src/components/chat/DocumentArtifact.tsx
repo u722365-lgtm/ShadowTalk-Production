@@ -507,9 +507,31 @@ export const DocumentArtifact: React.FC<DocumentArtifactProps> = ({ title, conte
   );
 };
 
-// Detect if AI response contains a document artifact
+// Detect if AI response contains a document artifact.
+// STRICT mode (audit fix): content must be 800+ chars AND contain explicit
+// document structure markers. This stops casual AI responses from being
+// auto-detected as documents and triggering the document-artifact UI
+// (which can be exported as PDF).
+//
+// To force a document, use the /doc or /draft slash command — that sets
+// toolExecution.tool = 'document_generator' which bypasses this check.
 export function detectDocumentArtifact(content: string): { isDocument: boolean; title: string; type: DocumentArtifactProps['type']; documentContent: string } | null {
-  if (!content || content.length < 180) return null;
+  if (!content || content.length < 800) return null;
+
+  // Completion verification: if the content ends mid-sentence (no terminal
+  // punctuation or markdown heading), treat it as incomplete and don't
+  // auto-detect as a document. This stops half-finished AI responses from
+  // being exported as incomplete PDFs.
+  const trimmedEnd = content.trimEnd();
+  const lastChar = trimmedEnd.slice(-1);
+  const last5 = trimmedEnd.slice(-5).toLowerCase();
+  const looksComplete =
+    /[.!?]/.test(lastChar) ||           // ends with punctuation
+    /```$/.test(trimmedEnd) ||          // ends with code block close
+    /^#{1,6}\s/.test(trimmedEnd.split("\n").pop() || "") ||  // ends with heading
+    last5.includes("---") ||            // ends with horizontal rule
+    last5.includes("***");
+  if (!looksComplete) return null;
 
   const documentPatterns: Array<{ regex: RegExp; type: DocumentArtifactProps['type']; titleExtractor: (match: RegExpMatchArray, content: string) => string }> = [
     {
