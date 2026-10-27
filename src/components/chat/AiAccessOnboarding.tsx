@@ -117,14 +117,36 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
   };
 
   const existingKey = getByokConfig();
-  const open = !loading && (!mode || (mode === "byok" && !existingKey?.apiKey));
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem("shadowtalk_onboarding_dismissed") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  const open = !loading && !dismissed && (!mode || (mode === "byok" && !existingKey?.apiKey));
+
+  const handleDismiss = () => {
+    try {
+      sessionStorage.setItem("shadowtalk_onboarding_dismissed", "1");
+    } catch {
+      // sessionStorage may be unavailable — non-fatal, just close in-memory
+    }
+    setDismissed(true);
+  };
 
   return (
-    <Dialog open={open} onOpenChange={() => undefined}>
+    <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) handleDismiss(); }}>
       <DialogContent
         className="max-w-xl"
         onEscapeKeyDown={(event) => event.preventDefault()}
         onPointerDownOutside={(event) => event.preventDefault()}
+        onInteractOutside={(event) => {
+          // Allow click-outside to close — overrides the pointer-down-outside preventDefault
+          event.preventDefault();
+          handleDismiss();
+        }}
       >
         <DialogHeader>
           <DialogTitle>Choose how ShadowTalk powers AI</DialogTitle>
@@ -166,6 +188,13 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
               </span>
             </button>
           </div>
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="mt-1 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Skip for now — I'll set this up later
+          </button>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
