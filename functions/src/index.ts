@@ -6,7 +6,71 @@ const cors = require("cors");
 admin.initializeApp();
 
 const corsHandler = cors({ origin: true });
+// === OpenRouter key pool (multi-key for non-tech users) ===
+// Backward compatible: OPENROUTER_API_KEY is the primary; _2 through _5 are
+// optional additional keys that increase throughput and provide failover.
+// Set them with: firebase functions:secrets:set OPENROUTER_API_KEY_2
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
+const openRouterApiKey2 = defineSecret("OPENROUTER_API_KEY_2");
+const openRouterApiKey3 = defineSecret("OPENROUTER_API_KEY_3");
+const openRouterApiKey4 = defineSecret("OPENROUTER_API_KEY_4");
+const openRouterApiKey5 = defineSecret("OPENROUTER_API_KEY_5");
+
+/**
+ * In-memory key pool with round-robin rotation + per-key cooldown on 429.
+ * Survives across warm function invocations. When a key returns 429 or 5xx,
+ * markCooldown() pulls it out of rotation for COOLDOWN_MS.
+ */
+const KEY_COOLDOWN_MS = 60_000;
+const allSecrets = [openRouterApiKey, openRouterApiKey2, openRouterApiKey3, openRouterApiKey4, openRouterApiKey5];
+
+class KeyPool {
+  private keys: string[] = [];
+  private cooldowns: Map<string, number> = new Map();
+  private nextIndex = 0;
+
+  load(): string[] {
+    this.keys = allSecrets
+      .map((s) => s.value())
+      .filter((v): v is string => Boolean(v) && v.length > 10);
+    return this.keys;
+  }
+
+  next(): string | null {
+    if (this.keys.length === 0) return null;
+    const now = Date.now();
+    for (let i = 0; i < this.keys.length; i++) {
+      const idx = (this.nextIndex + i) % this.keys.length;
+      const key = this.keys[idx];
+      const cooldownUntil = this.cooldowns.get(key) || 0;
+      if (now >= cooldownUntil) {
+        this.nextIndex = (idx + 1) % this.keys.length;
+        return key;
+      }
+    }
+    // All in cooldown — return the one with soonest expiry
+    let soonestKey: string | null = null;
+    let soonestExpiry = Infinity;
+    for (const key of this.keys) {
+      const expiry = this.cooldowns.get(key) || 0;
+      if (expiry < soonestExpiry) {
+        soonestExpiry = expiry;
+        soonestKey = key;
+      }
+    }
+    return soonestKey;
+  }
+
+  markCooldown(key: string, durationMs: number = KEY_COOLDOWN_MS): void {
+    this.cooldowns.set(key, Date.now() + durationMs);
+  }
+
+  size(): number {
+    return this.keys.length;
+  }
+}
+
+const keyPool = new KeyPool();
 const SHARED_DAILY_AI_LIMIT = 100;
 const SHARED_CHAT_MODEL = "openrouter/free";
 const SHARED_IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
@@ -97,7 +161,7 @@ function sendError(res: any, error: unknown): void {
   res.status(status).json({ error: message });
 }
 
-export const chat = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
+export const chat = onRequest({ secrets: allSecrets }, (req, res) => {
   corsHandler(req, res, async () => {
     if (req.method === "OPTIONS") return;
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
@@ -108,7 +172,8 @@ export const chat = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
     try {
       const user = await requireAuthenticatedUser(req.headers.authorization);
       await requireSharedAiMode(db, user.uid);
-      if (!openRouterApiKey.value()) {
+      const poolKeys = keyPool.load();
+      if (poolKeys.length === 0) {
         throw new AiRequestError(
           "Shared AI is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
           503,
@@ -149,37 +214,60 @@ export const chat = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
         );
       }
 
-      const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openRouterApiKey.value()}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
-          "X-Title": "ShadowTalk AI",
-        },
-        body: JSON.stringify({
-          model: SHARED_CHAT_MODEL,
-          messages: [{ role: "system", content: systemPrompts.join("\n\n") }, ...messages],
-          stream: Boolean(stream),
-          ...(structuredOutput ? { response_format: { type: "json_object" } } : {}),
-          max_tokens: Math.max(
-            256,
-            Math.min(
-              16384,
-              Number.isFinite(Number(maxTokens))
-                ? Math.floor(Number(maxTokens))
-                : deepResearch ? 8192 : 8192,
+// === Multi-key retry loop ===
+      let upstream: Response | null = null;
+      let lastError: string | null = null;
+      let lastStatus = 502;
+      for (let attempt = 0; attempt < poolKeys.length; attempt++) {
+        const apiKey = keyPool.next();
+        if (!apiKey) {
+          lastError = "No API keys available in the pool.";
+          lastStatus = 503;
+          break;
+        }
+        upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
+            "X-Title": "ShadowTalk AI",
+          },
+          body: JSON.stringify({
+            model: SHARED_CHAT_MODEL,
+            messages: [{ role: "system", content: systemPrompts.join("\n\n") }, ...messages],
+            stream: Boolean(stream),
+            ...(structuredOutput ? { response_format: { type: "json_object" } } : {}),
+            max_tokens: Math.max(
+              256,
+              Math.min(
+                16384,
+                Number.isFinite(Number(maxTokens))
+                  ? Math.floor(Number(maxTokens))
+                  : deepResearch ? 8192 : 8192,
+              ),
             ),
-          ),
-        }),
-      });
+          }),
+        });
 
-      if (!upstream.ok) {
+        if (upstream.ok) break;
+
         const detail = (await upstream.text()).slice(0, 500);
+        lastStatus = upstream.status === 429 ? 503 : 502;
+        lastError = `OpenRouter request failed (${upstream.status}) on key ${attempt + 1}/${poolKeys.length}. ${detail}`;
+
+        if (upstream.status === 429 || upstream.status >= 500) {
+          keyPool.markCooldown(apiKey);
+          continue;
+        }
+        break;
+      }
+
+      if (!upstream || !upstream.ok) {
         await releaseSharedAiRequest(db, usageRef);
         usageRef = null;
-        return res.status(upstream.status === 429 ? 503 : 502).json({
-          error: `OpenRouter request failed (${upstream.status}). ${detail}`,
+        return res.status(lastStatus).json({
+          error: lastError || "OpenRouter request failed after trying all pool keys.",
         });
       }
 
@@ -264,7 +352,7 @@ export const drive = onRequest((req, res) => {
   });
 });
 
-export const generateImage = onRequest({ secrets: [openRouterApiKey] }, (req, res) => {
+export const generateImage = onRequest({ secrets: allSecrets }, (req, res) => {
   corsHandler(req, res, async () => {
     if (req.method === "OPTIONS") return;
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
@@ -275,7 +363,8 @@ export const generateImage = onRequest({ secrets: [openRouterApiKey] }, (req, re
     try {
       const user = await requireAuthenticatedUser(req.headers.authorization);
       await requireSharedAiMode(db, user.uid);
-      if (!openRouterApiKey.value()) {
+      const poolKeys = keyPool.load();
+      if (poolKeys.length === 0) {
         throw new AiRequestError(
           "Shared image generation is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
           503,
@@ -302,27 +391,48 @@ export const generateImage = onRequest({ secrets: [openRouterApiKey] }, (req, re
             { type: "image_url", image_url: { url: referenceImage } },
           ]
         : prompt.trim();
-      const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openRouterApiKey.value()}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
-          "X-Title": "ShadowTalk AI",
-        },
-        body: JSON.stringify({
-          model: SHARED_IMAGE_MODEL,
-          messages: [{ role: "user", content }],
-          modalities: ["image", "text"],
-          stream: false,
-        }),
-      });
-      if (!upstream.ok) {
+// === Multi-key retry loop (same pattern as chat) ===
+      let upstream: Response | null = null;
+      let lastError: string | null = null;
+      let lastStatus = 502;
+      for (let attempt = 0; attempt < poolKeys.length; attempt++) {
+        const apiKey = keyPool.next();
+        if (!apiKey) {
+          lastError = "No API keys available in the pool.";
+          lastStatus = 503;
+          break;
+        }
+        upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://shadowtalk-ai-7a513.web.app",
+            "X-Title": "ShadowTalk AI",
+          },
+          body: JSON.stringify({
+            model: SHARED_IMAGE_MODEL,
+            messages: [{ role: "user", content }],
+            modalities: ["image", "text"],
+            stream: false,
+          }),
+        });
+        if (upstream.ok) break;
         const detail = (await upstream.text()).slice(0, 500);
+        lastStatus = upstream.status === 429 ? 503 : 502;
+        lastError = `OpenRouter image request failed (${upstream.status}) on key ${attempt + 1}/${poolKeys.length}. ${detail}`;
+        if (upstream.status === 429 || upstream.status >= 500) {
+          keyPool.markCooldown(apiKey);
+          continue;
+        }
+        break;
+      }
+
+      if (!upstream || !upstream.ok) {
         await releaseSharedAiRequest(db, usageRef);
         usageRef = null;
-        return res.status(upstream.status === 429 ? 503 : 502).json({
-          error: `OpenRouter image request failed (${upstream.status}). ${detail}`,
+        return res.status(lastStatus).json({
+          error: lastError || "OpenRouter image request failed after trying all pool keys.",
         });
       }
 
