@@ -66,6 +66,7 @@ const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
 const BenchmarksPage = lazy(() => import("./pages/BenchmarksPage"));
 const ComingSoonPage = lazy(() => import("./pages/ComingSoonPage"));
+const AgenticIdePage = lazy(() => import("./pages/AgenticIdePage"));
 const GDPRPage = lazy(() => import("./pages/GDPRPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
@@ -171,7 +172,7 @@ const AnimatedRoutes = () => {
           <Route path="/downloads" element={<PageTransition><DownloadPage /></PageTransition>} />
           <Route path="/google-seo" element={<Navigate to="/google-seo-hub.html" replace />} />
           <Route path="/press" element={<Navigate to="/press-kit.html" replace />} />
-          <Route path="/ide" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/ide" element={<Suspense fallback={<PageLoader />}><PageTransition><AgenticIdePage /></PageTransition></Suspense>} />
           <Route path="/missioncontrol" element={<Navigate to="/agentic-ai-workspace" replace />} />
           <Route path="/workspace" element={<Navigate to="/chatbot" replace />} />
           <Route path="/marketplace" element={<Navigate to="/chatbot" replace />} />
