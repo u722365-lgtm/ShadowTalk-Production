@@ -108,9 +108,12 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(getChatbotPath(searchParams), { replace: true });
+      // Use hard redirect for reliability — if the user lands on /auth while
+      // already signed in (e.g. page refresh), a full reload ensures all
+      // auth state is cleanly hydrated before chatbot code runs.
+      window.location.assign(getChatbotPath(searchParams));
     }
-  }, [user, navigate, searchParams]);
+  }, [user, searchParams]);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
@@ -278,8 +281,11 @@ const AuthPage = () => {
         clearExplicitSignOut();
         toast({ title: "Welcome back!", description: "Logged in securely to ShadowTalk AI." });
         setLoading(false);
-        navigate(getChatbotPath(searchParams), { replace: true });
-        void playWelcomeVoice(cleanEmail);
+        // Hard redirect (full page reload) — guarantees AuthProvider re-initializes
+        // from Firebase persistence with the new session. Client-side navigate()
+        // races with onAuthStateChanged and can bounce back to /auth.
+        window.location.assign(getChatbotPath(searchParams));
+        return;
       } else {
         const { data, error } = await backend.auth.signUp({
           email: cleanEmail,
@@ -293,8 +299,9 @@ const AuthPage = () => {
           description: "Welcome to ShadowTalk! We've sent a verification link to your email — please verify to secure your account.",
         });
         setLoading(false);
-        navigate(getChatbotPath(searchParams), { replace: true });
-        void playWelcomeVoice(cleanEmail);
+        // Hard redirect — same reason as login (see comment above)
+        window.location.assign(getChatbotPath(searchParams));
+        return;
       }
     } catch (error: any) {
       toast({
