@@ -892,12 +892,14 @@ const ChatbotPage = () => {
         augmented = [{ role: "system", content: userMemoryContext }, ...augmented];
       }
 
-      const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
-      const isDocRequest =
-        docTypeMatch ||
-        /\b(write|create|draft|generate|compose)\s+(a\s+|an\s+)?(document|report|proposal|whitepaper|business\s+plan|contract|essay|memo|sop|article|resume)\b/i.test(lastUser);
+      // Document generation — ONLY on explicit slash command (/doc, /draft,
+      // /write, /document). Removed the auto-detection that matched casual
+      // mentions of "report", "email", "memo", "article" etc. — that caused
+      // unwanted document generation (audit fix, see commit ea8e98f).
+      const isExplicitDocCommand = /^\/(doc|draft|write|document)\b/i.test(lastUser);
 
-      if (isDocRequest) {
+      if (isExplicitDocCommand) {
+        const docTypeMatch = inferDocumentTypeFromMessage(lastUser);
         const inferredType = docTypeMatch || "report";
         const docDirective = `[PUBLICATION-QUALITY DOCUMENT STANDARDS]
 You are generating a world-class, publication-grade ${inferredType}.

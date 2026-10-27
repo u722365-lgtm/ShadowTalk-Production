@@ -202,6 +202,13 @@ export function useAgenticToolDispatch() {
 
         case "presentation_builder":
         case "document_generator": {
+          // Only navigate to the document forge on explicit slash commands
+          // (/doc, /draft, /write, /document, /slides). Natural language
+          // mentions no longer trigger this (audit fix).
+          if (tool === "document_generator" && !/^\/(doc|draft|write|document)\b/i.test(message)) {
+            // Not an explicit slash command — fall through to default handling
+            break;
+          }
           const path =
             tool === "presentation_builder"
               ? "/forge?mode=slides"
