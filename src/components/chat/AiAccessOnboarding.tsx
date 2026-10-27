@@ -207,14 +207,6 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
               </Button>
             </div>
           </div>
-        )}
-
-        {step === "choose" && error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-        {step === "choose" && saving && (
-          <p className="flex items-center text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving your selection…
-          </p>
-        )}
       </DialogContent>
     </Dialog>
   );
