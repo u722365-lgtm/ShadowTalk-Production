@@ -31,18 +31,61 @@ const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const KEY_COOLDOWN_MS = 60_000;
 const allSecrets = [openRouterApiKey]; // primary only — add _2-_5 here when on Blaze
 
+/**
+ * Fetches OpenRouter keys from Firebase Remote Config.
+ * Cached for 5 min per function instance to avoid hammering the RC API.
+ * Returns an empty array if Remote Config isn't configured or fetch fails
+ * (non-fatal — the pool falls back to secrets + env vars).
+ *
+ * Remote Config parameter names: openrouter_key_2, openrouter_key_3,
+ * openrouter_key_4, openrouter_key_5. Set them in Firebase Console →
+ * Remote Config with the OpenRouter API key (sk-or-v1-...) as the value.
+ */
+const RC_CACHE_MS = 5 * 60 * 1000;
+let rcCache: { keys: string[]; fetchedAt: number } | null = null;
+
+async function fetchRemoteConfigKeys(): Promise<string[]> {
+  // Return cached value if fresh
+  if (rcCache && Date.now() - rcCache.fetchedAt < RC_CACHE_MS) {
+    return rcCache.keys;
+  }
+  try {
+    const template = await admin.remoteConfig().getTemplate();
+    const paramNames = ["openrouter_key_2", "openrouter_key_3", "openrouter_key_4", "openrouter_key_5"];
+    const keys: string[] = [];
+    for (const name of paramNames) {
+      const param = template.parameters[name];
+      const value = param?.defaultValue?.value;
+      if (typeof value === "string" && value.length > 10) {
+        keys.push(value);
+      }
+    }
+    rcCache = { keys, fetchedAt: Date.now() };
+    return keys;
+  } catch (err) {
+    // Remote Config not configured, permission denied, or network error —
+    // non-fatal. The pool falls back to secrets + env vars.
+    console.warn("[keypool] Remote Config fetch failed (non-fatal):", err);
+    return rcCache?.keys ?? [];
+  }
+}
+
 class KeyPool {
   private keys: string[] = [];
   private cooldowns: Map<string, number> = new Map();
   private nextIndex = 0;
 
   /**
-   * Loads all available keys. The primary key comes from defineSecret (works
-   * on Spark). Additional keys come from process.env.OPENROUTER_API_KEY_N —
-   * set them via `firebase functions:config:set openrouter.keyN="..."` on
-   * Spark, or via Secret Manager on Blaze.
+   * Loads all available keys. Sources (in priority order):
+   *   1. defineSecret("OPENROUTER_API_KEY") — primary, works on Spark
+   *   2. process.env.OPENROUTER_API_KEY_2..5 — env vars (legacy)
+   *   3. Firebase Remote Config: openrouter_key_2..5 — managed via Console UI
+   *
+   * Remote Config is fetched via the Admin SDK and cached for 5 min per
+   * function instance. To add a key, create a Remote Config parameter named
+   * `openrouter_key_2` (or _3, _4, _5) in the Firebase Console → Remote Config.
    */
-  load(): string[] {
+  async load(): Promise<string[]> {
     const fromSecrets = allSecrets
       .map((s) => s.value())
       .filter((v): v is string => Boolean(v) && v.length > 10);
@@ -52,9 +95,10 @@ class KeyPool {
       process.env.OPENROUTER_API_KEY_4,
       process.env.OPENROUTER_API_KEY_5,
     ].filter((v): v is string => Boolean(v) && v.length > 10);
-    // Dedupe (in case primary is also in env)
+    const fromRC = await fetchRemoteConfigKeys();
+    // Dedupe across all sources
     const seen = new Set<string>();
-    this.keys = [...fromSecrets, ...fromEnv].filter((k) => {
+    this.keys = [...fromSecrets, ...fromEnv, ...fromRC].filter((k) => {
       if (seen.has(k)) return false;
       seen.add(k);
       return true;
@@ -198,7 +242,7 @@ export const chat = onRequest({ secrets: allSecrets }, (req, res) => {
     try {
       const user = await requireAuthenticatedUser(req.headers.authorization);
       await requireSharedAiMode(db, user.uid);
-      const poolKeys = keyPool.load();
+      const poolKeys = await keyPool.load();
       if (poolKeys.length === 0) {
         throw new AiRequestError(
           "Shared AI is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
@@ -389,7 +433,7 @@ export const generateImage = onRequest({ secrets: allSecrets }, (req, res) => {
     try {
       const user = await requireAuthenticatedUser(req.headers.authorization);
       await requireSharedAiMode(db, user.uid);
-      const poolKeys = keyPool.load();
+      const poolKeys = await keyPool.load();
       if (poolKeys.length === 0) {
         throw new AiRequestError(
           "Shared image generation is not configured. Set the OPENROUTER_API_KEY Firebase secret.",
