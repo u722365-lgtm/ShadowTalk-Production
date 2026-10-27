@@ -99,8 +99,36 @@ export function SettingsByokCard() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Model</Label>
-            <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder={BYOK_PROVIDERS[provider].defaultModel} />
+            <Label>
+              Model
+              {validation.status === "validating" && (
+                <span className="ml-2 text-[10px] text-muted-foreground font-normal">Loading available models…</span>
+              )}
+              {validation.status === "valid" && validation.models.length > 0 && (
+                <span className="ml-2 text-[10px] text-success font-normal">{validation.models.length} models available</span>
+              )}
+            </Label>
+            {validation.status === "valid" && validation.models.length > 0 ? (
+              <Select value={model} onValueChange={setModel}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {/* Default model first, then alphabetical */}
+                  {!validation.models.includes(BYOK_PROVIDERS[provider].defaultModel) && (
+                    <SelectItem value={BYOK_PROVIDERS[provider].defaultModel}>
+                      {BYOK_PROVIDERS[provider].defaultModel} (default)
+                    </SelectItem>
+                  )}
+                  {validation.models.map((m) => (
+                    <SelectItem key={m} value={m}>{m}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder={BYOK_PROVIDERS[provider].defaultModel} />
+            )}
+            {validation.status === "valid" && validation.models.length === 0 && (
+              <p className="text-[10px] text-muted-foreground">Couldn&apos;t load the model list (CORS). Type the model ID manually.</p>
+            )}
           </div>
         </div>
         <div className="space-y-2">

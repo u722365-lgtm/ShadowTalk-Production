@@ -18,6 +18,8 @@ export interface ApiKeyValidationState {
   detail?: string;
   /** ISO timestamp of last successful validation */
   lastChecked?: string;
+  /** Model IDs available for this key (when status === "valid"). */
+  models: string[];
   /** Trigger a validation now (debounced). Pass the live key + provider. */
   validate: (provider: ByokProvider, apiKey: string) => void;
   /** Reset to idle. */
@@ -44,7 +46,7 @@ async function pingModels(
   provider: ByokProvider,
   apiKey: string,
   signal: AbortSignal,
-): Promise<{ ok: boolean; modelCount?: number; error?: string }> {
+): Promise<{ ok: boolean; modelCount?: number; models?: string[]; error?: string }> {
   const url = modelsUrlFor(provider);
   if (!url) return { ok: false, error: "Unknown provider" };
 
@@ -68,7 +70,8 @@ async function pingModels(
     }
     const json = (await res.json()) as ModelsResponse;
     const list = json.data || json.models || [];
-    return { ok: true, modelCount: list.length };
+    const modelIds = list.map((m) => m.id).filter(Boolean).sort();
+    return { ok: true, modelCount: modelIds.length, models: modelIds };
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") {
       return { ok: false, error: "aborted" };
@@ -84,6 +87,7 @@ export function useApiKeyValidation(): ApiKeyValidationState {
   const [status, setStatus] = useState<ApiKeyValidationState["status"]>("idle");
   const [detail, setDetail] = useState<string | undefined>();
   const [lastChecked, setLastChecked] = useState<string | undefined>();
+  const [models, setModels] = useState<string[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -117,6 +121,7 @@ export function useApiKeyValidation(): ApiKeyValidationState {
               ? `${result.modelCount} models available`
               : "Key accepted",
           );
+          setModels(result.models || []);
           setLastChecked(new Date().toISOString());
         } else if (result.error === "aborted") {
           // Newer validation in flight — leave state as-is
@@ -141,9 +146,10 @@ export function useApiKeyValidation(): ApiKeyValidationState {
     if (abortRef.current) abortRef.current.abort();
     setStatus("idle");
     setDetail(undefined);
+    setModels([]);
   }, []);
 
-  return { status, detail, lastChecked, validate, reset };
+  return { status, detail, lastChecked, models, validate, reset };
 }
 
 export default useApiKeyValidation;
