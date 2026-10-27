@@ -109,7 +109,7 @@ class KeyPool {
 const keyPool = new KeyPool();
 const SHARED_DAILY_AI_LIMIT = 100;
 const SHARED_CHAT_MODEL = "openrouter/free";
-const SHARED_IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
+const SHARED_IMAGE_MODEL = "google/gemini-2.5-flash-image";
 
 class AiRequestError extends Error {
   constructor(message: string, public status: number) {

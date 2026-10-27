@@ -11,7 +11,7 @@ export interface GenerateImageOptions {
   onFrame?: (dataUrl: string, isFinal: boolean) => void;
 }
 
-const OPENROUTER_IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
+const OPENROUTER_IMAGE_MODEL = "google/gemini-2.5-flash-image";
 
 export function isCloudImageConfigured(): boolean {
   return Boolean(functionsBaseUrl);
@@ -108,7 +108,7 @@ export async function generateCloudImage(
   const config = getByokConfig();
   if (!config?.apiKey) {
     throw new Error(
-      "Image generation requires a BYOK API key. Add your OpenAI or OpenRouter key in Settings → Personalization → BYOK. OpenAI (gpt-image-1) and OpenRouter (gemini-2.5-flash-image-preview) both support image generation."
+      "Image generation requires a BYOK API key. Add your OpenAI or OpenRouter key in Settings → Personalization → BYOK. OpenAI (gpt-image-1) and OpenRouter (gemini-2.5-flash-image) both support image generation."
     );
   }
   if (!prompt.trim()) throw new Error("Describe the image you want to generate.");
