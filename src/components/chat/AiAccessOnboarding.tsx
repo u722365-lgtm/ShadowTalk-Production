@@ -35,7 +35,7 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<AiAccessMode | null>(null);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<"choose" | "byok">("choose");
+  const [step, setStep] = useState<"choose" | "byok">("byok");
   const [provider, setProvider] = useState<ByokProvider>("openrouter");
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState(BYOK_PROVIDERS.openrouter.defaultModel);
@@ -71,19 +71,6 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
       active = false;
     };
   }, [userId]);
-
-  const saveSharedMode = async () => {
-    setSaving(true);
-    setError("");
-    try {
-      await saveAiAccessMode(userId, "shared");
-      setMode("shared");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save your AI setup.");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const saveByokMode = async () => {
     const trimmedKey = apiKey.trim();
@@ -149,56 +136,22 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
         }}
       >
         <DialogHeader>
-          <DialogTitle>Choose how ShadowTalk powers AI</DialogTitle>
+          <DialogTitle>Connect your API key</DialogTitle>
           <DialogDescription>
-            Pick the setup that fits you. Your choice is saved to your account; API keys are never saved to ShadowTalk servers.
+            ShadowTalk is BYOK-only. Paste your provider API key below — it's stored in this browser only and sent directly to your provider. Never sent to ShadowTalk servers.
           </DialogDescription>
         </DialogHeader>
 
-        {step === "choose" ? (
-          <>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => {
-                const current = getByokConfig();
-                setProvider(current?.provider ?? "openrouter");
-                setApiKey(current?.apiKey ?? "");
-                setModel(current?.model ?? BYOK_PROVIDERS[current?.provider ?? "openrouter"].defaultModel);
-                setStep("byok");
-                setError("");
-              }}
-              className="rounded-xl border border-border p-5 text-left transition-colors hover:border-primary/60 hover:bg-muted/30"
-            >
-              <KeyRound className="mb-3 h-5 w-5 text-primary" />
-              <span className="block font-semibold">Tech-User</span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                Connect your own provider key. Requests use your provider account and are not subject to ShadowTalk's shared-key quota.
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => void saveSharedMode()}
-              disabled={saving}
-              className="rounded-xl border border-border p-5 text-left transition-colors hover:border-primary/60 hover:bg-muted/30 disabled:opacity-60"
-            >
-              <Sparkles className="mb-3 h-5 w-5 text-primary" />
-              <span className="block font-semibold">Non-Tech-Users</span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                Use ShadowTalk's hosted OpenRouter provider for up to 100 AI requests per UTC day.
-              </span>
-            </button>
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <KeyRound className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-sm">Connect your API key</span>
           </div>
-          <button
-            type="button"
-            onClick={handleDismiss}
-            className="mt-1 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Skip for now — I'll set this up later
-          </button>
-          </>
-        ) : (
-          <div className="space-y-4">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            ShadowTalk is built for developers. Bring your own OpenAI, Anthropic, Google, Groq, or OpenRouter key — your key is stored in this browser only and never sent to ShadowTalk servers.
+          </p>
+        </div>
+        <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="byok-provider">Provider</Label>
               <Select
@@ -244,8 +197,8 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <div className="flex justify-between gap-2">
               {mode !== "byok" && (
-                <Button variant="ghost" onClick={() => setStep("choose")} disabled={saving}>
-                  Back
+                <Button variant="ghost" onClick={handleDismiss} disabled={saving}>
+                  Skip
                 </Button>
               )}
               <Button onClick={() => void saveByokMode()} disabled={saving} className="ml-auto">

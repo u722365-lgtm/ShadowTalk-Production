@@ -1184,17 +1184,14 @@ Structure and Content Guidelines:
 
     try {
       let accessMode = await loadAiAccessMode(user.id);
-      // If the user dismissed the onboarding dialog (or it hasn't loaded yet),
-      // default to 'shared' mode so they can send messages immediately using
-      // the free shared OpenRouter pool. They can upgrade to BYOK later via Settings.
-      // The shared mode has a 100 req/day limit (enforced by the Cloud Function),
-      // so this is safe — no quota bypass.
+      // ShadowTalk is BYOK-only. Default to 'byok' mode when no mode is set.
+      // If the user has no API key, the cloudChat layer will prompt them to
+      // add one in Settings — we don't fall back to the shared tier.
       if (!accessMode) {
         try {
-          await saveAiAccessMode(user.id, "shared");
+          await saveAiAccessMode(user.id, "byok");
         } catch {
-          // saveAiAccessMode is resilient (localStorage-first) — if this fails,
-          // continue anyway. The Cloud Function will enforce the daily limit.
+          // saveAiAccessMode is resilient (localStorage-first)
         }
       }
     } catch (error) {

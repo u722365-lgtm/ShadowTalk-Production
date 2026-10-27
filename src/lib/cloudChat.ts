@@ -62,7 +62,7 @@ export async function streamCloudChat(
   if (accessMode === "byok") {
     const byok = getByokConfig();
     if (!byok?.apiKey) {
-      return { content: "", error: "Your API key is not available on this device. Re-enter it in AI settings." };
+      return { content: "", error: "No API key set. Add your OpenAI/Anthropic/Google/Groq/OpenRouter key in Settings → Personalization → BYOK to start chatting." };
     }
     return streamByokChat(byok, messages, opts);
   }
