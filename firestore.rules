@@ -205,7 +205,10 @@ service cloud.firestore {
     match /{collection}/{doc} {
       allow read: if isUserDataCollection() && (ownsExisting() || isAdmin());
       allow create: if isUserDataCollection() && ownsIncoming();
-      allow update: if isUserDataCollection() && ((ownsExisting() && ownsIncoming()) || isAdmin());
+      // Update uses ownsExistingOrLegacy() so users can claim legacy docs
+      // (created before user_id was enforced) by writing their own user_id.
+      // Safe: ownsIncoming() ensures the new data has user_id == auth.uid.
+      allow update: if isUserDataCollection() && ((ownsExistingOrLegacy() && ownsIncoming()) || isAdmin());
       // Delete uses ownsExistingOrLegacy() so users can clear legacy docs
       // (created before user_id was enforced) that would otherwise block
       // batch deletes with "Missing or insufficient permissions" errors.
