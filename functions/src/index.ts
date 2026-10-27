@@ -6,15 +6,22 @@ const cors = require("cors");
 admin.initializeApp();
 
 const corsHandler = cors({ origin: true });
-// === OpenRouter key pool (multi-key for non-tech users) ===
-// Backward compatible: OPENROUTER_API_KEY is the primary; _2 through _5 are
-// optional additional keys that increase throughput and provide failover.
-// Set them with: firebase functions:secrets:set OPENROUTER_API_KEY_2
+// === OpenRouter key pool (Spark-safe) ===
+// PRIMARY key uses defineSecret (works on Spark + Blaze).
+// ADDITIONAL keys (_2 through _5) are read from process.env, so they work on
+// Spark (set via firebase functions:config or .env) without Secret Manager.
+// To add more keys on Spark:
+//   firebase functions:config:set openrouter.key2="sk-or-v1-..."
+//   firebase functions:config:set openrouter.key3="sk-or-v1-..."
+//   firebase deploy --only functions
+// On Blaze, you can also use Secret Manager:
+//   firebase functions:secrets:set OPENROUTER_API_KEY_2
+//   (then uncomment the defineSecret lines below)
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
-const openRouterApiKey2 = defineSecret("OPENROUTER_API_KEY_2");
-const openRouterApiKey3 = defineSecret("OPENROUTER_API_KEY_3");
-const openRouterApiKey4 = defineSecret("OPENROUTER_API_KEY_4");
-const openRouterApiKey5 = defineSecret("OPENROUTER_API_KEY_5");
+// const openRouterApiKey2 = defineSecret("OPENROUTER_API_KEY_2"); // Blaze only
+// const openRouterApiKey3 = defineSecret("OPENROUTER_API_KEY_3"); // Blaze only
+// const openRouterApiKey4 = defineSecret("OPENROUTER_API_KEY_4"); // Blaze only
+// const openRouterApiKey5 = defineSecret("OPENROUTER_API_KEY_5"); // Blaze only
 
 /**
  * In-memory key pool with round-robin rotation + per-key cooldown on 429.
@@ -22,17 +29,36 @@ const openRouterApiKey5 = defineSecret("OPENROUTER_API_KEY_5");
  * markCooldown() pulls it out of rotation for COOLDOWN_MS.
  */
 const KEY_COOLDOWN_MS = 60_000;
-const allSecrets = [openRouterApiKey, openRouterApiKey2, openRouterApiKey3, openRouterApiKey4, openRouterApiKey5];
+const allSecrets = [openRouterApiKey]; // primary only — add _2-_5 here when on Blaze
 
 class KeyPool {
   private keys: string[] = [];
   private cooldowns: Map<string, number> = new Map();
   private nextIndex = 0;
 
+  /**
+   * Loads all available keys. The primary key comes from defineSecret (works
+   * on Spark). Additional keys come from process.env.OPENROUTER_API_KEY_N —
+   * set them via `firebase functions:config:set openrouter.keyN="..."` on
+   * Spark, or via Secret Manager on Blaze.
+   */
   load(): string[] {
-    this.keys = allSecrets
+    const fromSecrets = allSecrets
       .map((s) => s.value())
       .filter((v): v is string => Boolean(v) && v.length > 10);
+    const fromEnv = [
+      process.env.OPENROUTER_API_KEY_2,
+      process.env.OPENROUTER_API_KEY_3,
+      process.env.OPENROUTER_API_KEY_4,
+      process.env.OPENROUTER_API_KEY_5,
+    ].filter((v): v is string => Boolean(v) && v.length > 10);
+    // Dedupe (in case primary is also in env)
+    const seen = new Set<string>();
+    this.keys = [...fromSecrets, ...fromEnv].filter((k) => {
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
     return this.keys;
   }
 
