@@ -23,14 +23,32 @@ export interface ProviderPricing {
 }
 
 export const PRICING: Record<string, ProviderPricing> = {
+  // OpenAI
   "gpt-4o-mini": { inputPer1M: 0.15, outputPer1M: 0.60 },
   "gpt-4o": { inputPer1M: 2.50, outputPer1M: 10.0 },
   "gpt-4-turbo": { inputPer1M: 10.0, outputPer1M: 30.0 },
+  // Anthropic
+  "claude-haiku-5-5": { inputPer1M: 0.10, outputPer1M: 0.50 },
   "claude-3-5-sonnet": { inputPer1M: 3.0, outputPer1M: 15.0 },
   "claude-3-5-haiku": { inputPer1M: 0.80, outputPer1M: 4.0 },
+  // Google
   "gemini-2.0-flash": { inputPer1M: 0.075, outputPer1M: 0.30 },
   "gemini-1.5-pro": { inputPer1M: 1.25, outputPer1M: 5.0 },
+  // Groq
   "llama-3.3-70b-versatile": { inputPer1M: 0.59, outputPer1M: 0.79 },
+  // Mistral
+  "mistral-small-latest": { inputPer1M: 0.20, outputPer1M: 0.60 },
+  "mistral-large-latest": { inputPer1M: 2.00, outputPer1M: 6.00 },
+  // DeepSeek
+  "deepseek-chat": { inputPer1M: 0.27, outputPer1M: 1.10 },
+  // xAI
+  "grok-2-latest": { inputPer1M: 2.00, outputPer1M: 10.0 },
+  // Perplexity
+  "llama-3.1-sonar-small-128k-online": { inputPer1M: 0.20, outputPer1M: 0.20 },
+  // Cohere
+  "command-r-plus": { inputPer1M: 2.50, outputPer1M: 10.0 },
+  // Cerebras
+  "llama-3.3-70b": { inputPer1M: 0.85, outputPer1M: 1.20 },
 };
 
 /** Fallback if the model isn't in our table — assume GPT-4o-mini pricing. */

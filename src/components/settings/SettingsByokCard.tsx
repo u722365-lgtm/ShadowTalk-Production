@@ -17,6 +17,18 @@ const KEY_QUICK_LINKS: Record<ByokProvider, { label: string; url: string }> = {
   groq: { label: "Get Groq Key", url: "https://console.groq.com/keys" },
   openrouter: { label: "Get OpenRouter Key", url: "https://openrouter.ai/keys" },
   gemini: { label: "Get Gemini Key", url: "https://aistudio.google.com/app/apikey" },
+  anthropic: { label: "Get Anthropic Key", url: "https://console.anthropic.com/settings/keys" },
+  mistral: { label: "Get Mistral Key", url: "https://console.mistral.ai/api-keys" },
+  deepseek: { label: "Get DeepSeek Key", url: "https://platform.deepseek.com/api_keys" },
+  together: { label: "Get Together Key", url: "https://api.together.xyz/settings/api-keys" },
+  fireworks: { label: "Get Fireworks Key", url: "https://fireworks.ai/account/api-keys" },
+  perplexity: { label: "Get Perplexity Key", url: "https://www.perplexity.ai/settings/api" },
+  cohere: { label: "Get Cohere Key", url: "https://dashboard.cohere.com/api-keys" },
+  xai: { label: "Get xAI Key", url: "https://console.x.ai" },
+  cerebras: { label: "Get Cerebras Key", url: "https://cloud.cerebras.ai" },
+  hyperbolic: { label: "Get Hyperbolic Key", url: "https://app.hyperbolic.xyz/settings" },
+  novita: { label: "Get Novita Key", url: "https://novita.ai/getKey" },
+  deepinfra: { label: "Get DeepInfra Key", url: "https://deepinfra.com/dash/api_keys" },
 };
 
 export function SettingsByokCard() {

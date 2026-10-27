@@ -5,7 +5,23 @@
 import type { CloudChatMessage, CloudChatOptions, CloudChatResult } from "@/lib/cloudChat";
 import { fbAuth } from "@/integrations/firebase/app";
 
-export type ByokProvider = "openai" | "groq" | "openrouter" | "gemini";
+export type ByokProvider =
+  | "openai"
+  | "groq"
+  | "openrouter"
+  | "gemini"
+  | "anthropic"
+  | "mistral"
+  | "deepseek"
+  | "together"
+  | "fireworks"
+  | "perplexity"
+  | "cohere"
+  | "xai"
+  | "cerebras"
+  | "hyperbolic"
+  | "novita"
+  | "deepinfra";
 export type ByokMode = "fallback" | "always";
 
 export interface ByokConfig {
@@ -20,6 +36,18 @@ export const BYOK_PROVIDERS: Record<ByokProvider, { label: string; url: string; 
   groq: { label: "Groq", url: "https://api.groq.com/openai/v1/chat/completions", defaultModel: "llama-3.3-70b-versatile", keyHint: "gsk_..." },
   openrouter: { label: "OpenRouter", url: "https://openrouter.ai/api/v1/chat/completions", defaultModel: "openai/gpt-4o-mini", keyHint: "sk-or-..." },
   gemini: { label: "Google Gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", defaultModel: "gemini-2.0-flash", keyHint: "AIza..." },
+  anthropic: { label: "Anthropic (Claude)", url: "https://api.anthropic.com/v1/openai/v1/chat/completions", defaultModel: "claude-haiku-5-5", keyHint: "sk-ant-..." },
+  mistral: { label: "Mistral AI", url: "https://api.mistral.ai/v1/chat/completions", defaultModel: "mistral-small-latest", keyHint: "..." },
+  deepseek: { label: "DeepSeek", url: "https://api.deepseek.com/v1/chat/completions", defaultModel: "deepseek-chat", keyHint: "sk-..." },
+  together: { label: "Together AI", url: "https://api.together.xyz/v1/chat/completions", defaultModel: "meta-llama/Llama-3.3-70B-Instruct-Turbo", keyHint: "..." },
+  fireworks: { label: "Fireworks AI", url: "https://api.fireworks.ai/inference/v1/chat/completions", defaultModel: "accounts/fireworks/models/llama-v3p3-70b-instruct", keyHint: "fw_..." },
+  perplexity: { label: "Perplexity", url: "https://api.perplexity.ai/chat/completions", defaultModel: "llama-3.1-sonar-small-128k-online", keyHint: "pplx-..." },
+  cohere: { label: "Cohere", url: "https://api.cohere.com/v1/chat/completions", defaultModel: "command-r-plus", keyHint: "..." },
+  xai: { label: "xAI (Grok)", url: "https://api.x.ai/v1/chat/completions", defaultModel: "grok-2-latest", keyHint: "xai-..." },
+  cerebras: { label: "Cerebras", url: "https://api.cerebras.ai/v1/chat/completions", defaultModel: "llama-3.3-70b", keyHint: "csk-..." },
+  hyperbolic: { label: "Hyperbolic", url: "https://api.hyperbolic.xyz/v1/chat/completions", defaultModel: "meta-llama/Meta-Llama-3.1-70B-Instruct", keyHint: "sk-..." },
+  novita: { label: "Novita AI", url: "https://api.novita.ai/v3/openai/chat/completions", defaultModel: "deepseek/deepseek-v3-turbo", keyHint: "sk_..." },
+  deepinfra: { label: "DeepInfra", url: "https://api.deepinfra.com/v1/openai/chat/completions", defaultModel: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", keyHint: "..." },
 };
 
 const STORAGE_KEY_PREFIX = "shadowtalk.byok.v2.";
