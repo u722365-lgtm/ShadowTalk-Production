@@ -156,6 +156,7 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
         </DialogHeader>
 
         {step === "choose" ? (
+          <>
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               type="button"
@@ -195,6 +196,7 @@ export function AiAccessOnboarding({ userId }: AiAccessOnboardingProps) {
           >
             Skip for now — I'll set this up later
           </button>
+          </>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
