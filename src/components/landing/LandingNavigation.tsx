@@ -135,8 +135,16 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
             </a>
           </nav>
 
-          {/* Action Group: Open App Button + Minimalist Glass Hamburger Button */}
+          {/* Action Group: Sign Up + Open App + Minimalist Glass Hamburger Button */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 whitespace-nowrap ml-auto">
+            {/* Sign Up Button */}
+            <Link
+              to="/auth"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-400/10 backdrop-blur-md px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-cyan-300 transition-all hover:bg-cyan-400/20 hover:border-cyan-400/60 hover:text-cyan-200 whitespace-nowrap shrink-0"
+            >
+              <span className="whitespace-nowrap">Sign Up</span>
+            </Link>
+
             {/* Primary Open App Button */}
             <Link
               to="/chatbot"
@@ -488,6 +496,15 @@ const LandingNavigation = ({ children }: LandingNavigationProps) => {
 
               {/* xAI Style Bottom Pill Button & Sub-links */}
               <div className="px-6 sm:px-8 pb-8 pt-4 shrink-0 space-y-4">
+                {/* Sign Up Button — full-width, cyan accent */}
+                <Link
+                  to="/auth"
+                  onClick={closeDrawer}
+                  className="w-full py-4 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300 font-semibold text-center text-sm sm:text-base hover:bg-cyan-400/20 hover:border-cyan-400/60 transition-colors block active:scale-[0.99]"
+                >
+                  Sign Up Free
+                </Link>
+
                 {/* Full-width Black & White Pill CTA Button */}
                 <Link
                   to="/chatbot"
