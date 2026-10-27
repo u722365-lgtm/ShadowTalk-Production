@@ -1258,42 +1258,21 @@ Structure and Content Guidelines:
       setIsLoading(true);
 
       try {
-        // Image generation — use generateCloudImage (BYOK key or shared pool)
-        // for better quality than the Pollinations.ai fallback.
+        // Image generation — BYOK only. Uses the user's own OpenAI or OpenRouter
+        // key. No fallback to free services. If the key is missing or fails,
+        // the error is shown to the user so they can fix their setup.
         if (toolResult.tool === "image_generator") {
           const imgPrompt = toolResult.params?.prompt || strippedForTools;
-          try {
-            const imageUrl = await generateCloudImage(imgPrompt, { watermark: true });
-            setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
-              ...m,
-              content: `Generated image for: *${imgPrompt}*`,
-              imageUrl,
-              toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
-            } : m));
-            // Record model call for cost tracker + session activation
-            costTracker.onRequestComplete("gemini-2.0-flash", 0, 0);
-            session.recordModelCall();
-          } catch (imgErr) {
-            // Cloud image generation failed — fall back to executeShadowTool
-            // which uses Pollinations.ai (free, no key needed)
-            console.warn("[chat] cloud image gen failed, trying fallback:", imgErr);
-            const fallback = await executeShadowTool(
-              toolResult.tool,
-              toolResult.params,
-              strippedForTools,
-              { personality, mode: chatMode, attachment: selectedFile || undefined },
-            );
-            if (fallback.kind === "inline" && fallback.imageUrl) {
-              setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
-                ...m,
-                content: fallback.content,
-                imageUrl: fallback.imageUrl,
-                toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
-              } : m));
-            } else {
-              throw new Error(fallback.kind === "inline" ? fallback.content : "Image generation failed.");
-            }
-          }
+          const imageUrl = await generateCloudImage(imgPrompt, { watermark: true });
+          setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
+            ...m,
+            content: `Generated image for: *${imgPrompt}*`,
+            imageUrl,
+            toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
+          } : m));
+          // Record model call for cost tracker + session activation
+          costTracker.onRequestComplete("gemini-2.0-flash", 0, 0);
+          session.recordModelCall();
         } else {
           // Other auto-execute tools (calculator, web_search, deep_research, etc.)
           const result = await executeShadowTool(

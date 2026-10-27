@@ -1,6 +1,6 @@
-import { fbAuth, functionsBaseUrl } from "@/integrations/firebase/app";
+// fbAuth + functionsBaseUrl removed — image gen is BYOK-only
 import { applyImageWatermark } from "@/lib/imageWatermark";
-import { getCachedAiAccessMode } from "@/lib/aiAccessMode";
+// getCachedAiAccessMode removed — image gen is BYOK-only
 import { getByokConfig } from "@/lib/byok";
 
 export interface GenerateImageOptions {
@@ -99,47 +99,21 @@ async function generateWithByok(
   );
 }
 
-async function generateWithSharedKey(
-  prompt: string,
-  options: GenerateImageOptions,
-): Promise<string> {
-  const idToken = await fbAuth().currentUser?.getIdToken().catch(() => null);
-  if (!idToken) throw new Error("Sign in to generate images.");
-
-  const response = await fetch(`${functionsBaseUrl}/generateImage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${idToken}`,
-    },
-    body: JSON.stringify({
-      prompt,
-      referenceImage: options.referenceImage,
-      stream: false,
-    }),
-    signal: options.signal,
-  });
-
-  if (!response.ok) {
-    const body = await response.json().catch(() => null);
-    throw new Error(body?.error || `Image generation failed (${response.status}).`);
-  }
-  return decodeImageResult(await response.json());
-}
-
 export async function generateCloudImage(
   prompt: string,
   options: GenerateImageOptions = {},
 ): Promise<string> {
-  const accessMode = getCachedAiAccessMode();
-  if (!accessMode) {
-    throw new Error("Choose Tech-User or Non-Tech-Users in the chatbot setup before using AI.");
+  // BYOK-only — image generation uses the user's own OpenAI or OpenRouter key.
+  // No shared-key path, no free fallback. Users must have a BYOK key configured.
+  const config = getByokConfig();
+  if (!config?.apiKey) {
+    throw new Error(
+      "Image generation requires a BYOK API key. Add your OpenAI or OpenRouter key in Settings → Personalization → BYOK. OpenAI (gpt-image-1) and OpenRouter (gemini-2.5-flash-image-preview) both support image generation."
+    );
   }
   if (!prompt.trim()) throw new Error("Describe the image you want to generate.");
 
-  const image = accessMode === "byok"
-    ? await generateWithByok(prompt, options)
-    : await generateWithSharedKey(prompt, options);
+  const image = await generateWithByok(prompt, options);
   const finalImage =
     options.watermark === false ? image : await applyImageWatermark(image);
   options.onFrame?.(finalImage, true);
