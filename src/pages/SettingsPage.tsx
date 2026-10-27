@@ -100,11 +100,27 @@ export default function SettingsPage() {
       >
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
         <div className="container mx-auto px-4 h-14 flex items-center gap-3 max-w-7xl">
-          <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} transition={spring}>
+          <motion.div
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            transition={spring}
+            onClick={() => {
+              settingsHapticTick();
+              // Hard redirect — guarantees navigation regardless of React
+              // Router state (same pattern as the auth redirect fix).
+              window.location.assign("/chatbot");
+            }}
+            className="cursor-pointer"
+          >
             <Button
+              type="button"
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/chatbot")}
+              onClick={(e) => {
+                e.stopPropagation();
+                settingsHapticTick();
+                window.location.assign("/chatbot");
+              }}
               aria-label="Back to chat"
               className="rounded-xl"
             >
