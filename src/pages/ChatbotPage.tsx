@@ -31,7 +31,7 @@ import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
 
 import { streamCloudChat, isCloudChatConfigured, type CloudChatMessage } from "@/lib/cloudChat";
 import { buildChatSystemPrompt } from "@/lib/shadowTalkPersona";
-import { loadAiAccessMode } from "@/lib/aiAccessMode";
+import { loadAiAccessMode, saveAiAccessMode } from "@/lib/aiAccessMode";
 
 import { ChatAmbientBackground } from "@/components/chat/ChatAmbientBackground";
 import { ChatEmptyState } from "@/components/chat/ChatEmptyState";
@@ -1183,14 +1183,19 @@ Structure and Content Guidelines:
     }
 
     try {
-      const accessMode = await loadAiAccessMode(user.id);
+      let accessMode = await loadAiAccessMode(user.id);
+      // If the user dismissed the onboarding dialog (or it hasn't loaded yet),
+      // default to 'shared' mode so they can send messages immediately using
+      // the free shared OpenRouter pool. They can upgrade to BYOK later via Settings.
+      // The shared mode has a 100 req/day limit (enforced by the Cloud Function),
+      // so this is safe — no quota bypass.
       if (!accessMode) {
-        toast({
-          title: "Choose your AI access",
-          description: "Complete the setup dialog before sending your message.",
-          variant: "destructive",
-        });
-        return;
+        try {
+          await saveAiAccessMode(user.id, "shared");
+        } catch {
+          // saveAiAccessMode is resilient (localStorage-first) — if this fails,
+          // continue anyway. The Cloud Function will enforce the daily limit.
+        }
       }
     } catch (error) {
       toast({
