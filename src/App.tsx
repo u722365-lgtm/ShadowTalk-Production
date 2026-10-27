@@ -65,6 +65,7 @@ const FAQPage = lazy(() => import("./pages/FAQPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const CaseStudiesPage = lazy(() => import("./pages/CaseStudiesPage"));
 const BenchmarksPage = lazy(() => import("./pages/BenchmarksPage"));
+const ComingSoonPage = lazy(() => import("./pages/ComingSoonPage"));
 const GDPRPage = lazy(() => import("./pages/GDPRPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
@@ -199,6 +200,21 @@ const AnimatedRoutes = () => {
           <Route path="/enterprise" element={<PageTransition><EnterprisePage /></PageTransition>} />
           <Route path="/referral" element={<PageTransition><ReferralPage /></PageTransition>} />
           <Route path="/sessions" element={<PageTransition><SessionsPage /></PageTransition>} />
+
+                    {/* Coming-soon fallbacks for features in active development */}
+          <Route path="/ai-strategy-consultant" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/anonymous-ai" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/answers" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/deep-research" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/discover" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/partnerships" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/privacy-score" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/security-audit" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/studio" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/transparency" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/trust" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/video-studio" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/workspace" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
 
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
