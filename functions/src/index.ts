@@ -31,44 +31,10 @@ const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const KEY_COOLDOWN_MS = 60_000;
 const allSecrets = [openRouterApiKey]; // primary only — add _2-_5 here when on Blaze
 
-/**
- * Fetches OpenRouter keys from Firebase Remote Config.
- * Cached for 5 min per function instance to avoid hammering the RC API.
- * Returns an empty array if Remote Config isn't configured or fetch fails
- * (non-fatal — the pool falls back to secrets + env vars).
- *
- * Remote Config parameter names: openrouter_key_2, openrouter_key_3,
- * openrouter_key_4, openrouter_key_5. Set them in Firebase Console →
- * Remote Config with the OpenRouter API key (sk-or-v1-...) as the value.
- */
-const RC_CACHE_MS = 5 * 60 * 1000;
-let rcCache: { keys: string[]; fetchedAt: number } | null = null;
-
-async function fetchRemoteConfigKeys(): Promise<string[]> {
-  // Return cached value if fresh
-  if (rcCache && Date.now() - rcCache.fetchedAt < RC_CACHE_MS) {
-    return rcCache.keys;
-  }
-  try {
-    const template = await admin.remoteConfig().getTemplate();
-    const paramNames = ["openrouter_key_2", "openrouter_key_3", "openrouter_key_4", "openrouter_key_5"];
-    const keys: string[] = [];
-    for (const name of paramNames) {
-      const param = template.parameters[name];
-      const value = param?.defaultValue?.value;
-      if (typeof value === "string" && value.length > 10) {
-        keys.push(value);
-      }
-    }
-    rcCache = { keys, fetchedAt: Date.now() };
-    return keys;
-  } catch (err) {
-    // Remote Config not configured, permission denied, or network error —
-    // non-fatal. The pool falls back to secrets + env vars.
-    console.warn("[keypool] Remote Config fetch failed (non-fatal):", err);
-    return rcCache?.keys ?? [];
-  }
-}
+// NOTE: Remote Config was previously used as a key source, but Remote Config
+// is client-delivered configuration — any key placed there is recoverable by
+// app clients. Removed for security (audit finding ST-02). Use defineSecret()
+// (Secret Manager, requires Blaze) or process.env for additional keys.
 
 class KeyPool {
   private keys: string[] = [];
@@ -78,27 +44,27 @@ class KeyPool {
   /**
    * Loads all available keys. Sources (in priority order):
    *   1. defineSecret("OPENROUTER_API_KEY") — primary, works on Spark
-   *   2. process.env.OPENROUTER_API_KEY_2..5 — env vars (legacy)
-   *   3. Firebase Remote Config: openrouter_key_2..5 — managed via Console UI
+   *   2. process.env.OPENROUTER_API_KEY_2..5 — env vars (set via functions:config
+   *      or .env file, NOT Remote Config which is client-readable)
    *
-   * Remote Config is fetched via the Admin SDK and cached for 5 min per
-   * function instance. To add a key, create a Remote Config parameter named
-   * `openrouter_key_2` (or _3, _4, _5) in the Firebase Console → Remote Config.
+   * To add more keys on Spark: create a .env file in functions/ with
+   *   OPENROUTER_API_KEY_2=sk-or-v1-...
+   *   OPENROUTER_API_KEY_3=sk-or-v1-...
+   * Then `firebase deploy --only functions`. The .env file must be gitignored.
    */
   async load(): Promise<string[]> {
     const fromSecrets = allSecrets
       .map((s) => s.value())
-      .filter((v): v is string => Boolean(v) && v.length > 10);
+      .filter((v): v is string => typeof v === "string" && v.length > 10);
     const fromEnv = [
       process.env.OPENROUTER_API_KEY_2,
       process.env.OPENROUTER_API_KEY_3,
       process.env.OPENROUTER_API_KEY_4,
       process.env.OPENROUTER_API_KEY_5,
-    ].filter((v): v is string => Boolean(v) && v.length > 10);
-    const fromRC = await fetchRemoteConfigKeys();
+    ].filter((v): v is string => typeof v === "string" && v.length > 10);
     // Dedupe across all sources
     const seen = new Set<string>();
-    this.keys = [...fromSecrets, ...fromEnv, ...fromRC].filter((k) => {
+    this.keys = [...fromSecrets, ...fromEnv].filter((k) => {
       if (seen.has(k)) return false;
       seen.add(k);
       return true;

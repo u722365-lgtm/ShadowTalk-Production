@@ -214,7 +214,6 @@ const AnimatedRoutes = () => {
           <Route path="/transparency" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
           <Route path="/trust" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
           <Route path="/video-studio" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/workspace" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
 
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>

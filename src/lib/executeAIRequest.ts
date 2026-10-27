@@ -79,6 +79,9 @@ export class AIKeyError extends Error {
  *  - VITE_OMNIROUTE_ENDPOINT: The OmniRoute /v1/chat/completions URL.
  *    e.g. "https://your-omniroute-instance/v1/chat/completions"
  *  - VITE_OMNIROUTE_API_KEY:  Bearer token for the OmniRoute instance.
+ *    ⚠️  SECURITY: VITE_* vars are in browser builds. Only use OmniRoute with
+ *    a key designed for client exposure (like a Stripe publishable key). For
+ *    shared provider keys, use Firebase Functions Secret Manager (server-side).
  *  - VITE_OMNIROUTE_MODEL:    OmniRoute model identifier. Defaults to
  *    "auto/fast" (load-balanced across Gemini/Groq/Mistral with token
  *    compression). Use "auto/cheap" for the lowest-cost routing.
@@ -110,14 +113,11 @@ function getOmniRouteConfig(): OmniRouteConfig | null {
  * Legacy: Resolve the shared OpenRouter key for NON_TECH users.
  * Only used as a fallback when OmniRoute is not configured.
  */
-function getSharedKey(): string | null {
-  const env = (import.meta as any).env ?? {};
-  const key = env.VITE_OPENROUTER_SHARED_KEY;
-  if (typeof key === 'string' && key.trim().length > 0) {
-    return key.trim();
-  }
-  return null;
-}
+// ── Legacy shared key resolution — REMOVED for security (audit ST-02) ───
+// VITE_OPENROUTER_SHARED_KEY was a direct OpenRouter key in the client build.
+// Shared keys must ONLY live in Firebase Functions Secret Manager (server-side).
+// The Cloud Function `/chat` endpoint handles shared-mode requests securely.
+
 
 // ── BYOK (TECH) execution ──────────────────────────────────────────────
 
@@ -355,7 +355,7 @@ async function executeSharedRequest(
   }
 
   // ── Fallback 1: Legacy shared OpenRouter key ──
-  const sharedKey = getSharedKey();
+  const sharedKey = null; // Removed (audit ST-02)
   if (sharedKey) {
     try {
       const result = await streamByokChat(

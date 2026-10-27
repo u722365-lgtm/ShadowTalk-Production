@@ -62,10 +62,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Profiles: publicly readable (leaderboards, public twin pages, counters).
+    // Profiles: readable by authenticated users only (was: public).
+    // SECURITY FIX (audit ST-01): public reads exposed email + personal fields
+    // to unauthenticated bulk collection. Now requires sign-in.
+    // TODO: split into profiles_public (limited fields, true public read) +
+    // profiles_private (email + sensitive, owner-only) for proper isolation.
     // Owners may edit their own profile but can never change their own plan.
     match /profiles/{uid} {
-      allow read: if true;
+      allow read: if signedIn();
       allow create: if signedIn()
         && request.auth.uid == uid
         && request.resource.data.get('plan', 'free') == 'free';
@@ -187,19 +191,19 @@ service cloud.firestore {
       ];
     }
 
-    // Realtime collections — signed-in users can read all, create their own.
-    // These back the broadcast/presence features (live cursors, typing indicators).
+    // Realtime collections — signed-in users can read all (broadcast model).
+    // SECURITY FIX (audit ST-04): create/update/delete now require ownership.
     match /realtime_channels/{doc} {
       allow read: if signedIn();
-      allow create: if signedIn();
-      allow update: if signedIn();
-      allow delete: if signedIn() || isAdmin();
+      allow create: if signedIn() && ownsIncoming();
+      allow update: if signedIn() && ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting() || isAdmin();
     }
     match /room_presences/{doc} {
       allow read: if signedIn();
-      allow create: if signedIn();
-      allow update: if signedIn();
-      allow delete: if signedIn() || isAdmin();
+      allow create: if signedIn() && ownsIncoming();
+      allow update: if signedIn() && ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting() || isAdmin();
     }
 
     match /{collection}/{doc} {
