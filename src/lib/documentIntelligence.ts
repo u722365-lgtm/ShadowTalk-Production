@@ -86,14 +86,17 @@ async function extractPdf(
   // pdfjs-dist — load the main module + worker.
   // Use Vite's ?url import for the worker so it's bundled locally (no CDN
   // dependency, works with strict CSP, survives ad blockers).
-  const pdfjs = await import("pdfjs-dist/build/pdf.mjs");
+  const pdfjs = await import("pdfjs-dist");
+  // Set up the PDF worker. Try multiple approaches for cross-platform compat:
+  // 1. Vite ?url import (best — bundles the worker locally)
+  // 2. CDN fallback (works everywhere but depends on network)
   try {
-    // Vite resolves this at build time to a bundled worker URL
+    // @ts-expect-error — Vite ?url suffix is a build-time directive
     const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
     // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
   } catch {
-    // Fallback: if the ?url import fails (e.g., in test env), use CDN
+    // Fallback: CDN (matches the installed version)
     // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   }
