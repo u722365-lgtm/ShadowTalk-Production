@@ -1372,15 +1372,21 @@ Structure and Content Guidelines:
       // Check if it's a video file
       if (isSupportedVideo(mimeType)) {
         // Video analysis — extract frames + send as image array
+        // Wrapped in try/finally to guarantee setIsLoading(false) runs
+        // even if an unexpected error occurs (prevents stuck loading state)
         try {
           // Convert data URL back to a File for the video extractor
+          // NOTE: This creates a temporary copy of the video in memory.
+          // The video extractor creates an object URL from this File,
+          // then revokes it in its finally block. Memory is freed after
+          // extraction completes.
           const base64 = data.split(",")[1] || "";
           const binaryString = atob(base64);
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
           const videoFile = new File([bytes], name, { type: mimeType });
 
-          toast({ title: "Processing video…", description: "Extracting frames for analysis." });
+          toast({ title: "Processing video…", description: "Extracting frames for analysis. This may take a moment." });
           const result = await extractVideoFrames(videoFile, { maxFrames: 6 });
           if (result.error) {
             toast({ title: "Video analysis failed", description: result.error, variant: "destructive" });

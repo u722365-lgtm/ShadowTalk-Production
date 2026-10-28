@@ -27,7 +27,7 @@ vi.mock("mammoth/mammoth.browser", () => ({
   })),
 }));
 
-import { detectDocumentFormat, validateFileSize, extractDocument, formatDocumentForChat, isSupportedDocument } from "../documentIntelligence";
+import { detectDocumentFormat, validateFileSize, extractDocument, formatDocumentForChat, isSupportedDocument, chunkDocument } from "../documentIntelligence";
 
 describe("Document Intelligence", () => {
   describe("detectDocumentFormat", () => {
@@ -163,6 +163,82 @@ describe("Document Intelligence", () => {
       };
       const formatted = formatDocumentForChat(doc);
       expect(formatted).toContain("Scanned PDF — no text layer.");
+    });
+
+    it("discloses partial coverage when truncated", () => {
+      const doc = {
+        text: "A".repeat(100),
+        filename: "big.pdf",
+        format: "pdf" as const,
+        truncated: true,
+        empty: false,
+      };
+      const formatted = formatDocumentForChat(doc);
+      expect(formatted).toContain("Partial");
+    });
+  });
+
+  describe("chunkDocument", () => {
+    it("returns single chunk for small documents", () => {
+            const chunks = chunkDocument("Small text.");
+      expect(chunks).toHaveLength(1);
+      expect(chunks[0].isLast).toBe(true);
+      expect(chunks[0].total).toBe(1);
+    });
+
+    it("splits large text into multiple chunks", () => {
+            const longText = Array(100).fill("Paragraph content here. ").join("\n\n");
+      const chunks = chunkDocument(longText, 200);
+      expect(chunks.length).toBeGreaterThan(1);
+      expect(chunks[0].index).toBe(0);
+      expect(chunks[chunks.length - 1].isLast).toBe(true);
+      // All chunks should have correct total
+      for (const c of chunks) expect(c.total).toBe(chunks.length);
+    });
+
+    it("preserves page boundaries for PDF format", () => {
+            const pdfText = "--- Page 1 ---\nPage 1 content\n\n--- Page 2 ---\nPage 2 content\n\n--- Page 3 ---\nPage 3 content";
+      const chunks = chunkDocument(pdfText, 30, "pdf");
+      expect(chunks.length).toBeGreaterThan(1);
+      // Each chunk should have page numbers
+      for (const c of chunks) {
+        if (c.pages) expect(c.pages.length).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  describe("encrypted/corrupt PDF handling", () => {
+    it("returns clear error for encrypted PDFs", async () => {
+      // Re-mock pdfjs to throw PasswordException
+      const pdfjs = await import("pdfjs-dist/build/pdf.mjs");
+      const mockGetDocument = pdfjs.getDocument as any;
+      mockGetDocument.mockImplementationOnce(() => ({
+        promise: Promise.reject({ name: "PasswordException", message: "password required" }),
+      }));
+
+      const result = await extractDocument(
+        "data:application/pdf;base64,JVBERi0xLjQK",
+        "encrypted.pdf",
+        "application/pdf",
+      );
+      expect(result.empty).toBe(true);
+      expect(result.notice).toContain("encrypted");
+    });
+
+    it("returns clear error for corrupt PDFs", async () => {
+      const pdfjs = await import("pdfjs-dist/build/pdf.mjs");
+      const mockGetDocument = pdfjs.getDocument as any;
+      mockGetDocument.mockImplementationOnce(() => ({
+        promise: Promise.reject({ name: "InvalidPDFException", message: "Invalid PDF" }),
+      }));
+
+      const result = await extractDocument(
+        "data:application/pdf;base64,JVBERi0xLjQK",
+        "corrupt.pdf",
+        "application/pdf",
+      );
+      expect(result.empty).toBe(true);
+      expect(result.notice).toContain("corrupt");
     });
   });
 });

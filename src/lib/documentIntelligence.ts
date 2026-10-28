@@ -83,13 +83,20 @@ async function extractPdf(
   dataUrl: string,
   opts: Required<DocumentExtractionOptions>,
 ): Promise<{ text: string; pageCount: number; truncated: boolean; empty: boolean; notice?: string }> {
-  // pdfjs-dist needs to be loaded with a worker. We use the legacy build path
-  // that works without a separate worker file (runs on main thread).
+  // pdfjs-dist — load the main module + worker.
+  // Use Vite's ?url import for the worker so it's bundled locally (no CDN
+  // dependency, works with strict CSP, survives ad blockers).
   const pdfjs = await import("pdfjs-dist/build/pdf.mjs");
-  // Set the worker source to a CDN that matches the installed version, or
-  // disable the worker (runs on main thread, slower but no CORS issues).
-  // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  try {
+    // Vite resolves this at build time to a bundled worker URL
+    const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+  } catch {
+    // Fallback: if the ?url import fails (e.g., in test env), use CDN
+    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  }
 
   // Convert data URL to Uint8Array
   const base64 = dataUrl.split(",")[1] || "";
@@ -243,17 +250,152 @@ export async function extractDocument(
     // Plain text formats
     const result = extractPlainText(dataUrl, fullOpts);
     return { text: result.text, filename, format, ...result };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
+  } catch (err: any) {
+    // Detect encrypted/password-protected PDFs (pdfjs throws PasswordException)
+    const errName = err?.name || "";
+    const errMessage = err?.message || "Unknown error";
+    if (errName === "PasswordException" || errMessage.includes("password")) {
+      return {
+        text: "",
+        filename,
+        format,
+        truncated: false,
+        empty: true,
+        notice: `This PDF is encrypted or password-protected. Remove the password and try again.`,
+      };
+    }
+    if (errName === "InvalidPDFException" || errMessage.includes("Invalid PDF")) {
+      return {
+        text: "",
+        filename,
+        format,
+        truncated: false,
+        empty: true,
+        notice: `This PDF is corrupt or invalid. The file may be incomplete or not a real PDF.`,
+      };
+    }
     return {
       text: "",
       filename,
       format,
       truncated: false,
       empty: true,
-      notice: `Failed to extract text from ${filename}: ${message}`,
+      notice: `Failed to extract text from ${filename}: ${errMessage}`,
     };
   }
+}
+
+/**
+ * Chunk a document for context-window-safe processing.
+ *
+ * Most chat models have context windows of 4K-32K tokens (~16K-128K chars).
+ * Sending a 500K-char document in one request will fail for most models.
+ * This function splits the document into chunks at page boundaries (for PDFs)
+ * or at paragraph boundaries (for other formats), each under `chunkSize` chars.
+ *
+ * The caller should:
+ *   1. Send the first chunk with the user's question
+ *   2. If the user asks about content in a later chunk, send that chunk
+ *   3. Always disclose which chunk was processed
+ */
+export interface DocumentChunk {
+  /** The chunk text. */
+  text: string;
+  /** 0-based chunk index. */
+  index: number;
+  /** Total number of chunks. */
+  total: number;
+  /** Page numbers covered by this chunk (PDF only). */
+  pages?: number[];
+  /** Whether this is the last chunk. */
+  isLast: boolean;
+}
+
+export function chunkDocument(
+  text: string,
+  chunkSize: number = 30_000,
+  format?: ExtractedDocument["format"],
+): DocumentChunk[] {
+  if (text.length <= chunkSize) {
+    return [{ text, index: 0, total: 1, isLast: true }];
+  }
+
+  // For PDFs, split at page boundaries (--- Page N ---)
+  if (format === "pdf") {
+    const pageParts = text.split(/\n\n--- Page \d+ ---\n/);
+    const pageMarkers = text.match(/--- Page (\d+) ---/g) || [];
+    const chunks: DocumentChunk[] = [];
+    let currentChunk = "";
+    let currentPages: number[] = [];
+    let currentSize = 0;
+
+    for (let i = 0; i < pageParts.length; i++) {
+      const part = pageParts[i];
+      const pageMarker = pageMarkers[i - 1]?.match(/\d+/);
+      const pageNum = pageMarker ? parseInt(pageMarker[0], 10) : i + 1;
+
+      if (currentSize + part.length > chunkSize && currentChunk) {
+        chunks.push({
+          text: currentChunk,
+          index: chunks.length,
+          total: -1, // filled in after
+          pages: currentPages,
+          isLast: false,
+        });
+        currentChunk = "";
+        currentPages = [];
+        currentSize = 0;
+      }
+      if (part.trim()) {
+        currentChunk += (currentChunk ? "\n\n" : "") + `--- Page ${pageNum} ---\n${part}`;
+        currentPages.push(pageNum);
+        currentSize += part.length;
+      }
+    }
+    if (currentChunk) {
+      chunks.push({
+        text: currentChunk,
+        index: chunks.length,
+        total: -1,
+        pages: currentPages,
+        isLast: true,
+      });
+    }
+    // Fill in total
+    return chunks.map((c) => ({ ...c, total: chunks.length }));
+  }
+
+  // For other formats, split at paragraph boundaries (double newline)
+  const paragraphs = text.split(/\n\n+/);
+  const chunks: DocumentChunk[] = [];
+  let currentChunk = "";
+  let currentSize = 0;
+
+  for (const para of paragraphs) {
+    if (currentSize + para.length > chunkSize && currentChunk) {
+      chunks.push({
+        text: currentChunk,
+        index: chunks.length,
+        total: -1,
+        isLast: false,
+      });
+      currentChunk = "";
+      currentSize = 0;
+    }
+    if (para.trim()) {
+      currentChunk += (currentChunk ? "\n\n" : "") + para;
+      currentSize += para.length;
+    }
+  }
+  if (currentChunk) {
+    chunks.push({
+      text: currentChunk,
+      index: chunks.length,
+      total: -1,
+      isLast: true,
+    });
+  }
+  return chunks.map((c) => ({ ...c, total: chunks.length }));
 }
 
 /**
@@ -266,6 +408,10 @@ export function formatDocumentForChat(doc: ExtractedDocument): string {
   if (doc.truncated) meta.push("⚠️ Truncated");
   if (doc.empty) meta.push("⚠️ No extractable text");
 
+  // Disclose partial coverage
+  if (doc.truncated) {
+    meta.push("⚠️ Partial — only first chunk sent");
+  }
   const header = `[Document Analysis]\n${meta.join(" · ")}\n${doc.notice ? `Note: ${doc.notice}\n` : ""}\n--- Document Content ---\n`;
   return header + (doc.text || "[No text extracted]");
 }
