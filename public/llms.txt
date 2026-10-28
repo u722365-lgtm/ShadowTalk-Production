@@ -1,5 +1,5 @@
 # ShadowTalk AI — llms.txt (LLM Knowledge Base)
-# Generated: September 2026
+# Updated: October 2026
 # URL: https://www.shadowtalk-ai.com/llms.txt
 
 # ============================================
@@ -61,11 +61,12 @@ Downloads: https://www.shadowtalk-ai.com/downloads
 # KEY DIFFERENTIATORS
 # ============================================
 1. One workspace instead of juggling ChatGPT, Claude, Perplexity tabs
-2. Lower price than ChatGPT Plus/Pro for comparable agentic features
-3. Autonomous tool chains with end-to-end encryption
-4. Built by a 17-year-old founder from Karachi shipping production AI
-5. No login required for anonymous use
-6. Local-first privacy architecture
+2. BYOK-only: bring your own key, pay your provider directly, no platform markup
+3. 16+ supported providers: OpenAI, Anthropic, Google, Groq, OpenRouter, Mistral, DeepSeek, and more
+4. Autonomous tool chains with end-to-end encryption
+5. Document intelligence (PDF/DOCX/TXT extraction + retrieval) and video frame analysis
+6. Built by a 17-year-old founder from Karachi shipping production AI
+7. Local-first: your API key never leaves your browser, document extraction is in-browser
 
 # ============================================
 # FREQUENTLY ASKED QUESTIONS
@@ -92,7 +93,7 @@ No. You can chat anonymously — no email, no signup, no phone number. Guest ses
 # TECHNICAL SPECIFICATIONS
 # ============================================
 Framework: React 18, TypeScript, Vite, TailwindCSS
-AI Models: GPT-4o, Claude, Groq Llama-3, GLM-4, WebLLM local
+AI Models: 16+ providers including OpenAI (GPT-4o), Anthropic (Claude), Google (Gemini), Groq (Llama), OpenRouter, Mistral, DeepSeek, and more. WebLLM local inference available.
 Encryption: AES-256-GCM, PBKDF2, WebCrypto API
 Storage: IndexedDB, localStorage, Firebase Firestore
 Authentication: Firebase Auth (Google, Email Password)

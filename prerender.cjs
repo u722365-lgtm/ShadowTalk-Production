@@ -22,14 +22,14 @@ const ROUTES_TO_PRERENDER = [
   '/about',
   '/pricing',
   '/chatbot',
-  '/execute',
-  '/research',
-  '/computer',
+  '/docs',
+  '/faq',
+  '/blog',
+  '/changelog',
   '/security',
-  '/insights',
-  '/forge',
-  '/marketplace',
-  '/missioncontrol'
+  '/benchmarks',
+  '/contact',
+  '/help'
 ];
 
 // Simple static file server

@@ -125,43 +125,13 @@ export function getSoftwareApplicationSchema() {
       'WebGPU local inference via WebLLM (Llama, Mistral, Qwen on-device)',
       'Local browser vector RAG (on-device embeddings + retrieval, zero egress)',
     ],
-    offers: [
-      {
-        '@type': 'Offer',
-        name: 'Free (Instant Start)',
-        price: '0',
-        priceCurrency: 'USD',
-        description: '50 messages/day, 5 images/day, 3 research/day. No credit card.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'BYOK Power User',
-        price: '0',
-        priceCurrency: 'USD',
-        description: 'Bring your own API key — unlimited messages, direct provider, no platform fee.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Pro',
-        price: '5',
-        priceCurrency: 'USD',
-        description: 'Unlimited messages, 20 images/day, 20 research/day. Priority queue + pro models.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Premium',
-        price: '15',
-        priceCurrency: 'USD',
-        description: 'Shadow Twin, collaboration, full agent stack. 50 images/day, 50 research/day.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Elite',
-        price: '20',
-        priceCurrency: 'USD',
-        description: 'Unlimited everything, private AI, white-label, phone support.',
-      },
-    ],
+    offers: {
+      '@type': 'Offer',
+      name: 'BYOK (Bring Your Own Key)',
+      price: '0',
+      priceCurrency: 'USD',
+      description: 'Bring your own provider API key. No platform fee. Pay your provider directly.',
+    },
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.8',
@@ -332,12 +302,12 @@ export const CHATBOT_FAQ = [
   {
     question: "Is ShadowTalk AI free to use?",
     answer:
-      "Yes. ShadowTalk AI offers a free tier with generous daily limits — no credit card required. Pro ($5/mo), Premium ($15/mo), and Elite ($20/mo) plans unlock higher limits, priority routing, and advanced tools like Video Studio.",
+      "ShadowTalk AI is BYOK (Bring Your Own Key). There is no platform fee — you bring your own provider API key (OpenAI, Anthropic, Google, Groq, OpenRouter + 12 more) and pay your provider directly. No markup, no subscription, no hidden fees.",
   },
   {
     question: "Does ShadowTalk AI require a login or signup?",
     answer:
-      "No. You can chat with ShadowTalk AI anonymously — no email, no signup, no phone number. Guest sessions run entirely in your browser and are never linked to a persistent identity.",
+      "Yes. ShadowTalk AI requires an account and a BYOK API key. The guided onboarding wizard walks you through choosing a provider, getting an API key, and testing the connection. Your key is stored in your browser only.",
   },
   {
     question: "Does ShadowTalk store or train on my chat data?",
@@ -412,7 +382,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "what-is-shadowtalk",
     question: "What is ShadowTalk AI?",
     answer:
-      "ShadowTalk AI is a private, no-login agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. It combines chat, agentic workflows, built-in tools, voice & code, desktop app, encrypted vault and local-first AI. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs multi-step workflows and tool chains from one workspace.",
+      "ShadowTalk AI is a BYOK (Bring Your Own Key) agentic AI workspace founded in 2024 by Zain Ahmed Fahad Patel in Karachi, Pakistan. Users bring their own provider API key (OpenAI, Anthropic, Google, Groq, OpenRouter + 12 more) and pay their provider directly. It combines chat, agentic workflows, document intelligence, video analysis, voice, code IDE, and local-first AI in one browser-based workspace. No platform fee, no markup.",
   },
   {
     id: "privacy",
@@ -436,7 +406,7 @@ export const GEO_CANONICAL_SUMMARIES = [
     id: "pricing",
     question: "Is ShadowTalk AI free?",
     answer:
-      "Yes. ShadowTalk offers a free tier with daily limits and no credit card required. Paid plans start at $5/month (Pro), $15/month (Premium), and $20/month (Elite). A $99 one-time lifetime deal is also available.",
+      "ShadowTalk is BYOK (Bring Your Own Key). There is no platform fee — users bring their own provider API key (OpenAI, Anthropic, Google, Groq, OpenRouter + 12 more) and pay their provider directly. No markup, no subscription.",
   },
   {
     id: "data-retention",
