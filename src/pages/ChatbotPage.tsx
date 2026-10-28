@@ -11,8 +11,8 @@ type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AiAccessOnboarding } from "@/components/chat/AiAccessOnboarding";
-import { LiveVoiceMode } from "@/components/chat/LiveVoiceMode";
-import { SettingsByokCard } from "@/components/settings/SettingsByokCard";
+const LiveVoiceMode = lazy(() => import("@/components/chat/LiveVoiceMode").then(m => ({ default: m.LiveVoiceMode })));
+const SettingsByokCard = lazy(() => import("@/components/settings/SettingsByokCard").then(m => ({ default: m.SettingsByokCard })));
 import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
@@ -55,8 +55,10 @@ import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
 import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
 import { executeShadowTool } from "@/lib/shadowTools/executeShadowTool";
 import { generateCloudImage } from "@/lib/cloudImage";
-import { extractDocument, formatDocumentForChat, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat, isSupportedDocument, detectDocumentFormat, validateFileSize } from "@/lib/documentIntelligence";
-import { extractVideoFrames, formatFramesForChat, isSupportedVideo, validateVideoFile } from "@/lib/videoIntelligence";
+// Lazy-load document + video intelligence (saves ~800KB from initial chat load)
+// These are only needed when a user attaches a file, not on every page visit.
+const lazyDocIntel = () => import("@/lib/documentIntelligence");
+const lazyVidIntel = () => import("@/lib/videoIntelligence");
 import { TokenCostBadge } from "@/components/chat/TokenCostBadge";
 
 
@@ -1369,8 +1371,15 @@ Structure and Content Guidelines:
       const { name, mimeType, data } = userMessage.attachment;
       const format = detectDocumentFormat(name, mimeType);
 
+      // Lightweight format detection (inline — no import needed)
+      const ext = name.split(".").pop()?.toLowerCase() || "";
+      const isVideo = ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext) || mimeType.startsWith("video/");
+      const isDoc = ["pdf", "docx", "txt", "md", "csv", "json", "js", "ts", "jsx", "tsx", "py", "rb", "go", "rs", "java", "c", "cpp", "h", "css", "html", "xml", "yml", "yaml", "sh", "sql"].includes(ext);
+
       // Check if it's a video file
-      if (isSupportedVideo(mimeType)) {
+      if (isVideo) {
+        // Lazy-load the video intelligence module only when needed
+        const { extractVideoFrames, formatFramesForChat } = await lazyVidIntel();
         // Video analysis — extract frames + send as image array
         // Wrapped in try/finally to guarantee setIsLoading(false) runs
         // even if an unexpected error occurs (prevents stuck loading state)
@@ -1412,8 +1421,10 @@ Structure and Content Guidelines:
           setIsLoading(false);
           return;
         }
-      } else if (format !== "unknown") {
+      } else if (isDoc) {
         // Document analysis — extract text locally, then use retrieval for large docs
+        // Lazy-load the document intelligence module
+        const { extractDocument, formatDocumentForChat, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat, detectDocumentFormat, validateFileSize } = await lazyDocIntel();
         try {
           const sizeCheck = validateFileSize({ size: data.length }, 25 * 1024 * 1024);
           if (!sizeCheck.ok) {
@@ -1464,7 +1475,7 @@ Structure and Content Guidelines:
         // Unsupported file type
         toast({
           title: "Unsupported file",
-          description: `${name}: supported formats are PDF, DOCX, TXT, MD, CSV, JSON, code files, and common video formats (MP4, WebM).`,
+          description: `${name}: supported formats are PDF, DOCX, TXT, MD, CSV, JSON, code files, and common video formats (MP4, WebM, MOV, MKV).`,
           variant: "destructive",
         });
         setIsLoading(false);

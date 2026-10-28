@@ -278,6 +278,21 @@ function ChatEmptyStateInner({
         </motion.div>
       )}
 
+      {/* Slash command discoverability hint */}
+      <motion.div
+        variants={staggerItem}
+        className="flex items-center justify-center gap-2 mb-3"
+      >
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[11px] text-cyan-300">
+          <span className="font-mono font-semibold">/</span>
+          <span>type for commands</span>
+        </span>
+        <span className="text-[11px] text-muted-foreground">·</span>
+        <span className="text-[11px] text-muted-foreground">
+          Try <code className="font-mono text-foreground">/image</code>, <code className="font-mono text-foreground">/doc</code>, <code className="font-mono text-foreground">/research</code>
+        </span>
+      </motion.div>
+
       {/* Prompt Inspiration Pills */}
       <motion.div
         variants={staggerItem}
