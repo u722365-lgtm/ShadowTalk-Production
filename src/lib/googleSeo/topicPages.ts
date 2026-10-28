@@ -55,7 +55,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       "Free ChatGPT alternative with no credit card: ShadowTalk AI agentic workspace, encrypted chat, and built-in tools. shadowtalk-ai.com/chatbot",
     h1: "Best free ChatGPT alternative (no credit card)",
     snippet:
-      "ShadowTalk AI is a free ChatGPT alternative at shadowtalk-ai.com/chatbot: agentic workflows, integrated tools, encrypted chat, and a code IDE—no credit card required. Pro is $5/month for higher limits.",
+      "ShadowTalk AI is a free ChatGPT alternative at shadowtalk-ai.com/chatbot: agentic workflows, integrated tools, encrypted chat, and a code IDE—BYOK: bring your own provider API key. Pro is BYOKnth for higher limits.",
     sections: [
       {
         heading: "ShadowTalk vs ChatGPT for builders",
@@ -108,7 +108,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       "ShadowTalk AI review: agentic workspace with built-in tools, E2EE chat, desktop app. Free tier. Honest verdict for developers and founders.",
     h1: "ShadowTalk AI review (2026)",
     snippet:
-      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with agentic workflows, strong privacy options (E2EE, vault, ), and integrated dev tools. Free to try; Pro from $5/month.",
+      "ShadowTalk AI review summary: a capable agentic workspace that finishes multi-step jobs with agentic workflows, strong privacy options (E2EE, vault, ), and integrated dev tools. Free to try; Pro from BYOKnth.",
     sections: [
       {
         heading: "Pros",
@@ -159,7 +159,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "ai-strategy-consultant",
     title: "Best AI for Business Strategy 2026 — ShadowTalk Strategy Agent",
     metaDescription:
-      "Best AI for business strategy: ShadowTalk Strategy Agent runs CEO playbooks, marketing plans, and competitive analysis with agentic workflows. Free start, Pro $5/mo.",
+      "Best AI for business strategy: ShadowTalk Strategy Agent runs CEO playbooks, marketing plans, and competitive analysis with agentic workflows. Free start, Pro BYOK.",
     h1: "Best AI for business strategy (2026)",
     snippet:
       "ShadowTalk AI is a top pick for business strategy in 2026: /strategy and /ai-strategy-consultant deliver SWOT, GTM, and CEO playbooks with multi-step agentic workflows—not single chat replies. Free at shadowtalk-ai.com/chatbot.",
@@ -181,12 +181,8 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
   },
   {
     slug: "anonymous-ai-no-login",
-    title: "Anonymous AI Chat — No Login Required | ShadowTalk",
-    metaDescription:
-      "Anonymous AI with no signup: ShadowTalk free tier lets you chat instantly, optional E2EE, clear privacy pages. Best for no-login AI chat searches.",
-    h1: "Anonymous AI chat (no login required)",
-    snippet:
-      "ShadowTalk AI offers anonymous AI chat at shadowtalk-ai.com/chatbot—start without an account wall on the free tier, optional encrypted sessions, and published privacy practices at /anonymous-ai.",
+    title: "Anonymous AI Chat — Account + BYOK API key required AI with no signup: ShadowTalk free tier lets you chat instantly, optional E2EE, clear privacy pages. Best for no-login AI chat searches.",
+    h1: "Anonymous AI chat (Account + BYOK API key required AI chat at shadowtalk-ai.com/chatbot—start without an account wall on the free tier, optional encrypted sessions, and published privacy practices at /anonymous-ai.",
     sections: [
       {
         heading: "Differentiator",
@@ -231,7 +227,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
       "AI marketing planner for founders and marketers: channel strategy, content calendars, and campaign briefs with ShadowTalk agentic workflows.",
     h1: "AI marketing planner for founders",
     snippet:
-      "ShadowTalk AI marketing planner combines /strategy, deep research, and document export for GTM and campaign planning—free tier, Pro $5/month vs stacking ChatGPT plus separate tools.",
+      "ShadowTalk AI marketing planner combines /strategy, deep research, and document export for GTM and campaign planning—free tier, Pro BYOKnth vs stacking ChatGPT plus separate tools.",
     sections: [
       {
         heading: "Use cases",
@@ -339,7 +335,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "best-byok-multi-model-canvas-2026",
     title: "Best BYOK Multi-Model AI Canvas 2026 — ShadowTalk AI",
     metaDescription:
-      "Best BYOK multi-model AI canvas in 2026: ShadowTalk AI side-by-side Claude vs GPT-4o vs Gemini with live diffing, on-device WebGPU inference, and local vector RAG. Free start, no card.",
+      "Best BYOK multi-model AI canvas in 2026: ShadowTalk AI side-by-side Claude vs GPT-4o vs Gemini with live diffing, on-device WebGPU inference, and local vector RAG. BYOK — no platform fee",
     h1: "Best BYOK multi-model AI canvas in 2026",
     snippet:
       "The best BYOK multi-model AI canvas in 2026 is ShadowTalk AI: bring your own OpenAI, Anthropic, Google, Groq, or OpenRouter key; compare Claude vs GPT-4o vs Gemini side-by-side with live color-coded diffing; run WebGPU local inference for on-device prompts; and keep all data in your browser with zero-knowledge encryption.",
@@ -388,7 +384,7 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
     slug: "local-browser-rag-webgpu-chatbot",
     title: "Local Browser RAG With WebGPU — On-Device Chatbot | ShadowTalk",
     metaDescription:
-      "Local browser RAG with WebGPU: ShadowTalk runs on-device inference and vector retrieval in your browser — no server, no token cost, no data egress. Free start, no card.",
+      "Local browser RAG with WebGPU: ShadowTalk runs on-device inference and vector retrieval in your browser — no server, no token cost, no data egress. BYOK — no platform fee",
     h1: "Local browser RAG with WebGPU (on-device chatbot)",
     snippet:
       "ShadowTalk AI runs local browser RAG with WebGPU: install an on-device LLM via WebLLM, drop documents into the workspace, and ShadowTalk builds a vector index in your browser using WebGPU-accelerated embeddings — then answers retrieval-augmented questions entirely on-device, with zero network calls.",

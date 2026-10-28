@@ -20,44 +20,7 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
     filename: "how-to-free-ai-chatbot-no-login.html",
     title: "How to Use a Free AI Chatbot Without Login — ShadowTalk AI",
     metaDescription:
-      "Step-by-step guide: try a free AI chatbot with no login required. Use ShadowTalk AI for private, instant chat, research, and document work.",
-    keywords: ["free AI chatbot", "no login free AI", "AI chatbot no signup", "private AI chat"],
-    steps: [
-      "Open https://www.shadowtalk-ai.com/chatbot",
-      "Start typing — no signup wall for the free tier",
-      "Pick a chat mode or run a built-in tool",
-      "Export, save, or continue in the desktop app",
-    ],
-    ctaLabel: "Try ShadowTalk free — no card, no login",
-    utmCampaign: "phase3",
-  },
-  {
-    slug: "ai-strategy-planner-free",
-    filename: "how-to-ai-strategy-planner-free.html",
-    title: "How to Use a Free AI Strategy Planner — ShadowTalk AI",
-    metaDescription:
-      "Free AI strategy planner guide: CEO playbooks, marketing plans, and GTM frameworks with ShadowTalk Strategy Agent and agentic workflows.",
-    keywords: [
-      "AI strategy planner free",
-      "free business strategy AI",
-      "CEO playbook generator",
-      "marketing plan AI",
-    ],
-    steps: [
-      "Go to shadowtalk-ai.com/strategy or /ai-strategy-consultant",
-      "Describe your business goal or paste context",
-      "Run Strategy Agent or agentic workflows for multi-step output",
-      "Export the plan or continue editing in chat",
-    ],
-    ctaLabel: "Try free AI strategy planner",
-    utmCampaign: "strategy_howto",
-  },
-  {
-    slug: "private-ai-chat",
-    filename: "how-to-private-ai-chat.html",
-    title: "How to Use Private AI Chat with Encryption — ShadowTalk",
-    metaDescription:
-      "Use private AI chat: anonymous session, optional E2EE, encrypted vault, and . ShadowTalk privacy-first workspace guide.",
+      "Step-by-step guide: try a free AI chatbot with Account + BYOK API key required session, optional E2EE, encrypted vault, and . ShadowTalk privacy-first workspace guide.",
     keywords: ["private AI chat", "encrypted AI chat", "anonymous AI", "AI"],
     steps: [
       "Open /chatbot — anonymous session works without signup",
@@ -83,7 +46,7 @@ export const HOW_TO_GUIDES: HowToGuide[] = [
       "ChatGPT: strong for single-turn brainstorming and polish",
       "ShadowTalk: missions, /strategy, exports, and tool chains in one workspace",
       "Try both on the same prompt — compare finish rate, not reply length",
-      "Use ShadowTalk free tier for strategy; upgrade Pro at $5/mo for limits",
+      "Use ShadowTalk free tier for strategy; upgrade Pro at BYOK for limits",
     ],
     ctaLabel: "Try ShadowTalk for strategy — free",
     utmCampaign: "comparison_howto",

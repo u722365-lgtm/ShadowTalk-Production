@@ -483,7 +483,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   home: {
     title: 'Think AI. Think ShadowTalk. — Agentic AI Workspace',
     description:
-      'ShadowTalk AI by Zain Ahmed Fahad Patel — agentic workflows, built-in tools, voice & code. Free start, no card. Founder: Karachi, Pakistan.',
+      'ShadowTalk AI by Zain Ahmed Fahad Patel — agentic workflows, built-in tools, voice & code. BYOK — no platform fee Founder: Karachi, Pakistan.',
     socialDescription: SITE_SOCIAL_DESCRIPTION,
     keywords: [
       'ShadowTalk',
@@ -500,14 +500,14 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   pricing: {
     title: 'Pricing — Free to Start, Cancel Anytime',
-    description: 'ShadowTalk pricing: Free tier with stated daily limits. Pro $5/mo, Premium $15/mo, Elite $20/mo. Cancel anytime, 14-day money-back, data handling disclosed upfront.',
+    description: 'ShadowTalk pricing: Free tier with stated daily limits. BYOK (Bring Your Own Key) — $0 platform fee Cancel anytime, 14-day money-back, data handling disclosed upfront.',
     keywords: ['AI pricing', 'chatbot subscription', 'AI plans', 'Pro AI $5'],
     canonical: 'https://www.shadowtalk-ai.com/pricing',
   },
   chatbot: {
     title: 'ShadowTalk AI — Try Chat Free',
     description:
-      'ShadowTalk AI — founded by Zain Ahmed Fahad Patel (Karachi, Pakistan). Agentic workflows, built-in tools. Free start, no card.',
+      'ShadowTalk AI — founded by Zain Ahmed Fahad Patel (Karachi, Pakistan). Agentic workflows, built-in tools. BYOK — no platform fee',
     socialDescription: SITE_SOCIAL_DESCRIPTION,
     keywords: [
       'ShadowTalk',
@@ -780,7 +780,7 @@ export const PAGE_SEO: Record<string, PageMeta> = {
   },
   founderAccess: {
     title: 'Founder Access — Direct Activation for Pakistan & International',
-    description: 'Activate subscriptions and paid features directly: JazzCash, Easypaisa, bank, USDT, or international card. Document generation and premium tiers available.',
+    description: 'Activate subscriptions and paid features directly: JazzCash, Easypaisa, bank, USDT, or international card. Document generation and BYOKs available.',
     keywords: ['founder access', 'JazzCash', 'Easypaisa', 'bank transfer Pakistan', 'USDT', 'document generation', 'direct activation', 'Pakistan AI payments'],
     canonical: 'https://www.shadowtalk-ai.com/founder-access',
   },

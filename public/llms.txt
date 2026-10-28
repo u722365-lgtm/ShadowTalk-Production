@@ -5,7 +5,7 @@
 # ============================================
 # PRODUCT OVERVIEW
 # ============================================
-ShadowTalk AI is an agentic AI workspace by Zain Ahmed Fahad Patel (Karachi, Pakistan). It combines multi-model chat, voice & code, desktop app, secure vault and local-first AI. Free tier with no card required.
+ShadowTalk AI is an agentic AI workspace by Zain Ahmed Fahad Patel (Karachi, Pakistan). It combines multi-model chat, voice & code, desktop app, secure vault and local-first AI. BYOK — no platform fee required.
 
 Key features:
 - ShadowTalk Live: Real-time voice chat
@@ -14,10 +14,8 @@ Key features:
 - 11 languages supported: English, Spanish, French, German, Arabic, Hindi, Portuguese, Russian, Japanese, Chinese, Urdu
 
 Pricing:
-- Free: Daily limits, no credit card, ~50 messages/day
-- Pro: $5/month - Unlimited messages, pro models
-- Premium: $15/month - Full agent stack, collaboration
-- Elite: $20/month - Unlimited research, images, offline AI
+- Free: Daily limits, no credit card, BYOK (bring your own key)
+- Pro: BYOK (bring your own key)nth - Unlimited research, images, offline AI
 - Enterprise: Custom - SSO, SLA, API
 
 # ============================================
@@ -78,7 +76,7 @@ Who built ShadowTalk?
 Zain Ahmed Fahad Patel, Founder & Lead Architect from Karachi, Pakistan. Also known publicly as Zain Ahmed. Profile: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html
 
 Is ShadowTalk free?
-Yes. Free tier with daily limits, no credit card required. Pro ($5/mo), Premium ($15/mo), Elite ($20/mo).
+Yes. BYOK (Bring Your Own Key) — no platform fee BYOK (bring your own key) — no platform fee.
 
 How is ShadowTalk different from ChatGPT?
 ShadowTalk chains tools from chat, offers E2EE options, includes research/code/desktop in one workspace at lower paid tiers.
@@ -87,7 +85,7 @@ Is ShadowTalk private?
 Yes. ShadowTalk is local-first: chat history lives in browser IndexedDB, on-device inference runs via WebLLM once cached, and encrypted storage uses PBKDF2 + AES-256-GCM encryption. Cloud calls are encrypted and never used to train models.
 
 Does ShadowTalk require signup?
-No. You can chat anonymously — no email, no signup, no phone number. Guest sessions run entirely in your browser.
+No. You can create an account and configure a BYOK API key. Your API key is stored in your browser only.
 
 # ============================================
 # TECHNICAL SPECIFICATIONS

@@ -51,7 +51,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Integrated tools (research, code, images, security) from one chat",
       "End-to-end encrypted chat",
       "In-browser IDE, presentations, and desktop app",
-      "Pro from $5/mo vs ChatGPT Plus pricing for more integrated tooling",
+      "Pro from BYOK vs ChatGPT Plus pricing for more integrated tooling",
       "+ optional on-device stealth models",
     ],
     competitorWins: [
@@ -186,7 +186,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Agentic workflows for multi-step go-to-market tasks",
       "In-browser code workspace and document generation",
       "Affiliate and referral tools built in",
-      "Pro from $5/mo with transparent usage caps",
+      "Pro from BYOK with transparent usage caps",
     ],
     competitorWins: [
       "Huge immediate helper text quality out of the box",
@@ -323,7 +323,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Agentic workflows for multi-step tasks",
       "Built-in code IDE and document generation",
       "Encrypted vault and privacy controls",
-      "Free start, no card, transparent limits",
+      "BYOK — no platform fee, transparent limits",
       "Offline-capable desktop app",
     ],
     competitorWins: [
@@ -370,7 +370,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Multi-step workflows with human approval",
       "Deep research with citations in same workspace",
       "Document and presentation export",
-      "Pro $5/mo vs ChatGPT Plus for integrated tooling",
+      "Pro BYOK vs ChatGPT Plus for integrated tooling",
     ],
     competitorWins: [
       "Strong brand for quick strategy Q&A",

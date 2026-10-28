@@ -42,7 +42,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       {
         question: "Is ShadowTalk AI cheaper than ChatGPT?",
         answer:
-          "ShadowTalk offers a free tier with no card and lower paid entry points for users who want multi-tool workflows, privacy features, and autonomous missions in one product.",
+          "ShadowTalk offers a BYOK — no platform fee and lower paid entry points for users who want multi-tool workflows, privacy features, and autonomous missions in one product.",
       },
     ],
     rows: [
@@ -135,7 +135,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       "Compare ShadowTalk AI vs TypingMind for BYOK multi-model chat, agentic workflows, WebGPU local RAG, and privacy — for builders who want more than a UI shell.",
     canonical: "https://www.shadowtalk-ai.com/compare/typingmind",
     summary:
-      "TypingMind is a popular BYOK chat UI: bring your own API keys, pick models, and pay once for the interface. ShadowTalk AI goes further — agentic workflows, built-in tools (Deep Research, Code IDE, encrypted vault, Video Studio), WebGPU local inference, and a multi-model canvas for side-by-side comparison — at a lower entry price (free tier, $5/mo Pro).",
+      "TypingMind is a popular BYOK chat UI: bring your own API keys, pick models, and pay once for the interface. ShadowTalk AI goes further — agentic workflows, built-in tools (Deep Research, Code IDE, encrypted vault, Video Studio), WebGPU local inference, and a multi-model canvas for side-by-side comparison — at a lower entry price (free tier, BYOK Pro).",
     bestFor:
       "Developers and power users who want a BYOK multi-model canvas plus agentic execution, not just a prettier chat shell.",
     whyShadowTalkWins: [
@@ -143,7 +143,7 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       "Multi-model canvas: compare Claude vs GPT-4o vs Gemini side-by-side with live color-coded diffing.",
       "WebGPU local inference + local vector RAG runs on-device via WebLLM — no provider roundtrip required.",
       "Encrypted vault (PBKDF2 + AES-256-GCM, zero-knowledge) ships in-product; TypingMind has no equivalent.",
-      "Free tier with no card and lower paid entry ($5/mo Pro) vs TypingMind's one-time license fee.",
+      "BYOK — no platform fee and lower paid entry (BYOK Pro) vs TypingMind's one-time license fee.",
     ],
     faq: [
       {
@@ -159,11 +159,11 @@ export const COMPARISON_PAGES: ComparisonPageData[] = [
       {
         question: "Does ShadowTalk AI cost less than TypingMind?",
         answer:
-          "ShadowTalk has a free tier with no credit card and Pro from $5/month. TypingMind is a one-time license purchase for the interface (then BYOK provider costs on top). For builders who want execution + tools, not just chat UI, ShadowTalk includes more per dollar.",
+          "ShadowTalk has a free tier with no credit card and Pro from BYOKnth. TypingMind is a one-time license purchase for the interface (then BYOK provider costs on top). For builders who want execution + tools, not just chat UI, ShadowTalk includes more per dollar.",
       },
     ],
     rows: [
-      { category: "Pricing model", shadowtalk: "Free tier + Pro $5/mo", competitor: "One-time license fee" },
+      { category: "Pricing model", shadowtalk: "Free tier + Pro BYOK", competitor: "One-time license fee" },
       { category: "BYOK support", shadowtalk: "100% BYOK — all major providers", competitor: "BYOK — all major providers" },
       { category: "Multi-model canvas", shadowtalk: "Side-by-side with live diffing", competitor: "Single conversation at a time" },
       { category: "Agentic workflows", shadowtalk: "Multi-step missions with approval gates", competitor: "Single-turn chat only" },

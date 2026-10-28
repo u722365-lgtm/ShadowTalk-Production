@@ -1,10 +1,10 @@
 import { PLAN_DETAILS } from "@/lib/stripe";
 
 /**
- * Best default for ShadowTalk: Premium $15/mo.
- * - Pro ($5) = entry hook for price-sensitive users only
- * - Premium ($15) = main revenue + matches ChatGPT Plus anchor with more tools
- * - Elite ($20) = decoy that makes Premium feel like the smart middle
+ * Best default for ShadowTalk: Premium BYOK.
+ * - BYOK) = entry hook for price-sensitive users only
+ * - BYOK) = main revenue + matches ChatGPT Plus anchor with more tools
+ * - BYOK) = decoy that makes Premium feel like the smart middle
  */
 export const RECOMMENDED_MONTHLY_PLAN = "premium" as const;
 export const BEST_MONTHLY_PLAN = RECOMMENDED_MONTHLY_PLAN;
@@ -27,7 +27,7 @@ export const COMPETITOR_ANCHORS = {
 
 export function dailyPrice(monthlyUsd: number): string {
   const perDay = monthlyUsd / 30;
-  // Always show 2 decimals when <$1 so $15/mo renders "$0.50/day", not "$0/day".
+  // Always show 2 decimals when <$1 so BYOK renders "$0.50/day", not "$0/day".
   if (perDay < 1) {
     return `$${perDay.toFixed(2)}`;
   }

@@ -4,9 +4,7 @@ import { FREE_TIER_MARKETING } from "@/lib/productClaims";
 
 export const STRIPE_CONFIG = {
   prices: {
-    pro: "price_1ScezZInnwEWcho15wMKeOMU", // $5/month
-    premium: "price_1SeVSbInnwEWcho1EILyNsK4", // $15/month
-    elite: "price_1SeTpoInnwEWcho1ETYh5Udy", // $20/month
+    pro: "price_1ScezZInnwEWcho15wMKeOMU", // BYOK (bring your own key)nth
   },
   products: {
     pro: "prod_TZocSSpPddFCH1",

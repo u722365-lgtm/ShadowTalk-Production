@@ -126,10 +126,10 @@ export function buildMonthlyPlans(): PricingPlan[] {
 
 export const PRICING_COMPARE_ROWS = [
   { label: "ShadowTalk Free", price: "$0/mo", us: true },
-  { label: "ChatGPT Plus", price: "$20/mo", us: false },
+  { label: "ChatGPT Plus", price: "BYOK", us: false },
   { label: "ChatGPT Pro", price: "$200/mo", us: false },
-  { label: "ShadowTalk Premium", price: "$15/mo", us: true },
-  { label: "ShadowTalk Elite", price: "$20/mo", us: true },
+  { label: "ShadowTalk Premium", price: "BYOK", us: true },
+  { label: "ShadowTalk Elite", price: "BYOK", us: true },
   { label: "ShadowTalk Enterprise", price: "Custom", us: true },
 ] as const;
 

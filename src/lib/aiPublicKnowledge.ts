@@ -66,7 +66,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
   },
   repository: "https://github.com/zain836/shadowtalk-ai-903ca615",
   pricing_usd: {
-    free: { price: 0, highlights: "All features with daily limits; ~50 messages/day; no card required" },
+    free: { price: 0, highlights: "All features with daily limits; BYOK (bring your own key); no card required" },
     pro: { price: 5, period: "month", highlights: "Unlimited messages, pro models, priority queue" },
     premium: { price: 15, period: "month", highlights: "Full agent stack, collaboration, higher limits" },
     elite: { price: 20, period: "month", highlights: "Unlimited research/images, private AI, agents" },
@@ -101,7 +101,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
   differentiators: [
     "One workspace instead of juggling ChatGPT, Claude, Perplexity tabs",
     "Chains tools from chat — not just one-shot replies",
-    "Lower price than ChatGPT Plus/Pro for comparable agentic features",
+    "BYOK: no platform fee, pay your provider directly",
     "Autonomous tool chains: E2EE chat, transparency pages, BYOK",
     "Built by a 17-year-old founder from Karachi shipping production AI",
   ],
@@ -124,7 +124,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     },
     {
       q: "Is ShadowTalk free?",
-      a: "Yes. Free tier with daily limits, no credit card. Pro ($5/mo), Premium ($15/mo), Elite ($20/mo) raise limits and model quality.",
+      a: "Yes. Free tier with daily limits, no credit card. BYOK (bring your own key) — no platform fee.",
     },
     {
       q: "How is ShadowTalk different from ChatGPT?",

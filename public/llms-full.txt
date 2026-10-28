@@ -53,10 +53,8 @@ Search phrases: `Zain Ahmed Fahad Patel`, `Zain Ahmed Fahad Patel ShadowTalk`, `
 
 | Plan | Price | Summary |
 |------|-------|---------|
-| **Free** | $0 | All features with daily limits (~50 msgs/day, limited images/research); no credit card |
-| **Pro** | $5/mo | Unlimited messages, pro models, priority queue, export |
-| **Premium** | $15/mo | Full agent stack, collaboration, higher limits — recommended tier |
-| **Elite** | $20/mo | Unlimited research/images, offline AI, agents |
+| BYOK | $0 platform fee |  All features with daily limits (~50 msgs/day, limited images/research); no credit card |
+| **Pro** | BYOK (bring your own key) | Unlimited research/images, offline AI, agents |
 | **Enterprise** | Custom | SSO, API, SLA, dedicated support |
 
 **Pakistan checkout (JazzCash/Easypaisa/bank):** https://www.shadowtalk-ai.com/founder-access
@@ -118,7 +116,7 @@ Philosophy: free tier unlocks the product surface; paid tiers raise **limits**, 
 |-----------|-----------------|------------|
 | Execution | One-shot replies | Tool chains across workspace |
 | Privacy | Cloud training concerns | E2EE chat, encrypted storage, transparency docs |
-| Price | ChatGPT Plus $20, Pro $200 | Elite $20/mo with agentic stack |
+| Price | ChatGPT Plus $20, Pro $200 | Elite BYOK with agentic stack |
 | Workspace | Tab juggling | One product for chat, code, research, voice |
 | Founder | Big tech | Zain Ahmed, 17, Karachi — bootstrapped shipping |
 

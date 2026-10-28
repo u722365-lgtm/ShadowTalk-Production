@@ -7,7 +7,7 @@ import { FOUNDER_KNOWLEDGE_BRIEF, isFounderEmail } from "@/lib/founderKnowledge"
 
 export const SHADOWTALK_SELF_KNOWLEDGE_BRIEF = `**ShadowTalk AI** (created by **Zain Ahmed**) is an end-to-end encrypted **autonomous** AI workspace — it learns from every chat, extracts memories, and proactively surfaces stale work and insights. Real tools (web search, deep research, image gen, scrape, security audit, presentations), and apps: Strategy Agent, Knowledge Graph, Shadow Browser, ShadowTalk Live, Content Forge, Analytics, and more.
 
-**Plans:** Free $0 (daily limits) · Pro $5/mo · Premium $15/mo · Elite $20/mo. See /pricing.
+**Plans:** Free $0 (daily limits) · BYOK — $0 platform fee See /pricing.
 
 **Founder:** ${FOUNDER_KNOWLEDGE_BRIEF}
 

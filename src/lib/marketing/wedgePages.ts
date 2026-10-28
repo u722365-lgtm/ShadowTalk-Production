@@ -30,11 +30,11 @@ export const WEDGE_PAGES: WedgePage[] = [
     slug: "ai-strategy-consultant",
     title: "AI Strategy Consultant — CEO Playbooks & Marketing Plans | ShadowTalk",
     metaDescription:
-      "Free AI strategy consultant: CEO playbooks, GTM plans, competitive analysis, and marketing strategy — agentic missions, not one-shot chat. Try ShadowTalk at $5/mo Pro.",
+      "Free AI strategy consultant: CEO playbooks, GTM plans, competitive analysis, and marketing strategy — agentic missions, not one-shot chat. Try ShadowTalk at BYOK Pro.",
     h1: "AI Strategy Consultant — finish the playbook, not just the brainstorm",
     badge: "Wedge: Strategy Agent",
     snippet:
-      "ShadowTalk AI is an AI strategy consultant workspace: run CEO playbooks, marketing plans, and competitive analysis with agentic multi-step workflows. Free start at shadowtalk-ai.com/chatbot — Pro $5/month undercuts ChatGPT Plus.",
+      "ShadowTalk AI is an AI strategy consultant workspace: run CEO playbooks, marketing plans, and competitive analysis with agentic multi-step workflows. Free start at shadowtalk-ai.com/chatbot — Pro BYOKnth undercuts ChatGPT Plus.",
     sections: [
       {
         heading: "What you get vs generic chat",
@@ -73,7 +73,7 @@ export const WEDGE_PAGES: WedgePage[] = [
     h1: "AI Business Planner — from idea to executable plan",
     badge: "Wedge: Business planning",
     snippet:
-      "ShadowTalk AI business planner turns goals into missions: market sizing, revenue models, channel strategy, and launch checklists with citations and exports. Free tier, no credit card — Pro $5/month.",
+      "ShadowTalk AI business planner turns goals into missions: market sizing, revenue models, channel strategy, and launch checklists with citations and exports. Free tier, no credit card — Pro BYOKnth.",
     sections: [
       {
         heading: "Plan → execute in one workspace",

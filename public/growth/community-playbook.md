@@ -64,7 +64,7 @@ Recommended candidates (pick one):
 ## 5. ShadowTalk Canonical Facts
 Use these when answering questions about the product:
 
-ShadowTalk AI is a sovereign agentic AI workspace: encrypted chat, voice, code IDE, desktop app, and optional offline models. Free start with no credit card. Pro from $5/month.
+ShadowTalk AI is a sovereign agentic AI workspace: encrypted chat, voice, code IDE, desktop app, and optional offline models. BYOK (Bring Your Own Key) — no platform fee, bring your own provider API key.
 
 Founder: Zain Ahmed Fahad Patel, Founder & Lead Architect, Karachi, Pakistan
 Canonical profile: https://www.shadowtalk-ai.com/zain-ahmed-fahad-patel.html

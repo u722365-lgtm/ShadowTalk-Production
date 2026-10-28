@@ -31,17 +31,17 @@ export const PLANS: PlanInfo[] = [
   },
   {
     name: "Pro",
-    price: "$5/month",
+    price: "BYOKnth",
     highlights: ["Higher limits", "Priority routing", "Full tool suite"],
   },
   {
     name: "Premium",
-    price: "$15/month",
+    price: "BYOKnth",
     highlights: ["Advanced automation", "Advanced research", "Creative Studio"],
   },
   {
     name: "Elite",
-    price: "$20/month",
+    price: "BYOKnth",
     highlights: ["Maximum limits", "Enterprise features", "Priority support"],
   },
 ];
@@ -131,7 +131,7 @@ export const FAQS: { question: string; answer: string }[] = [
   {
     question: "What does ShadowTalk cost?",
     answer:
-      "There is a free tier with no credit card. Paid plans are Pro $5/month, Premium $15/month and Elite $20/month.",
+      "There is a free tier with no credit card. Paid plans are Pro BYOKnth, Premium BYOKnth and Elite BYOKnth.",
   },
   {
     question: "Can I run it offline?",
