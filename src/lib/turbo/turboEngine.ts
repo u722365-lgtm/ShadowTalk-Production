@@ -30,10 +30,10 @@ export async function turboComplete(
   const byok = accessMode === "byok" ? getByokConfig() : null;
 
   if (!accessMode) {
-    throw new Error("Choose Tech-User or Non-Tech-Users in the chatbot setup before using AI.");
+    throw new Error("Add your API key in Settings → Personalization → BYOK to start using AI. ShadowTalk is BYOK-only.");
   }
   if (accessMode === "byok" && !byok?.apiKey) {
-    throw new Error("Your API key is not available on this device. Re-enter it in AI settings.");
+    throw new Error("No API key set. Add your key in Settings → Personalization → BYOK to use this feature.");
   }
 
   const result = await streamCloudChat(

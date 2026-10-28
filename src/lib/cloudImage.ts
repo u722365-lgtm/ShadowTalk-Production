@@ -14,7 +14,10 @@ export interface GenerateImageOptions {
 const OPENROUTER_IMAGE_MODEL = "google/gemini-2.5-flash-image";
 
 export function isCloudImageConfigured(): boolean {
-  return Boolean(functionsBaseUrl);
+  // BYOK-only: image generation is available when the user has a BYOK key
+  // configured for a provider that supports image generation (OpenAI or OpenRouter).
+  const config = getByokConfig();
+  return Boolean(config?.apiKey) && (config.provider === "openai" || config.provider === "openrouter");
 }
 
 function decodeImageResult(body: any): string {

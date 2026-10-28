@@ -195,20 +195,17 @@ export const LiveVoiceMode: React.FC<LiveVoiceModeProps> = ({
       let aiFailed = false;
 
       try {
-        if (userCohort === "TECH" && userApiKey) {
-          const byokConfig = getByokConfig();
-          const config = byokConfig || {
-            provider: "openrouter" as const,
-            apiKey: userApiKey,
-            model: "openai/gpt-4o-mini",
-            mode: "always" as const,
-          };
-          const result = await streamByokChat({ ...config, apiKey: userApiKey }, chatMessages, { temperature: 0.8 });
+        // BYOK-only: use the user's configured BYOK key directly.
+        // The AIKeyContext cohort system is legacy — in BYOK-only mode,
+        // getByokConfig() is the single source of truth.
+        const byokConfig = getByokConfig();
+        if (byokConfig?.apiKey) {
+          const result = await streamByokChat(byokConfig, chatMessages, { temperature: 0.8 });
           responseText = result.content || "";
           if (!responseText && result.error) aiFailed = true;
-        }
-
-        if (!responseText && !aiFailed) {
+        } else {
+          // No BYOK key — try streamCloudChat as fallback (it will return
+          // a clear error directing the user to add a key)
           const result = await streamCloudChat(chatMessages, { temperature: 0.8 });
           responseText = result.content || "";
           if (!responseText && result.error) aiFailed = true;

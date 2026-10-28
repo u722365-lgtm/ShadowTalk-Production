@@ -67,7 +67,7 @@ export async function streamCloudChat(
     return streamByokChat(byok, messages, opts);
   }
   if (accessMode !== "shared") {
-    return { content: "", error: "Choose Tech-User or Non-Tech-Users in the chatbot setup before using AI." };
+    return { content: "", error: "Add your API key in Settings → Personalization → BYOK to start chatting. ShadowTalk is BYOK-only." };
   }
   return streamBuiltInChat(messages, opts);
 }
