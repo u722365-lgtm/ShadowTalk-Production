@@ -399,6 +399,150 @@ export function chunkDocument(
 }
 
 /**
+ * Select the most relevant chunks for a user's question using keyword overlap.
+ *
+ * Simple keyword-based retrieval (no vector DB, no embeddings, no external
+ * service). Each chunk is scored by how many question keywords appear in it.
+ * The top chunks that fit within the context budget are returned.
+ *
+ * This is appropriate for the existing architecture — it keeps processing
+ * local and doesn't require any provider calls for retrieval.
+ *
+ * @param chunks The document chunks (from chunkDocument())
+ * @param question The user's question
+ * @param contextBudget Maximum chars to include (default 60K ≈ 15K tokens,
+ *   leaving room for the question + model response in a 16K-token context)
+ * @param maxChunks Maximum number of chunks to select (default 5)
+ */
+export interface RetrievalResult {
+  /** The selected chunks, in document order. */
+  selected: DocumentChunk[];
+  /** The indices of the selected chunks (0-based). */
+  selectedIndices: number[];
+  /** Total number of chunks available. */
+  totalChunks: number;
+  /** Whether the entire document fit (no retrieval needed). */
+  fullDocument: boolean;
+  /** A human-readable disclosure of what was analyzed. */
+  disclosure: string;
+}
+
+export function selectRelevantChunks(
+  chunks: DocumentChunk[],
+  question: string,
+  contextBudget: number = 60_000,
+  maxChunks: number = 5,
+): RetrievalResult {
+  // If all chunks fit within the budget, send everything
+  const totalChars = chunks.reduce((sum, c) => sum + c.text.length, 0);
+  if (totalChars <= contextBudget) {
+    return {
+      selected: chunks,
+      selectedIndices: chunks.map((_, i) => i),
+      totalChunks: chunks.length,
+      fullDocument: true,
+      disclosure: chunks.length > 1
+        ? `Analyzed all ${chunks.length} chunks of the document.`
+        : `Analyzed the full document.`,
+    };
+  }
+
+  // Extract keywords from the question (words 3+ chars, lowercase, no stopwords)
+  const stopWords = new Set([
+    "the", "and", "for", "are", "but", "not", "you", "all", "can", "her",
+    "was", "one", "our", "out", "has", "have", "had", "did", "this", "that",
+    "with", "from", "they", "will", "would", "there", "their", "what", "about",
+    "which", "when", "who", "how", "why", "where", "your", "any", "some",
+    "into", "than", "them", "then", "these", "those", "also", "only", "very",
+    "just", "more", "most", "such", "much", "many", "like", "even", "still",
+  ]);
+  const keywords = question
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !stopWords.has(w));
+
+  // Score each chunk by keyword occurrences
+  const scored = chunks.map((chunk, idx) => {
+    const lowerText = chunk.text.toLowerCase();
+    let score = 0;
+    for (const kw of keywords) {
+      // Count occurrences (whole-word match)
+      const matches = lowerText.match(new RegExp(`\\b${kw}\\b`, "g"));
+      if (matches) score += matches.length;
+    }
+    // Small bonus for chunks with page metadata (PDFs)
+    if (chunk.pages && chunk.pages.length > 0) score += 0.5;
+    return { chunk, idx, score };
+  });
+
+  // Sort by score descending, take top maxChunks
+  scored.sort((a, b) => b.score - a.score);
+  const top = scored.slice(0, maxChunks);
+
+  // If no keywords matched (e.g., question is "summarize"), take the first
+  // and last chunks (beginning + conclusion) + middle for coverage
+  if (top.every((t) => t.score === 0)) {
+    const indices: number[] = [];
+    if (chunks.length > 0) indices.push(0);
+    if (chunks.length > 2) {
+      const mid = Math.floor(chunks.length / 2);
+      indices.push(mid);
+    }
+    if (chunks.length > 1) indices.push(chunks.length - 1);
+    const selected = indices
+      .filter((v, i, a) => a.indexOf(v) === i) // dedupe
+      .map((i) => chunks[i])
+      .sort((a, b) => a.index - b.index);
+    return {
+      selected,
+      selectedIndices: selected.map((c) => c.index),
+      totalChunks: chunks.length,
+      fullDocument: false,
+      disclosure: `Analyzed ${selected.length} of ${chunks.length} chunks (beginning, middle, and end) — the document is too large to analyze in full. Some content may have been missed.`,
+    };
+  }
+
+  // Sort selected back into document order
+  top.sort((a, b) => a.idx - b.idx);
+  const selected = top.map((t) => t.chunk);
+
+  return {
+    selected,
+    selectedIndices: top.map((t) => t.idx),
+    totalChunks: chunks.length,
+    fullDocument: false,
+    disclosure: `Analyzed ${selected.length} of ${chunks.length} chunks (selected by relevance to your question). Some content may have been missed. Ask about specific topics for more targeted retrieval.`,
+  };
+}
+
+/**
+ * Format retrieved chunks as a chat message prefix.
+ * Includes the disclosure + the selected chunk text with page references.
+ */
+export function formatRetrievedChunksForChat(
+  retrieval: RetrievalResult,
+  filename: string,
+  format: ExtractedDocument["format"],
+): string {
+  const meta: string[] = [
+    `File: ${filename}`,
+    `Format: ${format.toUpperCase()}`,
+    `Chunks analyzed: ${retrieval.selected.length} of ${retrieval.totalChunks}`,
+  ];
+
+  let body = "";
+  for (const chunk of retrieval.selected) {
+    const pageRef = chunk.pages && chunk.pages.length > 0
+      ? ` (pages ${chunk.pages[0]}${chunk.pages.length > 1 ? `-${chunk.pages[chunk.pages.length - 1]}` : ""})`
+      : "";
+    body += `\n\n--- Chunk ${chunk.index + 1} of ${chunk.total}${pageRef} ---\n${chunk.text}`;
+  }
+
+  return `[Document Analysis — Retrieval]\n${meta.join(" · ")}\nDisclosure: ${retrieval.disclosure}\n\n--- Retrieved Content ---${body}`;
+}
+
+/**
  * Format the extracted document as a chat message prefix.
  * This is prepended to the user's question so the model has the document context.
  */

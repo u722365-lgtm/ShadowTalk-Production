@@ -55,7 +55,7 @@ import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
 import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
 import { executeShadowTool } from "@/lib/shadowTools/executeShadowTool";
 import { generateCloudImage } from "@/lib/cloudImage";
-import { extractDocument, formatDocumentForChat, isSupportedDocument, detectDocumentFormat, validateFileSize } from "@/lib/documentIntelligence";
+import { extractDocument, formatDocumentForChat, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat, isSupportedDocument, detectDocumentFormat, validateFileSize } from "@/lib/documentIntelligence";
 import { extractVideoFrames, formatFramesForChat, isSupportedVideo, validateVideoFile } from "@/lib/videoIntelligence";
 import { TokenCostBadge } from "@/components/chat/TokenCostBadge";
 
@@ -1413,7 +1413,7 @@ Structure and Content Guidelines:
           return;
         }
       } else if (format !== "unknown") {
-        // Document analysis — extract text locally
+        // Document analysis — extract text locally, then use retrieval for large docs
         try {
           const sizeCheck = validateFileSize({ size: data.length }, 25 * 1024 * 1024);
           if (!sizeCheck.ok) {
@@ -1430,11 +1430,26 @@ Structure and Content Guidelines:
               variant: "default",
             });
           }
-          const docContext = formatDocumentForChat(doc);
-          // Prepend the document text to the user's message
-          chatMessages[chatMessages.length - 1].content = `${docContext}\n\n--- User Question ---\n${msgContent || "Summarize this document."}`;
+
+          // Chunk the document, then select relevant chunks for the question
+          const chunks = chunkDocument(doc.text, 30_000, doc.format);
+          const retrieval = selectRelevantChunks(chunks, msgContent || "summarize");
+
+          if (retrieval.fullDocument) {
+            // Small document — send everything
+            const docContext = formatDocumentForChat(doc);
+            chatMessages[chatMessages.length - 1].content = `${docContext}\n\n--- User Question ---\n${msgContent || "Summarize this document."}`;
+          } else {
+            // Large document — send only retrieved chunks + disclosure
+            const retrievedContext = formatRetrievedChunksForChat(retrieval, name, doc.format);
+            chatMessages[chatMessages.length - 1].content = `${retrievedContext}\n\n--- User Question ---\n${msgContent || "Summarize the analyzed portions of this document."}`;
+          }
+
           if (doc.notice) {
             toast({ title: "Document processed", description: doc.notice });
+          }
+          if (!retrieval.fullDocument) {
+            toast({ title: "Partial analysis", description: retrieval.disclosure });
           }
         } catch (err) {
           toast({

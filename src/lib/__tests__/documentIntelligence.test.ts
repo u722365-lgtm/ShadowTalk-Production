@@ -27,7 +27,7 @@ vi.mock("mammoth/mammoth.browser", () => ({
   })),
 }));
 
-import { detectDocumentFormat, validateFileSize, extractDocument, formatDocumentForChat, isSupportedDocument, chunkDocument } from "../documentIntelligence";
+import { detectDocumentFormat, validateFileSize, extractDocument, formatDocumentForChat, isSupportedDocument, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat } from "../documentIntelligence";
 
 describe("Document Intelligence", () => {
   describe("detectDocumentFormat", () => {
@@ -239,6 +239,83 @@ describe("Document Intelligence", () => {
       );
       expect(result.empty).toBe(true);
       expect(result.notice).toContain("corrupt");
+    });
+  });
+
+  describe("selectRelevantChunks", () => {
+    it("returns full document when all chunks fit budget", () => {
+      const chunks = [
+        { text: "Small chunk one.", index: 0, total: 2, isLast: false },
+        { text: "Small chunk two.", index: 1, total: 2, isLast: true },
+      ];
+      const result = selectRelevantChunks(chunks, "any question", 100_000);
+      expect(result.fullDocument).toBe(true);
+      expect(result.selected).toHaveLength(2);
+      expect(result.disclosure).toContain("all 2 chunks");
+    });
+
+    it("selects relevant chunks by keyword match", () => {
+      const chunks = [
+        { text: "This chunk discusses revenue growth and quarterly earnings.", index: 0, total: 5, isLast: false },
+        { text: "This chunk is about employee benefits and HR policies.", index: 1, total: 5, isLast: false },
+        { text: "Revenue projections for next year look strong.", index: 2, total: 5, isLast: false },
+        { text: "The office cafeteria menu has changed.", index: 3, total: 5, isLast: false },
+        { text: "Conclusion and future outlook.", index: 4, total: 5, isLast: true },
+      ];
+      const result = selectRelevantChunks(chunks, "What is the revenue growth?", 200, 3);
+      expect(result.fullDocument).toBe(false);
+      expect(result.selected.length).toBeLessThanOrEqual(3);
+      // Chunks mentioning "revenue" should be selected (indices 0 and 2)
+      expect(result.selectedIndices).toContain(0);
+      expect(result.selectedIndices).toContain(2);
+    });
+
+    it("falls back to beginning/middle/end when no keywords match", () => {
+      const chunks = Array(10).fill(null).map((_, i) => ({
+        text: `Generic content ${i}. `.repeat(50),
+        index: i,
+        total: 10,
+        isLast: i === 9,
+      }));
+      const result = selectRelevantChunks(chunks, "summarize", 200, 5);
+      expect(result.fullDocument).toBe(false);
+      expect(result.selected.length).toBeGreaterThanOrEqual(2);
+      // Should include first and last chunk
+      expect(result.selectedIndices).toContain(0);
+      expect(result.selectedIndices).toContain(9);
+    });
+
+    it("disclosure mentions partial analysis", () => {
+      const chunks = Array(5).fill(null).map((_, i) => ({
+        text: `Chunk ${i}. `.repeat(100),
+        index: i,
+        total: 5,
+        isLast: i === 4,
+      }));
+      const result = selectRelevantChunks(chunks, "test question", 200, 3);
+      expect(result.disclosure).toContain("of 5 chunks");
+      expect(result.disclosure).toContain("missed");
+    });
+  });
+
+  describe("formatRetrievedChunksForChat", () => {
+    it("includes filename + chunk count + disclosure", () => {
+      const retrieval = {
+        selected: [
+          { text: "Chunk 0 content.", index: 0, total: 3, isLast: false, pages: [1, 2] },
+          { text: "Chunk 2 content.", index: 2, total: 3, isLast: true, pages: [5] },
+        ],
+        selectedIndices: [0, 2],
+        totalChunks: 3,
+        fullDocument: false,
+        disclosure: "Analyzed 2 of 3 chunks. Some content may have been missed.",
+      };
+      const formatted = formatRetrievedChunksForChat(retrieval, "report.pdf", "pdf");
+      expect(formatted).toContain("File: report.pdf");
+      expect(formatted).toContain("Chunks analyzed: 2 of 3");
+      expect(formatted).toContain("Chunk 1 of 3");
+      expect(formatted).toContain("pages 1-2");
+      expect(formatted).toContain("Some content may have been missed");
     });
   });
 });
