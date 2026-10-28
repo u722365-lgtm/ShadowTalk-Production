@@ -55,6 +55,8 @@ import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
 import { useToolOrchestrator } from "@/hooks/useToolOrchestrator";
 import { executeShadowTool } from "@/lib/shadowTools/executeShadowTool";
 import { generateCloudImage } from "@/lib/cloudImage";
+import { extractDocument, formatDocumentForChat, isSupportedDocument, detectDocumentFormat, validateFileSize } from "@/lib/documentIntelligence";
+import { extractVideoFrames, formatFramesForChat, isSupportedVideo, validateVideoFile } from "@/lib/videoIntelligence";
 import { TokenCostBadge } from "@/components/chat/TokenCostBadge";
 
 
@@ -1361,7 +1363,93 @@ Structure and Content Guidelines:
         content: m.content,
       }));
     chatMessages.push({ role: "user", content: msgContent });
-    if (userMessage.attachment?.type === "image") {
+
+    // === Document Intelligence — extract text from PDF/DOCX/TXT/etc. ===
+    if (userMessage.attachment?.type === "file") {
+      const { name, mimeType, data } = userMessage.attachment;
+      const format = detectDocumentFormat(name, mimeType);
+
+      // Check if it's a video file
+      if (isSupportedVideo(mimeType)) {
+        // Video analysis — extract frames + send as image array
+        try {
+          // Convert data URL back to a File for the video extractor
+          const base64 = data.split(",")[1] || "";
+          const binaryString = atob(base64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+          const videoFile = new File([bytes], name, { type: mimeType });
+
+          toast({ title: "Processing video…", description: "Extracting frames for analysis." });
+          const result = await extractVideoFrames(videoFile, { maxFrames: 6 });
+          if (result.error) {
+            toast({ title: "Video analysis failed", description: result.error, variant: "destructive" });
+            setIsLoading(false);
+            return;
+          }
+          if (result.frames.length > 0) {
+            chatMessages[chatMessages.length - 1].content = formatFramesForChat(
+              result.frames,
+              msgContent || "Describe what's happening in this video.",
+              result.metadata,
+            );
+            if (result.notice) {
+              toast({ title: "Video processed", description: result.notice });
+            }
+          }
+        } catch (err) {
+          toast({
+            title: "Video analysis failed",
+            description: err instanceof Error ? err.message : "Could not process the video.",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+      } else if (format !== "unknown") {
+        // Document analysis — extract text locally
+        try {
+          const sizeCheck = validateFileSize({ size: data.length }, 25 * 1024 * 1024);
+          if (!sizeCheck.ok) {
+            toast({ title: "File too large", description: sizeCheck.error, variant: "destructive" });
+            setIsLoading(false);
+            return;
+          }
+          toast({ title: "Processing document…", description: `Extracting text from ${name}.` });
+          const doc = await extractDocument(data, name, mimeType);
+          if (doc.empty) {
+            toast({
+              title: "No text extracted",
+              description: doc.notice || "The document appears to be empty or scanned.",
+              variant: "default",
+            });
+          }
+          const docContext = formatDocumentForChat(doc);
+          // Prepend the document text to the user's message
+          chatMessages[chatMessages.length - 1].content = `${docContext}\n\n--- User Question ---\n${msgContent || "Summarize this document."}`;
+          if (doc.notice) {
+            toast({ title: "Document processed", description: doc.notice });
+          }
+        } catch (err) {
+          toast({
+            title: "Document analysis failed",
+            description: err instanceof Error ? err.message : "Could not process the document.",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        // Unsupported file type
+        toast({
+          title: "Unsupported file",
+          description: `${name}: supported formats are PDF, DOCX, TXT, MD, CSV, JSON, code files, and common video formats (MP4, WebM).`,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+    } else if (userMessage.attachment?.type === "image") {
       const imageData = userMessage.attachment.data;
       chatMessages[chatMessages.length - 1].content = [
         { type: "text", text: msgContent || "Analyze this image." },
