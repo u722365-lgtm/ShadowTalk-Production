@@ -9,6 +9,7 @@ truth: `src/`, `functions/`, `firebase.json`, `firestore.rules`,
 
 - [Project overview and developer setup](../README.md)
 - [Current architecture and runtime flow](./architecture/README.md)
+- [SEO / GEO / AEO architecture](./SEO_GEO_AEO_ARCHITECTURE.md)
 
 ## Reference PDFs
 
