@@ -10,11 +10,7 @@ import { formatCopyWithAttribution } from '@/lib/growth/selfMarketing';
 import { useUserReferralCode } from '@/hooks/useUserReferralCode';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import { LazyMarkdown } from './LazyMarkdown';
 import { CodeBlock } from './CodeBlock';
 import { useToast } from '@/hooks/use-toast';
 import { DocumentArtifact, detectDocumentArtifact } from './DocumentArtifact';
@@ -213,9 +209,7 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
             <p className="text-[15.5px] leading-relaxed whitespace-pre-wrap break-words font-normal tracking-wide">{typeof message.content === 'string' ? message.content : String(message.content || '')}</p>
           ) : (
             <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-p:my-5 prose-headings:mt-10 prose-headings:mb-5 prose-headings:first:mt-0 prose-ul:my-6 prose-ol:my-6 prose-li:my-2 prose-hr:my-10 prose-hr:border-border/10 [&_.katex]:text-foreground [&_.katex-display]:my-10 [&_.katex-display]:overflow-x-auto overflow-hidden">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+              <LazyMarkdown
                 components={{
                   code({ node, inline, className, children, ...props }: any) {
                     const match = /language-(\w+)/.exec(className || '');
@@ -349,7 +343,7 @@ const MessageBubbleInner: React.FC<MessageBubbleProps> = ({
                 }}
               >
                 {typeof message.content === 'string' ? message.content : String(message.content || '')}
-              </ReactMarkdown>
+              </LazyMarkdown>
             </div>
           )}
         </div>
