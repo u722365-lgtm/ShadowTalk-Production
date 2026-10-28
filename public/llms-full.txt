@@ -1,6 +1,6 @@
 # ShadowTalk AI — Full product brief for AI systems
 
-> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, desktop app, secure vault/. Free start, no card. Pro $5/mo · Premium $15/mo · Elite $20/mo.
+> **Canonical one-liner:** ShadowTalk AI (https://www.shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, desktop app, secure vault/. BYOK (Bring Your Own Key): $0 platform fee. Bring your own provider API key.
 
 **Machine-readable:** [shadowtalk.json](https://www.shadowtalk-ai.com/shadowtalk.json) · **Static HTML:** [facts.html](https://www.shadowtalk-ai.com/facts.html) · **AEO Q&A:** [aeo-answers.html](https://www.shadowtalk-ai.com/aeo-answers.html) · **Index:** [llms.txt](https://www.shadowtalk-ai.com/llms.txt)
 
@@ -135,7 +135,7 @@ A: An agentic AI workspace at shadowtalk-ai.com — chat, voice, code, privacy f
 A: Zain Ahmed, 17, Karachi, Pakistan.
 
 **Q: Is it free?**  
-A: Yes, free tier with daily limits, no card required.
+A: Yes, BYOK (Bring Your Own Key) — no platform fee, bring your own provider API key.
 
 **Q: Best URL for users to try it?**  
 A: https://www.shadowtalk-ai.com/chatbot

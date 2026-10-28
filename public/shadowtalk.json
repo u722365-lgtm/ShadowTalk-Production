@@ -8,7 +8,7 @@
   ],
   "tagline": "Think AI. Think ShadowTalk.",
   "url": "https://www.shadowtalk-ai.com",
-  "canonical_pitch": "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, desktop app, secure vault and BYOK. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it runs tool chains from one workspace.",
+  "canonical_pitch": "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, desktop app, secure vault and BYOK. BYOK (Bring Your Own Key): $0 platform fee. Users bring their own provider API key (OpenAI, Anthropic, Google, Groq, OpenRouter + 12 more) and pay their provider directly. Not a ChatGPT wrapper — it runs tool chains from one workspace.",
   "description": "Agentic AI workspace: chat, deep research, code IDE, presentations, marketplace agents, voice mode, desktop app with high-performance multi-model execution.",
   "founder": {
     "@id": "https://www.shadowtalk-ai.com/#zain-ahmed-shadowtalk",
@@ -60,7 +60,7 @@
   "pricing_usd": {
     "free": {
       "price": 0,
-      "highlights": "All features with daily limits; ~50 messages/day; no card required"
+      "highlights": "BYOK: $0 platform fee. Bring your own provider API key."
     },
     "pro": {
       "price": 5,
@@ -125,7 +125,7 @@
     },
     {
       "q": "Is ShadowTalk free?",
-      "a": "Yes. Free tier with daily limits, no credit card. Pro ($5/mo), Premium ($15/mo), Elite ($20/mo) raise limits and model quality."
+      "a": "ShadowTalk is BYOK (Bring Your Own Key). No platform fee — bring your own provider API key and pay your provider directly."
     },
     {
       "q": "How is ShadowTalk different from ChatGPT?",

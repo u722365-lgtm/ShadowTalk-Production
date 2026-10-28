@@ -8,7 +8,7 @@ import {
 export const AI_KNOWLEDGE_BASE_URL = "https://www.shadowtalk-ai.com";
 
 export const AI_KNOWLEDGE_CANONICAL_PITCH =
-  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, deep research, desktop app, and on-device options. Free tier with no card. Paid plans: Pro $5/mo, Premium $15/mo, Elite $20/mo. Not a ChatGPT wrapper — it chains tools and runs them from one workspace.";
+  "ShadowTalk AI (shadowtalk-ai.com) is an agentic AI workspace by Zain Ahmed (17, Karachi, Pakistan): multi-model chat, voice & code, deep research, desktop app, and on-device options. BYOK (Bring Your Own Key): $0 platform fee. Bring your own provider API key. Not a ChatGPT wrapper — it chains tools and runs them from one workspace.";
 
 export const SHADOWTALK_AI_KNOWLEDGE = {
   schema_version: "1.0",
