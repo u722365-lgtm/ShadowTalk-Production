@@ -291,6 +291,8 @@ function ChatEmptyStateInner({
         <span className="text-[11px] text-muted-foreground">
           Try <code className="font-mono text-foreground">/image</code>, <code className="font-mono text-foreground">/doc</code>, <code className="font-mono text-foreground">/research</code>
         </span>
+        <span className="text-[11px] text-muted-foreground">·</span>
+        <a href="/settings?section=personalization" className="text-[11px] text-primary hover:underline">Need help setting up your API key?</a>
       </motion.div>
 
       {/* Prompt Inspiration Pills */}

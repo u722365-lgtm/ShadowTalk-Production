@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/AuthProvider";
 import { backend } from "@/integrations/local/client";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// html2canvas lazy-loaded below to keep it out of the initial bundle
 import type { BusinessIdea, StrategyResult } from "@/lib/strategy/types";
 
 interface StrategyPDFGeneratorProps {
@@ -298,6 +298,7 @@ export const StrategyPDFGenerator = ({
         addSeparator();
 
         try {
+          const { default: html2canvas } = await import('html2canvas');
           const canvas = await html2canvas(chartsRef.current, {
             scale: 2,
             useCORS: true,

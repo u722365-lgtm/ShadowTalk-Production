@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Share2, Download, Copy, Leaf, Droplets, Zap, TreePine, Flame, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
+// html2canvas lazy-loaded below to keep it out of the initial bundle
 
 interface ShareableImpactCardProps {
   co2Saved: number;
@@ -29,6 +29,7 @@ const ShareableImpactCard: React.FC<ShareableImpactCardProps> = ({
     if (!cardRef.current) return;
     setDownloading(true);
     try {
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: null,
         scale: 2,
