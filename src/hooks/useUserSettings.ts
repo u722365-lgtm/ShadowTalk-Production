@@ -41,8 +41,9 @@ export function useUserSettings<T = any>(settingKey: string, defaultValue: T) {
                 setValue(data.setting_value as T);
               } else {
                 // Migrate from localStorage if exists
-                const stored = localStorage.getItem(`shadowtalk_${settingKey}`) 
-                  || localStorage.getItem(`${settingKey}_${user.id}`)
+                // Signed-in settings must never fall back to the anonymous,
+                // browser-wide value: it may belong to a different account.
+                const stored = localStorage.getItem(`shadowtalk_${settingKey}_${user.id}`)
                   || localStorage.getItem(`custom_instructions_${user.id}`);
                 if (stored && settingKey === 'custom_instructions') {
                   const parsed = JSON.parse(stored);
@@ -80,7 +81,7 @@ export function useUserSettings<T = any>(settingKey: string, defaultValue: T) {
     setValue(newValue);
     
     if (!user) {
-      localStorage.setItem(`shadowtalk_${settingKey}`, JSON.stringify(newValue));
+      localStorage.setItem(`shadowtalk_${settingKey}_${user.id}`, JSON.stringify(newValue));
       return;
     }
 

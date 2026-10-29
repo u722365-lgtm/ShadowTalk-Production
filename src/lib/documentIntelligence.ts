@@ -91,13 +91,10 @@ async function extractPdf(
   // 1. Vite ?url import (best — bundles the worker locally)
   // 2. CDN fallback (works everywhere but depends on network)
   try {
-    // @ts-expect-error — Vite ?url suffix is a build-time directive
     const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
   } catch {
     // Fallback: CDN (matches the installed version)
-    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   }
 

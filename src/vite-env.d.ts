@@ -56,7 +56,9 @@ interface Window {
 declare const SpeechRecognition: SpeechRecognitionCtor | undefined;
 
 // ---- WebGPU type shim ----
-type GPU = unknown;
+  interface GPU {
+    requestAdapter(): Promise<unknown>;
+  }
 interface Navigator {
   gpu?: GPU;
 }

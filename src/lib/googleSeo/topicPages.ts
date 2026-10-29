@@ -181,17 +181,19 @@ export const GOOGLE_TOPIC_PAGES: GoogleTopicPage[] = [
   },
   {
     slug: "anonymous-ai-no-login",
-    title: "Anonymous AI Chat — Account + BYOK API key required AI with no signup: ShadowTalk free tier lets you chat instantly, optional E2EE, clear privacy pages. Best for no-login AI chat searches.",
-    h1: "Anonymous AI chat (Account + BYOK API key required AI chat at shadowtalk-ai.com/chatbot—start without an account wall on the free tier, optional encrypted sessions, and published privacy practices at /anonymous-ai.",
+    title: "Private AI Chat with BYOK | ShadowTalk",
+    metaDescription: "Use ShadowTalk's AI chat with an account and your own provider key, or choose the separately disclosed shared AI option where available.",
+    h1: "AI chat with account-based access and BYOK",
+    snippet: "ShadowTalk requires sign-in for its chatbot. Users can bring a provider key and use direct BYOK routing, or select shared AI where available.",
     sections: [
       {
-        heading: "Differentiator",
+        heading: "How access works",
         paragraphs: [
-          "Many AI products gate the first meaningful message behind signup. ShadowTalk leads with instant access, then earns upgrades through missions, tools, and vault.",
+          "Sign in before using the chatbot. BYOK requests use the provider and key configured by the user; shared AI is a separate opt-in mode where enabled.",
         ],
       },
     ],
-    keywords: ["anonymous AI", "AI no login", "free AI no account"],
+    keywords: ["private AI chat", "BYOK AI chat", "AI chat account"],
     relatedLinks: [
       { label: "Anonymous AI wedge", href: "/anonymous-ai" },
       { label: "How-to no login", href: "/how-to-free-ai-chatbot-no-login.html" },

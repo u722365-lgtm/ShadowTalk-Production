@@ -10,18 +10,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Telescope,
-  Sparkles,
-  Search,
-  Clock,
-  FileText,
-  KeyRound,
-  Layers,
-  ArrowRight,
-  Loader2,
-  Quote,
-} from "lucide-react";
+import { Telescope, Sparkles, Search, Clock, FileText, KeyRound, Layers, ArrowRight, Quote } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -48,42 +37,8 @@ const RECENT_RESULTS: ResearchResult[] = [];
 
 export default function ResearchPage() {
   const [query, setQuery] = useState("");
-  const [running, setRunning] = useState(false);
-  const [results, setResults] = useState<ResearchResult[]>(RECENT_RESULTS);
-
-  const startResearch = () => {
-    if (!query.trim()) return;
-    setRunning(true);
-    // Simulate the research kickoff. In production this hits
-    // /functions/research with the user's BYOK key or the OmniRoute pool.
-    const id = `res_${Date.now()}`;
-    const newEntry: ResearchResult = {
-      id,
-      query: query.trim(),
-      status: "running",
-      sources: 0,
-      createdAt: new Date().toISOString(),
-      excerpt: "Analyzing sources…",
-    };
-    setResults((prev) => [newEntry, ...prev]);
-    setQuery("");
-    setTimeout(() => {
-      setRunning(false);
-      setResults((prev) =>
-        prev.map((r) =>
-          r.id === id
-            ? {
-                ...r,
-                status: "completed",
-                sources: 14,
-                excerpt:
-                  "Synthesized findings across 14 sources. Key themes: regulatory pressure, on-device inference, and the rise of BYOK routing.",
-              }
-            : r,
-        ),
-      );
-    }, 1800);
-  };
+  const [researchNotice, setResearchNotice] = useState("");
+  const results = RECENT_RESULTS;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -91,7 +46,7 @@ export default function ResearchPage() {
         meta={{
           title: "Deep Research — ShadowTalk AI",
           description:
-            "Deep Research Mode analyzes multiple sources, synthesizes findings, and produces cited reports. Powered by your BYOK key or the shared OmniRoute pool.",
+            "Deep Research Mode is not connected to a provider-backed research workflow yet. No source search or report generation is currently available.",
           canonical: "https://www.shadowtalk-ai.com/research",
           keywords: ["deep research", "AI research", "cited reports", "OmniRoute", "BYOK"],
           ogType: "website",
@@ -114,8 +69,7 @@ export default function ResearchPage() {
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Deep Research Mode</h1>
             <p className="text-sm sm:text-base text-muted-foreground mt-3 max-w-2xl mx-auto leading-relaxed">
-              Ask a question. ShadowTalk analyzes multiple sources, cross-checks claims,
-              synthesizes findings, and returns a cited report you can actually use.
+              Provider-backed source discovery and cited report generation are not available on this page yet.
             </p>
           </motion.div>
 
@@ -149,18 +103,15 @@ export default function ResearchPage() {
                 ))}
               </div>
               <Button
-                onClick={startResearch}
-                disabled={!query.trim() || running}
+                onClick={() => setResearchNotice("No research was started. This workflow is not connected to a research provider yet.")}
+                disabled={!query.trim()}
                 className="gap-2"
               >
-                {running ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                {running ? "Researching…" : "Start Research"}
+                <Sparkles className="h-4 w-4" />
+                Research unavailable
               </Button>
             </div>
+            {researchNotice && <p role="status" className="mt-3 text-sm text-amber-300">{researchNotice}</p>}
           </motion.div>
 
           {/* Recent results */}
@@ -187,7 +138,7 @@ export default function ResearchPage() {
                 </div>
                 <p className="text-sm text-muted-foreground">No research yet</p>
                 <p className="text-[11px] text-muted-foreground/70 mt-1">
-                  Kick off your first query above to see results here.
+                  No saved reports. Research execution is not connected on this page.
                 </p>
               </div>
             ) : (

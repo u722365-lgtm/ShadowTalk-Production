@@ -21,6 +21,9 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "emulators": {
+    "firestore": { "port": 8088 }
+  },
   "hosting": {
     "public": "dist",
     "cleanUrls": true,

@@ -439,17 +439,6 @@ export async function analyzeImageInDetail(
   signal?: AbortSignal,
 ): Promise<ImageAnalysisResult> {
   const metrics = await extractImageMetrics(originalImage);
-  const defaultReport: ImageAnalysisResult = {
-    summary: "Visual analysis of the uploaded image.",
-    subject: "Central focal subject with balanced proportions.",
-    composition: `${metrics.aspectRatio} framing with natural perspective and depth.`,
-    palette: `${metrics.dominantTone} tonal atmosphere with average luminance of ${metrics.brightness}.`,
-    suggestedEdits: [
-      "Make it cyberpunk with glowing neon accents",
-      "Convert to an oil painting with dramatic brushstrokes",
-      "Change background to a futuristic skyline at night",
-    ],
-  };
 
   const systemPrompt = `You are ShadowTalk AI's Visual Reasoning Expert.
 You are shown a real image. Describe exactly what you see.
@@ -470,17 +459,21 @@ Respond with strictly valid JSON:
     signal,
   );
 
-  if (parsed && typeof parsed.summary === "string" && typeof parsed.subject === "string") {
-    return {
-      summary: parsed.summary,
-      subject: parsed.subject,
-      composition: typeof parsed.composition === "string" ? parsed.composition : defaultReport.composition,
-      palette: typeof parsed.palette === "string" ? parsed.palette : defaultReport.palette,
-      suggestedEdits: Array.isArray(parsed.suggestedEdits)
-        ? (parsed.suggestedEdits as unknown[]).filter((e): e is string => typeof e === "string")
-        : defaultReport.suggestedEdits,
-    };
+  if (!parsed || typeof parsed.summary !== "string" || typeof parsed.subject !== "string") {
+    throw new Error("The selected AI provider could not analyze this image. Check your provider connection and try again.");
   }
 
-  return defaultReport;
+  return {
+    summary: parsed.summary,
+    subject: parsed.subject,
+    composition: typeof parsed.composition === "string"
+      ? parsed.composition
+      : `${metrics.aspectRatio} framing; measured dimensions are ${metrics.width} × ${metrics.height}.`,
+    palette: typeof parsed.palette === "string"
+      ? parsed.palette
+      : `Measured image tone: ${metrics.dominantTone}; average luminance: ${metrics.brightness}.`,
+    suggestedEdits: Array.isArray(parsed.suggestedEdits)
+      ? (parsed.suggestedEdits as unknown[]).filter((edit): edit is string => typeof edit === "string")
+      : [],
+  };
 }

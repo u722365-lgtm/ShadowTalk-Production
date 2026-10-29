@@ -1147,17 +1147,10 @@ Structure and Content Guidelines:
       await runChatCompletion(chatMessages, conversationId);
       const endTime = performance.now();
       const totalDuration = endTime - startTime;
-      const ttfv = Math.min(totalDuration, 1500 + Math.random() * 2000); 
-
-      trackShadowTalkEvent("first_meaningful_result", { mission_id: conversationId, user_id: user?.id, ttfv_ms: ttfv });
       trackShadowTalkEvent("mission_completed", { 
         mission_id: conversationId, 
         user_id: user?.id, 
         duration_ms: totalDuration, 
-        estimated_cost: 0.012, 
-        cost_type: "estimated",
-        input_tokens: chatMessages.length * 45, 
-        output_tokens: 300, // mock since we don't have access to reply here
         success: true 
       });
     } catch (err) {
@@ -1252,6 +1245,11 @@ Structure and Content Guidelines:
     const toolResult = detectTool(strippedForTools);
 
     if (toolResult.tool && toolResult.autoExecute) {
+      const conversationId = await resolveConversationId();
+      if (!conversationId) {
+        setIsLoading(false);
+        throw new Error("Could not open a conversation for this tool request.");
+      }
       const toolMessageId = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ai-${Date.now()}`);
       const toolAiMessage: Message = {
         id: toolMessageId,
@@ -1276,8 +1274,8 @@ Structure and Content Guidelines:
             imageUrl,
             toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
           } : m));
-          // Record model call for cost tracker + session activation
-          costTracker.onRequestComplete("gemini-2.0-flash", 0, 0);
+          // The image provider does not return usage metadata here, so do not
+          // attribute this request to a chat model or report fabricated cost.
           session.recordModelCall();
         } else {
           // Other auto-execute tools (calculator, web_search, deep_research, etc.)
@@ -1369,8 +1367,6 @@ Structure and Content Guidelines:
     // === Document Intelligence — extract text from PDF/DOCX/TXT/etc. ===
     if (userMessage.attachment?.type === "file") {
       const { name, mimeType, data } = userMessage.attachment;
-      const format = detectDocumentFormat(name, mimeType);
-
       // Lightweight format detection (inline — no import needed)
       const ext = name.split(".").pop()?.toLowerCase() || "";
       const isVideo = ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext) || mimeType.startsWith("video/");
@@ -1641,17 +1637,10 @@ Structure and Content Guidelines:
       const endTime = performance.now();
       const totalDuration = endTime - startTime;
       // In a real streaming implementation, TTFV would be tracked on the first chunk.
-      const ttfv = Math.min(totalDuration, 1500 + Math.random() * 2000); 
-
-      trackShadowTalkEvent("first_meaningful_result", { mission_id: conversationId, user_id: user?.id, ttfv_ms: ttfv });
       trackShadowTalkEvent("mission_completed", { 
         mission_id: conversationId, 
         user_id: user?.id, 
         duration_ms: totalDuration, 
-        estimated_cost: 0.012, 
-        cost_type: "estimated",
-        input_tokens: chatMessages.length * 45, // rough estimate
-        output_tokens: assistantReply ? assistantReply.length / 4 : 0,
         success: true 
       });
 

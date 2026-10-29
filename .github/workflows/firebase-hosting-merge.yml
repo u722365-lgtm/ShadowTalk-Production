@@ -8,13 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
       - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npx --yes firebase-tools@14 emulators:exec --project demo-shadowtalk-auth-rules --only firestore "npm test"
       - run: npm run build
-        env:
-          # Public ShadowTalk chat AI endpoint (publishable values — safe in builds)
-          VITE_SUPABASE_URL: https://krsaqoitjivaexhepvll.supabase.co
-          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_yEjCspr-LLB4ODTFtT_ygw_PPEO-nEG
-          VITE_SUPABASE_PROJECT_ID: krsaqoitjivaexhepvll
+      - run: npm ci --prefix functions
+      - run: npm --prefix functions run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

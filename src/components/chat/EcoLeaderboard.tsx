@@ -64,12 +64,12 @@ const EcoLeaderboard: React.FC<EcoLeaderboardProps> = ({ currentUserId }) => {
 
         // Fetch display names for all users
         const userIds = stats.map(s => s.user_id);
-        const { data: profiles } = await backend
-          .from('profiles')
+        const { data: public_profiles } = await backend
+          .from('public_profiles')
           .select('id, display_name')
           .in('id', userIds);
 
-        const profileMap = new Map<string, string>(profiles?.map((p: any) => [p.id as string, p.display_name as string]) || []);
+        const profileMap = new Map<string, string>(public_profiles?.map((p: any) => [p.id as string, p.display_name as string]) || []);
 
         // Also fetch actions count filtered by timeframe
         let actionCounts = new Map<string, number>();

@@ -31,7 +31,10 @@ export const MEMORY_CATEGORIES: { id: MemoryCategory; label: string; description
   { id: 'facts', label: 'Custom Facts', description: 'Free-form facts and operational notes the AI should know', icon: '📝' },
 ];
 
-const LOCAL_STORAGE_KEY = 'shadowtalk_business_memories';
+const GUEST_LOCAL_STORAGE_KEY = 'shadowtalk_business_memories';
+const localStorageKey = (userId?: string) => userId
+  ? `${GUEST_LOCAL_STORAGE_KEY}.${userId}`
+  : GUEST_LOCAL_STORAGE_KEY;
 
 export const SAMPLE_BUSINESS_MEMORIES: MemoryFormData[] = [
   {
@@ -60,20 +63,20 @@ export const SAMPLE_BUSINESS_MEMORIES: MemoryFormData[] = [
   },
 ];
 
-function readLocalMemories(): BusinessMemory[] {
+function readLocalMemories(userId?: string): BusinessMemory[] {
   if (typeof localStorage === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const raw = localStorage.getItem(localStorageKey(userId));
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
 }
 
-function writeLocalMemories(memories: BusinessMemory[]) {
+function writeLocalMemories(memories: BusinessMemory[], userId?: string) {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(memories));
+    localStorage.setItem(localStorageKey(userId), JSON.stringify(memories));
   } catch {
     /* ignore storage quota errors */
   }
@@ -82,14 +85,16 @@ function writeLocalMemories(memories: BusinessMemory[]) {
 export function useBusinessMemory() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [memories, setMemories] = useState<BusinessMemory[]>(() => readLocalMemories());
+  const [memories, setMemories] = useState<BusinessMemory[]>([]);
+  const [loadedUid, setLoadedUid] = useState<string | null | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const fetchMemories = useCallback(async () => {
-    const local = readLocalMemories();
+    const local = readLocalMemories(user?.id);
+    setMemories(local);
+    setLoadedUid(user?.id ?? null);
     if (!user) {
-      setMemories(local);
       setLoading(false);
       return;
     }
@@ -106,9 +111,9 @@ export function useBusinessMemory() {
         const remoteMemories = data as unknown as BusinessMemory[];
         if (remoteMemories.length > 0) {
           setMemories(remoteMemories);
-          writeLocalMemories(remoteMemories);
-        } else if (local.length > 0) {
-          // Sync local items to remote
+          writeLocalMemories(remoteMemories, user.id);
+        } else {
+          // Use only this account's local cache when the remote has no rows.
           setMemories(local);
         }
       } else {
@@ -118,6 +123,7 @@ export function useBusinessMemory() {
       console.warn('Error fetching remote business memories, using local cache:', error);
       setMemories(local);
     } finally {
+      setLoadedUid(user?.id ?? null);
       setLoading(false);
     }
   }, [user]);
@@ -146,7 +152,7 @@ export function useBusinessMemory() {
       // 1. Optimistically write to local state and storage
       const updated = [newMemory, ...memories];
       setMemories(updated);
-      writeLocalMemories(updated);
+      writeLocalMemories(updated, user?.id);
 
       // 2. Persist to Firestore if user is authenticated
       if (user && !user.id.startsWith('local-')) {
@@ -186,7 +192,7 @@ export function useBusinessMemory() {
         m.id === id ? { ...m, ...data, updated_at: now } : m
       );
       setMemories(updated);
-      writeLocalMemories(updated);
+      writeLocalMemories(updated, user?.id);
 
       if (user && !user.id.startsWith('local-')) {
         await backend
@@ -219,7 +225,7 @@ export function useBusinessMemory() {
     try {
       const updated = memories.filter((m) => m.id !== id);
       setMemories(updated);
-      writeLocalMemories(updated);
+      writeLocalMemories(updated, user?.id);
 
       if (user && !user.id.startsWith('local-')) {
         await backend
@@ -270,7 +276,7 @@ export function useBusinessMemory() {
 
       const combined = [...seeded, ...memories.filter((m) => !m.id.startsWith('sample-'))];
       setMemories(combined);
-      writeLocalMemories(combined);
+      writeLocalMemories(combined, user?.id);
 
       toast({
         title: 'Sample Profile Loaded',
@@ -282,13 +288,15 @@ export function useBusinessMemory() {
     }
   };
 
+  const visibleMemories = loadedUid === (user?.id ?? null) ? memories : [];
+
   const getActiveMemories = useCallback((): BusinessMemory[] => {
-    return memories.filter((m) => m.is_active);
-  }, [memories]);
+    return visibleMemories.filter((m) => m.is_active);
+  }, [visibleMemories]);
 
   const getMemoriesByCategory = useCallback((category: MemoryCategory): BusinessMemory[] => {
-    return memories.filter((m) => m.category === category);
-  }, [memories]);
+    return visibleMemories.filter((m) => m.category === category);
+  }, [visibleMemories]);
 
   const getMemoryContext = useCallback((): string => {
     const activeMemories = getActiveMemories();
@@ -307,7 +315,7 @@ export function useBusinessMemory() {
   }, [getActiveMemories]);
 
   return {
-    memories,
+    memories: visibleMemories,
     loading,
     saving,
     addMemory,
