@@ -7,7 +7,12 @@
  * Premium voice quality — far better than browser TTS.
  */
 
-const ELEVENLABS_API_KEY_STORAGE = "shadowtalk_elevenlabs_key";
+const ELEVENLABS_API_KEY_PREFIX = "shadowtalk_elevenlabs_key.";
+
+function storageKey(): string | null {
+  const uid = fbAuth().currentUser?.uid;
+  return uid ? `${ELEVENLABS_API_KEY_PREFIX}${uid}` : null;
+}
 
 export interface ElevenLabsVoice {
   voice_id: string;
@@ -32,7 +37,8 @@ export const VOICE_OPTIONS: { id: string; name: string; description: string; gen
 
 export function getElevenLabsKey(): string | null {
   try {
-    return localStorage.getItem(ELEVENLABS_API_KEY_STORAGE);
+    const key = storageKey();
+    return key ? localStorage.getItem(key) : null;
   } catch {
     return null;
   }
@@ -40,7 +46,8 @@ export function getElevenLabsKey(): string | null {
 
 export function setElevenLabsKey(key: string): void {
   try {
-    localStorage.setItem(ELEVENLABS_API_KEY_STORAGE, key);
+    const storage = storageKey();
+    if (storage) localStorage.setItem(storage, key.trim());
   } catch {
     // ignore
   }
@@ -197,3 +204,4 @@ export function stopAllTTS(): void {
     a.currentTime = 0;
   });
 }
+import { fbAuth } from "@/integrations/firebase/app";

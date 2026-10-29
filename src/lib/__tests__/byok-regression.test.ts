@@ -30,13 +30,37 @@ const localStorageMock = (() => {
 
 Object.defineProperty(globalThis, "localStorage", { value: localStorageMock });
 
+const authMock = vi.hoisted(() => ({ uid: "test-uid-123" }));
+
 vi.mock("@/integrations/firebase/app", () => ({
-  fbAuth: () => ({ currentUser: { uid: "test-uid-123" } }),
+  fbAuth: () => ({ currentUser: { uid: authMock.uid } }),
   functionsBaseUrl: "https://test.functions.example.com",
 }));
 
 describe("BYOK regression fixes (commit 9a3dba3)", () => {
   beforeEach(() => { localStorageMock.clear(); });
+
+  it("does not expose a saved provider key after switching Firebase users", async () => {
+    authMock.uid = "test-uid-123";
+    localStorageMock.setItem("shadowtalk.byok.v2.test-uid-123", JSON.stringify(mockByokConfig));
+    const { getByokConfig } = await import("@/lib/byok");
+
+    authMock.uid = "another-user";
+    expect(getByokConfig()).toBeNull();
+    authMock.uid = "test-uid-123";
+    expect(getByokConfig()?.apiKey).toBe(mockByokConfig.apiKey);
+  });
+
+  it("scopes ElevenLabs credentials to the signed-in Firebase user", async () => {
+    authMock.uid = "test-uid-123";
+    const { getElevenLabsKey, setElevenLabsKey } = await import("@/lib/elevenlabsTts");
+    setElevenLabsKey("eleven-a");
+    authMock.uid = "another-user";
+    expect(getElevenLabsKey()).toBeNull();
+    setElevenLabsKey("eleven-b");
+    authMock.uid = "test-uid-123";
+    expect(getElevenLabsKey()).toBe("eleven-a");
+  });
 
   describe("isCloudImageConfigured", () => {
     it("returns false when no BYOK key is configured", async () => {

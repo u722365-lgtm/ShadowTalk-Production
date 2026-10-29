@@ -74,8 +74,8 @@ We collect information in the following categories:
     content: `
 We process data strictly to provide, maintain, and enhance our services:
 
-1. **AI Model Inference**: When you submit a query, the prompt context is routed to the selected model provider (such as Groq for Llama models or OpenAI for multimodal tasks) via encrypted TLS 1.3 tunnels.
-2. **Zero Model Training**: Commercial API agreements with our inference infrastructure partners specify that **user prompts are not utilized to train or fine-tune public foundation models**.
+1. **AI Model Inference**: When you submit a query, the prompt and any content you attach are sent to the provider selected for that feature. BYOK requests go directly to the configured provider; shared AI requests go through the configured ShadowTalk Cloud Function and its upstream provider.
+2. **Provider Practices**: Data retention, training use, and processing location depend on the provider and account terms you select. Review that provider's current policy before sending sensitive content; ShadowTalk cannot promise a uniform provider retention period.
 3. **Agent Orchestration**: Autonomous agent loops process multi-step instructions to trigger integrated tools (e.g., web search, code execution, slide deck generation).
 4. **Platform Security & Abuse Prevention**: We analyze request volume, rate limits, and network anomalies to protect our systems from denial-of-service attacks and malicious exploit payloads.
     `,
@@ -86,10 +86,10 @@ We process data strictly to provide, maintain, and enhance our services:
     content: `
 We implement layered defense-in-depth security measures to protect your data:
 
-- **Encryption in Transit**: All data exchanged between your browser, our servers, and third-party AI inference endpoints is secured using TLS 1.3 cryptographic protocols.
+- **Encryption in Transit**: Firebase SDK and provider connections use their configured HTTPS/TLS endpoints. The repository does not establish a single protocol version for every connection.
 - **Client-Side Secret Encryption**: Vault items utilize authenticated Web Crypto API primitives (AES-GCM with 256-bit keys derived via PBKDF2/SHA-256).
 - **Session Sandboxing**: Code generated and executed inside our developer scratchpads runs within sandboxed browser workers with restricted network permissions.
-- **Infrastructure Safeguards**: Cloud data is hosted within ISO 27001 and SOC 2 Type II certified data centers with automated vulnerability patching and continuous monitoring.
+- **Infrastructure Safeguards**: Firebase services provide the app's authentication, Firestore, Storage, Cloud Functions, and Hosting. Review Google's current service terms and security documentation for their controls and certifications.
     `,
   },
   {
@@ -100,18 +100,11 @@ To deliver high-speed multi-model AI capabilities, we partner with verified sub-
 
 | Service Provider | Role / Purpose | Processing Location |
 | :--- | :--- | :--- |
-| **Groq, Inc.** | Ultra-low latency LPU cloud inference | United States |
-| **OpenAI, LLC** | Multimodal analysis & frontier reasoning | United States |
-| **OpenRouter (openrouter.ai)** | Multi-model gateway routing (BYOK & shared pool) | United States |
-| **Google Gemini (generativelanguage.googleapis.com)** | Multimodal & long-context inference (BYOK) | United States |
-| **Zhipu AI / GLM (open.bigmodel.cn)** | GLM family reasoning & code models | Global Cloud |
-| **Lovable AI Gateway (ai.gateway.lovable.dev)** | Load-balanced OmniRoute gateway for default chat | Global Cloud |
-| **DeepSeek AI** | Code intelligence & math reasoning | Global Cloud |
-| **Firebase / Google Cloud** | Web application hosting & edge delivery | Global CDN |
-| **Supabase / PostgreSQL** | Relational user authentication & database | US East / West |
-| **Tavily / Perplexity** | Real-time web search indexing for agents | United States |
+| **Google Firebase / Google Cloud** | Authentication, database, file storage, Cloud Functions, and Hosting | Set by Google service configuration and terms |
+| **AI providers selected by the user or enabled for a feature** | Inference for direct BYOK requests or explicitly selected shared AI | Varies by provider and user configuration |
+| **Other integrations** | Used only when a user invokes a feature that connects to that service | Varies by integration |
 
-We require all sub-processors to implement enterprise security standards and abide by data protection regulations including GDPR and CCPA.
+The app repository does not identify a complete, contract-verified subprocessor list or processing location for every optional integration. Check the provider's terms before use.
     `,
   },
   {
@@ -121,8 +114,8 @@ We require all sub-processors to implement enterprise security standards and abi
 You maintain full control over the lifespan of your data:
 
 - **Local Storage Control**: You can purge all cached conversation transcriptskeys, and mission states at any moment via your browser settings or our [GDPR Management Page](/gdpr).
-- **Server-Side Accounts**: Active account profiles and cloud sync records are retained as long as your account remains open. If you delete your account, all associated database records are permanently purged within 30 days.
-- **Inference Ephemerality**: Model provider APIs process queries transiently in volatile memory and do not retain customer chat payloads beyond immediate generation and short-term abuse inspection windows (typically 30 days max).
+- **Server-Side Accounts**: Active account profiles and cloud sync records are retained while your account remains open. When account deletion succeeds, the app removes records matched to your account in its configured Firestore collections, your Firebase profile and role documents, private payment receipt files, and then the Firebase Authentication account. If cleanup fails, deletion reports an error and keeps the sign-in available so you can retry. Data held by external AI or payment providers follows those providers' retention practices; account deletion cannot erase their independent records.
+- **Local Data**: Browser-local caches are stored on the device. Account deletion removes local-storage entries whose keys are namespaced with the account ID on the device where deletion is performed; browser databases and data on other devices may require separate local removal.
     `,
   },
   {

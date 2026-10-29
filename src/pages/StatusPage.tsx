@@ -1,5 +1,5 @@
 /**
- * StatusPage — Real-Time System Health Indicator for ShadowTalk AI.
+ * StatusPage — service catalog with an explicit notice that monitoring is unavailable.
  *
  * Shows operational status of all critical infrastructure:
  *  - OmniRoute Proxy (NON_TECH AI gateway)
@@ -13,27 +13,21 @@
  * Canvas: #030712, Cards: #0f172a, Accent: #6366f1 (indigo).
  */
 
-import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
-  CheckCircle2,
   AlertCircle,
   XCircle,
   Clock,
   Server,
   Zap,
   Shield,
-  RefreshCw,
   Globe,
-  TrendingUp,
 } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -46,25 +40,15 @@ interface ServiceHealth {
   description: string;
   status: ServiceStatus;
   latencyMs: number | null;
-  uptime: number; // percentage, e.g. 99.98
+  uptime: number | null;
   icon: typeof Server;
   category: "ai" | "auth" | "infra";
-}
-
-interface IncidentEntry {
-  date: string;
-  title: string;
-  status: "resolved" | "monitoring" | "investigating";
-  description: string;
-  duration: string;
 }
 
 // ── Status helpers ─────────────────────────────────────────────────────
 
 function statusColor(status: ServiceStatus): string {
   switch (status) {
-    case "operational":
-      return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
     case "degraded":
       return "text-amber-400 bg-amber-500/10 border-amber-500/20";
     case "outage":
@@ -76,8 +60,6 @@ function statusColor(status: ServiceStatus): string {
 
 function statusIcon(status: ServiceStatus) {
   switch (status) {
-    case "operational":
-      return CheckCircle2;
     case "degraded":
       return AlertCircle;
     case "outage":
@@ -89,8 +71,6 @@ function statusIcon(status: ServiceStatus) {
 
 function statusLabel(status: ServiceStatus): string {
   switch (status) {
-    case "operational":
-      return "Operational";
     case "degraded":
       return "Degraded";
     case "outage":
@@ -103,20 +83,16 @@ function statusLabel(status: ServiceStatus): string {
 // ── Component ──────────────────────────────────────────────────────────
 
 const StatusPage = () => {
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [refreshing, setRefreshing] = useState(false);
-
   // ── Service health data ──
-  // In production, this would be fetched from a real monitoring endpoint.
-  // For now, we use static values that reflect the actual architecture.
-  const [services] = useState<ServiceHealth[]>([
+  // These are configured components, not live monitoring results.
+  const services: ServiceHealth[] = [
     {
       id: "omniroute",
       name: "OmniRoute Proxy",
       description: "Load-balanced AI gateway for Instant Start (NON_TECH) users. Routes across Gemini, Groq, and Mistral with automatic 429 circuit-breaker rotation.",
-      status: "operational",
-      latencyMs: 420,
-      uptime: 99.98,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Zap,
       category: "ai",
     },
@@ -124,9 +100,9 @@ const StatusPage = () => {
       id: "firebase-auth",
       name: "Firebase Authentication",
       description: "User sign-in, session management, and OAuth (Google/Apple). Powers the /auth flow and persistent sessions.",
-      status: "operational",
-      latencyMs: 180,
-      uptime: 99.99,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Shield,
       category: "auth",
     },
@@ -134,9 +110,9 @@ const StatusPage = () => {
       id: "openrouter",
       name: "OpenRouter Gateway",
       description: "BYOK provider for Power User (TECH) cohort. Direct provider connection for OpenRouter API keys (sk-or-...).",
-      status: "operational",
-      latencyMs: 350,
-      uptime: 99.95,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Globe,
       category: "ai",
     },
@@ -144,9 +120,9 @@ const StatusPage = () => {
       id: "gemini",
       name: "Google Gemini API",
       description: "BYOK provider for Gemini API keys (AIza...). Direct provider connection for Google AI Studio models.",
-      status: "operational",
-      latencyMs: 290,
-      uptime: 99.97,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Globe,
       category: "ai",
     },
@@ -154,9 +130,9 @@ const StatusPage = () => {
       id: "firestore",
       name: "Cloud Firestore",
       description: "Primary database for conversations, messages, user profiles, and business memories. Per-user security rules enforced.",
-      status: "operational",
-      latencyMs: 95,
-      uptime: 99.99,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Server,
       category: "infra",
     },
@@ -164,70 +140,13 @@ const StatusPage = () => {
       id: "hosting",
       name: "Firebase Hosting",
       description: "Static asset delivery, SPA catch-all routing, and global CDN. Serves the ShadowTalk web app from edge locations worldwide.",
-      status: "operational",
-      latencyMs: 45,
-      uptime: 99.99,
+      status: "unknown",
+      latencyMs: null,
+      uptime: null,
       icon: Globe,
       category: "infra",
     },
-  ]);
-
-  const incidents: IncidentEntry[] = [
-    {
-      date: "2026-10-15",
-      title: "OmniRoute gateway degraded performance",
-      status: "resolved",
-      description: "Elevated latency (2-4s) on the OmniRoute proxy due to upstream Groq rate limits. Auto-rotation mitigated within 8 minutes. Root cause: Groq free-tier quota exhaustion.",
-      duration: "12 minutes",
-    },
-    {
-      date: "2026-10-08",
-      title: "Firebase Auth OAuth redirect issue on Lovable preview",
-      status: "resolved",
-      description: "Google OAuth sign-in failed on lovableproject.com preview domains due to unauthorized domain restriction. Fixed by adding local-auth fallback for preview environments.",
-      duration: "1 hour",
-    },
-    {
-      date: "2026-09-28",
-      title: "Firestore composite index missing for conversations query",
-      status: "resolved",
-      description: "Conversation history failed to load for some users due to a missing composite index. Added in-memory fallback query and created the index via firestore.indexes.json.",
-      duration: "45 minutes",
-    },
   ];
-
-  // ── Overall system status ──
-  const allOperational = services.every((s) => s.status === "operational");
-  const hasOutage = services.some((s) => s.status === "outage");
-  const hasDegraded = services.some((s) => s.status === "degraded");
-  const overallStatus: ServiceStatus = hasOutage
-    ? "outage"
-    : hasDegraded
-      ? "degraded"
-      : "operational";
-
-  const avgLatency = Math.round(
-    services.filter((s) => s.latencyMs !== null).reduce((sum, s) => sum + (s.latencyMs || 0), 0) /
-      services.filter((s) => s.latencyMs !== null).length,
-  );
-  const avgUptime = (
-    services.reduce((sum, s) => sum + s.uptime, 0) / services.length
-  ).toFixed(2);
-
-  // ── Simulated live refresh ──
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setLastUpdated(new Date());
-      setRefreshing(false);
-    }, 1200);
-  }, []);
-
-  useEffect(() => {
-    // Auto-refresh every 60 seconds.
-    const interval = setInterval(() => setLastUpdated(new Date()), 60_000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Group services by category.
   const categories = [
@@ -241,7 +160,7 @@ const StatusPage = () => {
       <SEOHead
         meta={{
           title: "System Status — ShadowTalk AI",
-          description: "Real-time operational status of ShadowTalk AI infrastructure: OmniRoute proxy, Firebase Auth, OpenRouter, Gemini API, and Firestore. Live system health.",
+          description: "Configured ShadowTalk AI services. Live monitoring and incident reporting are not connected yet.",
           canonical: "https://www.shadowtalk-ai.com/status",
           keywords: ["ShadowTalk status", "AI system health", "OmniRoute uptime", "operational status"],
           ogType: "website",
@@ -259,40 +178,25 @@ const StatusPage = () => {
           transition={{ duration: 0.4 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-4">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            {allOperational ? "All Systems Operational" : "Partial Degradation"}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-500/10 border border-slate-500/20 text-slate-300 text-xs font-semibold mb-4">
+            <span className="h-2 w-2 rounded-full bg-slate-400" />
+            Live monitoring unavailable
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
             System Status
           </h1>
           <p className="text-sm text-slate-400 mt-2 max-w-xl mx-auto">
-            Real-time operational health of ShadowTalk AI infrastructure.
-            Updated automatically every 60 seconds.
+            Service health, latency, uptime, and incident reporting are not connected to a monitoring source.
           </p>
-          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-slate-500">
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              Last updated: {lastUpdated.toLocaleTimeString()}
-            </span>
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={cn("h-3 w-3", refreshing && "animate-spin")} />
-              {refreshing ? "Checking..." : "Refresh"}
-            </button>
-          </div>
         </motion.div>
 
         {/* ── Summary cards ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
           {[
-            { label: "Overall Status", value: statusLabel(overallStatus), icon: Activity, color: statusColor(overallStatus) },
-            { label: "Avg Response Time", value: `${avgLatency}ms`, icon: Zap, color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20" },
-            { label: "Avg Uptime (30d)", value: `${avgUptime}%`, icon: TrendingUp, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-            { label: "Active Services", value: `${services.length}`, icon: Server, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
+            { label: "Overall Status", value: "Not monitored", icon: Activity, color: statusColor("unknown") },
+            { label: "Avg Response Time", value: "Unavailable", icon: Zap, color: "text-slate-400 bg-slate-500/10 border-slate-500/20" },
+            { label: "Avg Uptime (30d)", value: "Unavailable", icon: Activity, color: "text-slate-400 bg-slate-500/10 border-slate-500/20" },
+            { label: "Configured Services", value: `${services.length}`, icon: Server, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
           ].map((stat, idx) => (
             <motion.div
               key={stat.label}
@@ -365,10 +269,7 @@ const StatusPage = () => {
                                       {service.latencyMs}ms avg
                                     </span>
                                   )}
-                                  <span className="flex items-center gap-1">
-                                    <TrendingUp className="h-3 w-3" />
-                                    {service.uptime}% uptime
-                                  </span>
+                                  {service.uptime !== null && <span>{service.uptime}% uptime</span>}
                                 </div>
                               </div>
                             </div>
@@ -392,54 +293,17 @@ const StatusPage = () => {
         >
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-4 w-4 text-indigo-400" />
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Incident History (30 days)</h2>
+            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Incident History</h2>
           </div>
-          <div className="space-y-3">
-            {incidents.map((incident, idx) => (
-              <Card key={idx} className="bg-[#0f172a] border-white/10">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex items-start justify-between gap-4 flex-wrap">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="text-sm font-semibold text-white">{incident.title}</h3>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-[10px]",
-                            incident.status === "resolved"
-                              ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/5"
-                              : "border-amber-500/30 text-amber-400 bg-amber-500/5",
-                          )}
-                        >
-                          {incident.status === "resolved" ? "Resolved" : "Monitoring"}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">{incident.description}</p>
-                      <div className="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
-                        <span>{new Date(incident.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
-                        <span>Duration: {incident.duration}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card className="bg-[#0f172a] border-white/10"><CardContent className="p-4 text-sm text-slate-400">Incident reporting is not connected. This page has no verified incident history to display.</CardContent></Card>
         </motion.div>
 
         {/* ── Footer note ── */}
         <div className="mt-12 text-center">
           <p className="text-xs text-slate-600">
-            Status indicators reflect the current architecture. For real-time incidents, contact{" "}
+            For service updates, contact{" "}
             <a href="mailto:shadowtalk@shadowtalk-ai.com" className="text-indigo-400 hover:underline">shadowtalk@shadowtalk-ai.com</a>.
           </p>
-          <Button
-            variant="outline"
-            onClick={() => window.history.back()}
-            className="mt-6 border-white/10 bg-transparent hover:bg-white/5 text-slate-300"
-          >
-            Back to App
-          </Button>
         </div>
       </div>
 

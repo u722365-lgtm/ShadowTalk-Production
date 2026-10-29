@@ -28,11 +28,13 @@ import { BackToHomeButton } from "@/components/BackToHomeButton";
 import PersistedAuthRedirect from "@/components/PersistedAuthRedirect";
 import { OAuthReturnHandler } from "@/components/OAuthReturnHandler";
 import { OAuthRedirectHandler } from "@/components/OAuthRedirectHandler";
+import EmailVerificationNotice from "@/components/auth/EmailVerificationNotice";
 
 export const CommandPaletteContext = createContext<{ open: () => void }>({ open: () => {} });
 // Critical path pages - loaded immediately
 const RootRoute = lazy(() => import("@/components/RootRoute"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const AuthActionPage = lazy(() => import("./pages/AuthActionPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 import { NetworkTransitionOverlay } from "@/components/chat/NetworkTransitionOverlay";
@@ -140,6 +142,7 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<Suspense fallback={<PageLoader />}><PageTransition><RootRoute /></PageTransition></Suspense>} />
           <Route path="/auth" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthPage /></PageTransition></Suspense>} />
+          <Route path="/auth/action" element={<Suspense fallback={<PageLoader />}><AuthActionPage /></Suspense>} />
           
           {/* Core App Routes */}
           <Route path="/chatbot" element={<Suspense fallback={<PageLoader />}><ChatbotPage /></Suspense>} />
@@ -280,6 +283,7 @@ const App = () => {
               <Sonner />
                <BrowserRouter>
                   <MobileViewportFix />
+                  <EmailVerificationNotice />
                   <NetworkTransitionOverlay />
                   <SiteMotionProvider>
                     <SitePageShell>

@@ -18,7 +18,7 @@ const ChatWidget = () => {
       try {
         // Real total registered users — no fabricated count.
         const { count } = await backend
-          .from("profiles")
+          .from("public_profiles")
           .select("id", { count: "exact", head: true });
         if (!cancelled) setOnlineUsers(count ?? 0);
       } catch {

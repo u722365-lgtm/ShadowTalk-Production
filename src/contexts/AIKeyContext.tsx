@@ -11,15 +11,12 @@
  * All AI features (Chat, Doc Gen, Image Gen, Vision, Doc Analysis) route
  * through executeAIRequest() which reads this context to decide auth.
  *
- * Storage:
- *  - shadowtalk_ai_cohort       : 'TECH' | 'NON_TECH'
- *  - shadowtalk_ai_api_key      : encrypted-ish user key (localStorage)
- *  - shadowtalk_ai_onboarded    : '1' when onboarding is complete
- *  - shadowtalk_daily_usage     : { count, date } — UTC date-stamped
+ * Storage is namespaced by Firebase UID. Unscoped legacy onboarding keys are
+ * never loaded because their owner cannot be established safely.
  *
  * Backward compatibility:
- *  - Existing BYOK system (shadowtalk.byok.v1) is respected — if a user
- *    already has a BYOK config, we auto-migrate them to the TECH cohort
+ *  - Existing UID-scoped BYOK configs are respected — if the active user
+ *    already has one, we auto-migrate them to the TECH cohort
  *    on first load without showing the onboarding modal.
  *  - Existing daily message counter (shadowtalk-daily-msgs-YYYY-MM-DD)
  *    is NOT touched — this context uses its own shadowtalk_daily_usage key
@@ -36,6 +33,8 @@ import React, {
   type ReactNode,
 } from 'react';
 import { getByokConfig, saveByokConfig, clearByokConfig, type ByokConfig } from '@/lib/byok';
+import { useAuth } from '@/components/AuthProvider';
+import { aiKeyStorageKey } from '@/lib/aiKeyStorage';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -76,10 +75,6 @@ export interface AIKeyContextValue {
 
 // ── Constants ──────────────────────────────────────────────────────────
 
-const COHORT_KEY = 'shadowtalk_ai_cohort';
-const API_KEY_STORAGE = 'shadowtalk_ai_api_key';
-const ONBOARDED_KEY = 'shadowtalk_ai_onboarded';
-const DAILY_USAGE_KEY = 'shadowtalk_daily_usage';
 const MAX_DAILY_LIMIT = 50;
 
 const AIKeyContext = createContext<AIKeyContextValue | undefined>(undefined);
@@ -92,16 +87,16 @@ function todayUTC(): string {
 }
 
 /** Read the daily usage object, resetting if the date has rolled over. */
-function readDailyUsage(): DailyUsage {
+function readDailyUsage(uid: string): DailyUsage {
   if (typeof localStorage === 'undefined') return { count: 0, date: todayUTC() };
   try {
-    const raw = localStorage.getItem(DAILY_USAGE_KEY);
+    const raw = localStorage.getItem(aiKeyStorageKey(uid, 'daily_usage'));
     if (!raw) return { count: 0, date: todayUTC() };
     const parsed = JSON.parse(raw) as DailyUsage;
     // If the stored date isn't today, reset the counter.
     if (parsed.date !== todayUTC()) {
       const reset = { count: 0, date: todayUTC() };
-      localStorage.setItem(DAILY_USAGE_KEY, JSON.stringify(reset));
+      localStorage.setItem(aiKeyStorageKey(uid, 'daily_usage'), JSON.stringify(reset));
       return reset;
     }
     return { count: Math.max(0, parsed.count || 0), date: parsed.date };
@@ -111,10 +106,10 @@ function readDailyUsage(): DailyUsage {
 }
 
 /** Write the daily usage object. */
-function writeDailyUsage(usage: DailyUsage): void {
+function writeDailyUsage(uid: string, usage: DailyUsage): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(DAILY_USAGE_KEY, JSON.stringify(usage));
+    localStorage.setItem(aiKeyStorageKey(uid, 'daily_usage'), JSON.stringify(usage));
   } catch {
     // storage full or unavailable — best-effort
   }
@@ -136,62 +131,83 @@ function migrateExistingByok(): { cohort: UserCohort; key: string } | null {
 // ── Provider ───────────────────────────────────────────────────────────
 
 export const AIKeyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user, loading: authLoading } = useAuth();
+  const uid = user?.id ?? null;
+  const activeUid = useRef<string | null>(null);
+  const [loadedUid, setLoadedUid] = useState<string | null>(null);
   const [userCohort, setUserCohort] = useState<UserCohort | null>(null);
   const [userApiKey, setUserApiKey] = useState<string>('');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
   const [dailyUsage, setDailyUsage] = useState<DailyUsage>({ count: 0, date: todayUTC() });
-  const migratedRef = useRef(false);
+  const migratedUids = useRef(new Set<string>());
 
-  // Bootstrap from localStorage on mount.
+  // Load onboarding and credentials only from the active user's namespace.
+  // Legacy global keys are deliberately not migrated because their owner is unknown.
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (authLoading) return;
+    if (activeUid.current !== uid) {
+      activeUid.current = uid;
+      setLoadedUid(null);
+      setUserCohort(null);
+      setUserApiKey('');
+      setHasCompletedOnboarding(false);
+      setDailyUsage({ count: 0, date: todayUTC() });
+    }
+    if (!uid || typeof window === 'undefined') return;
 
-    // 1. Try the new onboarding system first.
-    const storedCohort = localStorage.getItem(COHORT_KEY) as UserCohort | null;
-    const storedKey = localStorage.getItem(API_KEY_STORAGE) || '';
-    const onboarded = localStorage.getItem(ONBOARDED_KEY) === '1';
+    const cohortKey = aiKeyStorageKey(uid, 'cohort');
+    const apiKeyStorage = aiKeyStorageKey(uid, 'api_key');
+    const onboardedKey = aiKeyStorageKey(uid, 'onboarded');
+    const storedCohort = localStorage.getItem(cohortKey) as UserCohort | null;
+    const storedKey = localStorage.getItem(apiKeyStorage) || '';
+    const onboarded = localStorage.getItem(onboardedKey) === '1';
 
     if (storedCohort && onboarded) {
       setUserCohort(storedCohort);
       setUserApiKey(storedKey);
       setHasCompletedOnboarding(true);
-    } else if (!migratedRef.current) {
+    } else if (!migratedUids.current.has(uid)) {
       // 2. Backward-compat: migrate existing BYOK users to TECH cohort.
       const migrated = migrateExistingByok();
       if (migrated) {
-        localStorage.setItem(COHORT_KEY, migrated.cohort);
-        localStorage.setItem(API_KEY_STORAGE, migrated.key);
-        localStorage.setItem(ONBOARDED_KEY, '1');
+        localStorage.setItem(cohortKey, migrated.cohort);
+        localStorage.setItem(apiKeyStorage, migrated.key);
+        localStorage.setItem(onboardedKey, '1');
         setUserCohort(migrated.cohort);
         setUserApiKey(migrated.key);
         setHasCompletedOnboarding(true);
-        migratedRef.current = true;
+        migratedUids.current.add(uid);
+      } else {
+        migratedUids.current.add(uid);
       }
     }
 
     // 3. Load daily usage (auto-resets on UTC date rollover).
-    setDailyUsage(readDailyUsage());
-  }, []);
+    setDailyUsage(readDailyUsage(uid));
+    setLoadedUid(uid);
+  }, [authLoading, uid]);
 
   // Check for UTC date rollover every 60s (so a long-running tab resets at midnight).
   useEffect(() => {
     const interval = setInterval(() => {
-      const current = readDailyUsage();
+      if (!uid) return;
+      const current = readDailyUsage(uid);
       setDailyUsage((prev) => {
         if (prev.date !== current.date) return current;
         return prev;
       });
     }, 60_000);
     return () => clearInterval(interval);
-  }, []);
+  }, [uid]);
 
   const setTechCohort = useCallback((apiKey: string, provider: ByokConfig['provider'] = 'openrouter') => {
+    if (!uid) return;
     const trimmed = apiKey.trim();
     if (!trimmed) return;
 
-    localStorage.setItem(COHORT_KEY, 'TECH');
-    localStorage.setItem(API_KEY_STORAGE, trimmed);
-    localStorage.setItem(ONBOARDED_KEY, '1');
+    localStorage.setItem(aiKeyStorageKey(uid, 'cohort'), 'TECH');
+    localStorage.setItem(aiKeyStorageKey(uid, 'api_key'), trimmed);
+    localStorage.setItem(aiKeyStorageKey(uid, 'onboarded'), '1');
 
     // Also sync to the existing BYOK system so all current AI code paths work.
     const model = provider === 'openai' ? 'gpt-4o-mini'
@@ -203,12 +219,13 @@ export const AIKeyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setUserCohort('TECH');
     setUserApiKey(trimmed);
     setHasCompletedOnboarding(true);
-  }, []);
+  }, [uid]);
 
   const setNonTechCohort = useCallback(() => {
-    localStorage.setItem(COHORT_KEY, 'NON_TECH');
-    localStorage.removeItem(API_KEY_STORAGE);
-    localStorage.setItem(ONBOARDED_KEY, '1');
+    if (!uid) return;
+    localStorage.setItem(aiKeyStorageKey(uid, 'cohort'), 'NON_TECH');
+    localStorage.removeItem(aiKeyStorageKey(uid, 'api_key'));
+    localStorage.setItem(aiKeyStorageKey(uid, 'onboarded'), '1');
 
     // Clear any existing BYOK config so it doesn't interfere with the
     // OmniRoute gateway routing. NON_TECH requests go through
@@ -218,7 +235,7 @@ export const AIKeyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setUserCohort('NON_TECH');
     setUserApiKey('');
     setHasCompletedOnboarding(true);
-  }, []);
+  }, [uid]);
 
   const incrementUsage = useCallback(() => {
     // Only NON_TECH users are metered.
@@ -228,39 +245,41 @@ export const AIKeyProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       // Ensure we're incrementing today's count (reset if date rolled).
       const base = prev.date === todayUTC() ? prev : { count: 0, date: todayUTC() };
       const next = { count: base.count + 1, date: todayUTC() };
-      writeDailyUsage(next);
+      if (uid) writeDailyUsage(uid, next);
       return next;
     });
-  }, [userCohort]);
+  }, [userCohort, uid]);
 
   const resetOnboarding = useCallback(() => {
-    localStorage.removeItem(COHORT_KEY);
-    localStorage.removeItem(API_KEY_STORAGE);
-    localStorage.removeItem(ONBOARDED_KEY);
+    if (uid) {
+      localStorage.removeItem(aiKeyStorageKey(uid, 'cohort'));
+      localStorage.removeItem(aiKeyStorageKey(uid, 'api_key'));
+      localStorage.removeItem(aiKeyStorageKey(uid, 'onboarded'));
+    }
     // Don't clear BYOK here — let the user re-pick.
     setUserCohort(null);
     setUserApiKey('');
     setHasCompletedOnboarding(false);
-  }, []);
+  }, [uid]);
 
   const clearApiKey = useCallback(() => {
-    localStorage.removeItem(API_KEY_STORAGE);
+    if (uid) localStorage.removeItem(aiKeyStorageKey(uid, 'api_key'));
     clearByokConfig();
     setUserApiKey('');
-  }, []);
+  }, [uid]);
 
   const dailyUsageCount = dailyUsage.count;
   const remainingMessages = Math.max(0, MAX_DAILY_LIMIT - dailyUsageCount);
   const isLimitReached = userCohort === 'NON_TECH' && dailyUsageCount >= MAX_DAILY_LIMIT;
 
   const value: AIKeyContextValue = {
-    userCohort,
-    userApiKey,
-    hasCompletedOnboarding,
-    dailyUsageCount,
+    userCohort: loadedUid === uid ? userCohort : null,
+    userApiKey: loadedUid === uid ? userApiKey : '',
+    hasCompletedOnboarding: loadedUid === uid && hasCompletedOnboarding,
+    dailyUsageCount: loadedUid === uid ? dailyUsageCount : 0,
     maxDailyLimit: MAX_DAILY_LIMIT,
-    remainingMessages,
-    isLimitReached,
+    remainingMessages: loadedUid === uid ? remainingMessages : MAX_DAILY_LIMIT,
+    isLimitReached: loadedUid === uid && isLimitReached,
     setTechCohort,
     setNonTechCohort,
     incrementUsage,

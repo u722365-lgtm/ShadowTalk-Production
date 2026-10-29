@@ -88,7 +88,7 @@ export const ProfileTab = ({
     }
   };
 
-  const handleUrlKeyDown = (e: React.KeyboardEvent) => {
+  const handleUrlKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.currentTarget.blur(); // trigger onBlur which saves
     }

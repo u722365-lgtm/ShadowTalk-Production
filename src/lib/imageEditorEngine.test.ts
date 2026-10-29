@@ -95,11 +95,29 @@ describe("Image Editor Engine", () => {
   });
 
   describe("analyzeImageInDetail", () => {
+    beforeEach(() => {
+      provider.getBestProvider.mockResolvedValue({ streamChat: provider.streamChat });
+      provider.streamChat.mockResolvedValue({
+        content: JSON.stringify({
+          summary: "A test image with a single subject.",
+          subject: "A centered geometric shape.",
+          composition: "Centered, square framing.",
+          palette: "Mostly blue.",
+          suggestedEdits: ["Increase contrast"],
+        }),
+      });
+    });
+
     it("produces structured visual reasoning with suggested edits", async () => {
       const analysis = await analyzeImageInDetail(sampleImage);
       expect(analysis.summary).toBeTruthy();
       expect(analysis.subject).toBeTruthy();
       expect(analysis.suggestedEdits.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("surfaces provider failure instead of returning invented visual findings", async () => {
+      provider.getBestProvider.mockRejectedValueOnce(new Error("provider unavailable"));
+      await expect(analyzeImageInDetail(sampleImage)).rejects.toThrow(/could not analyze this image/i);
     });
   });
 
@@ -141,3 +159,11 @@ describe("Image Editor Engine", () => {
     });
   });
 });
+import { vi } from "vitest";
+
+const provider = vi.hoisted(() => ({
+  getBestProvider: vi.fn(),
+  streamChat: vi.fn(),
+}));
+
+vi.mock("@/ai/AIProviderRouter", () => ({ AIProviderRouter: provider }));

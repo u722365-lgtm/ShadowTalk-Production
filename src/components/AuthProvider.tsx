@@ -8,7 +8,6 @@ import {
   clearExplicitSignOut,
   isAnonymousUser,
   markExplicitSignOut,
-  saveLocalUser,
 } from '@/lib/persistentAuth';
 
 interface AuthContextType {
@@ -149,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       applySession(local);
       if (local?.user) {
         clearExplicitSignOut();
-        saveLocalUser(local.user.email || '', local.user.id);
+        if (typeof localStorage !== "undefined") localStorage.removeItem("shadowtalk-local-user");
         void syncProfile(local.user.id, {
           email: local.user.email || undefined,
           display_name: (local.user.user_metadata as any)?.display_name || undefined,

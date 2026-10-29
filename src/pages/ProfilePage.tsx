@@ -315,20 +315,20 @@ const ProfilePage = () => {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      // Use the Firebase Auth deleteAccount adapter (client-side)
-      const result = await (backend.auth as any).deleteAccount();
-      if (result?.error) throw result.error;
+      const uid = user?.id;
+      if (!uid) throw new Error("Sign in again before deleting your account.");
+      const { data, error } = await backend.functions.invoke("deleteAccount");
+      if (error) throw error;
+      if (!data?.deleted) throw new Error("Account deletion did not complete. Please try again.");
 
-      // Best-effort: delete user's Firestore data
-      try {
-        await backend.from("profiles").delete().eq("id", user?.id || "");
-        await backend.from("user_settings").delete().eq("user_id", user?.id || "");
-        await backend.from("conversations").delete().eq("user_id", user?.id || "");
-      } catch {
-        // Firestore data cleanup is best-effort — the auth account is already deleted
+      // Remove this account's browser-side settings and credentials on this device.
+      for (let index = localStorage.length - 1; index >= 0; index--) {
+        const key = localStorage.key(index);
+        if (key && (key.includes(uid) || key === `shadowtalk.byok.v2.${uid}`)) {
+          localStorage.removeItem(key);
+        }
       }
-
-      toast({ title: "Account deleted", description: "Your account and data have been removed." });
+      toast({ title: "Account deleted", description: "Linked Firebase records and private receipt files were removed." });
       await signOut();
       navigate("/auth");
     } catch (err) {
@@ -685,8 +685,8 @@ const ProfilePage = () => {
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <Trash2 className="h-5 w-5" /> Delete Account
             </DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. Type <span className="font-mono font-bold text-foreground">DELETE</span> to confirm.
+              <DialogDescription>
+               This permanently deletes your Firebase account records and private receipt files. Type <span className="font-mono font-bold text-foreground">DELETE</span> to confirm.
             </DialogDescription>
           </DialogHeader>
           <Input value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} placeholder='Type "DELETE"' className="bg-muted/30 font-mono" />

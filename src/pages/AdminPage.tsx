@@ -9,7 +9,9 @@
  * Route: /admin
  */
 
-import { ComponentType, useState } from "react";
+import { ComponentType } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { motion } from "framer-motion";
 import {
   ShieldAlert,
@@ -95,7 +97,10 @@ const AccessDeniedFallback = () => (
 );
 
 export default function AdminPage() {
-  const [accessGranted] = useState(true); // hook ready for future auth gating
+  const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useAdminCheck();
+  const accessGranted = Boolean(user && isAdmin);
+  const accessLoading = authLoading || roleLoading;
 
   const handleNavigate = (section: string) => {
     // In production this would route to the admin subpage (e.g. /admin/users).
@@ -138,7 +143,9 @@ export default function AdminPage() {
             </p>
           </motion.div>
 
-          {!accessGranted ? (
+          {accessLoading ? (
+            <p className="rounded-xl border border-border/50 bg-card/60 p-6 text-sm text-muted-foreground" role="status" aria-live="polite">Checking admin access…</p>
+          ) : !accessGranted ? (
             <AccessDeniedFallback />
           ) : (
             <>

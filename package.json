@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build && node prerender.cjs",
     "build:dev": "vite build --mode development",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest --run"
@@ -65,6 +66,7 @@
     "embla-carousel-react": "^8.6.0",
     "firebase": "^12.18.0",
     "framer-motion": "^12.25.0",
+    "fflate": "^0.8.2",
     "happy-dom": "^20.3.0",
     "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
@@ -104,6 +106,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",

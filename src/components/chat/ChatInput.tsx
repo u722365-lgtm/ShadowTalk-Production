@@ -266,6 +266,10 @@ const ChatInputInner = ({
                     </Tooltip>
                   </TooltipProvider>
                 )}
+                <ModeSelector mode={chatMode} onModeChange={(mode) => {
+                  onModeChange(mode);
+                  if (mode === "image") onOpenImageGenerator?.();
+                }} disabled={isLoading} />
                 <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-muted-foreground/75 bg-card/60 border border-border/50 select-none">
                   <Sparkles className="h-3 w-3 text-primary" />
                   <span>Quantum Studio v4.2</span>

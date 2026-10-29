@@ -55,6 +55,11 @@ export async function syncProfile(userId: string, fields: ProfileFields): Promis
     }
 
     await setDoc(ref, update, { merge: true });
+
+    const publicUpdate: Record<string, any> = { user_id: userId, updated_at: serverTimestamp() };
+    if (fields.display_name !== undefined) publicUpdate.display_name = fields.display_name;
+    if (fields.avatar_url !== undefined) publicUpdate.avatar_url = fields.avatar_url;
+    await setDoc(doc(db, 'public_profiles', userId), publicUpdate, { merge: true });
   } catch (err) {
     // Profile sync is best-effort — it must never block the auth flow.
     // A missing profile just means the user appears as "free" until the

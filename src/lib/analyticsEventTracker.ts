@@ -18,7 +18,13 @@ export type AnalyticsEventName =
   | "demo_started"
   | "demo_completed"
   | "feature_used"
-  | "user_returned";
+  | "user_returned"
+  | "ide_page_viewed"
+  | "ide_preview_run"
+  | "ide_code_run"
+  | "benchmarks_try_in_workspace"
+  | "benchmarks_cta_clicked"
+  | "coming_soon_page_viewed";
 
 export interface AnalyticsEventParams {
   session_id?: string;

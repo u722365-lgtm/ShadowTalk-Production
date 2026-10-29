@@ -32,19 +32,6 @@ service cloud.firestore {
       return signedIn() && request.resource.data.get('user_id', '') == request.auth.uid;
     }
 
-    // Like ownsExisting(), but also matches legacy docs that have no user_id
-    // field at all (created before user_id was enforced). Used ONLY for delete
-    // so users can clear out their own legacy chats that block batch deletes.
-    // Safe because: (1) user must be signed in, (2) collection must be
-    // whitelisted by isUserDataCollection(), (3) legacy docs have no claimed
-    // owner. Read/update/create still require the strict ownsExisting()/ownsIncoming().
-    function ownsExistingOrLegacy() {
-      return signedIn() && (
-        resource.data.get('user_id', '') == request.auth.uid
-        || !('user_id' in resource.data)
-      );
-    }
-
     function isValidIntake() {
       return (!('message' in request.resource.data) || request.resource.data.message.size() < 5000)
           && (!('email' in request.resource.data) || request.resource.data.email.size() < 256)
@@ -69,7 +56,7 @@ service cloud.firestore {
     // profiles_private (email + sensitive, owner-only) for proper isolation.
     // Owners may edit their own profile but can never change their own plan.
     match /profiles/{uid} {
-      allow read: if signedIn();
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn()
         && request.auth.uid == uid
         && request.resource.data.get('plan', 'free') == 'free';
@@ -78,6 +65,22 @@ service cloud.firestore {
             && request.auth.uid == uid
             && request.resource.data.get('plan', 'free') == resource.data.get('plan', 'free'));
       allow delete: if isAdmin();
+    }
+
+    // Deliberately limited public identity fields. Private profile fields
+    // (including email and entitlement data) remain in /profiles.
+    match /public_profiles/{uid} {
+      function validPublicProfile() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(['user_id', 'display_name', 'avatar_url', 'updated_at'])
+          && data.get('user_id', '') == uid
+          && (!('display_name' in data) || (data.display_name is string && data.display_name.size() <= 100))
+          && (!('avatar_url' in data) || (data.avatar_url is string && data.avatar_url.size() < 300000))
+          && (!('updated_at' in data) || data.updated_at is timestamp);
+      }
+      allow read: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid && validPublicProfile();
+      allow delete: if (signedIn() && request.auth.uid == uid) || isAdmin();
     }
 
     // Billing / entitlement state — readable by owner, writable only by admins/server.
@@ -162,6 +165,7 @@ service cloud.firestore {
         'user_sessions',
         'user_settings',
         'user_memories',
+        'business_memories',
         'user_notifications',
         'user_installed_agents',
         'user_locations',
@@ -209,14 +213,11 @@ service cloud.firestore {
     match /{collection}/{doc} {
       allow read: if isUserDataCollection() && (ownsExisting() || isAdmin());
       allow create: if isUserDataCollection() && ownsIncoming();
-      // Update uses ownsExistingOrLegacy() so users can claim legacy docs
-      // (created before user_id was enforced) by writing their own user_id.
-      // Safe: ownsIncoming() ensures the new data has user_id == auth.uid.
-      allow update: if isUserDataCollection() && ((ownsExistingOrLegacy() && ownsIncoming()) || isAdmin());
-      // Delete uses ownsExistingOrLegacy() so users can clear legacy docs
-      // (created before user_id was enforced) that would otherwise block
-      // batch deletes with "Missing or insufficient permissions" errors.
-      allow delete: if isUserDataCollection() && (ownsExistingOrLegacy() || isAdmin());
+      // Updates require stored and resulting ownership; an ownerless legacy
+      // document cannot be claimed by guessing or discovering its document ID.
+      allow update: if isUserDataCollection() && ((ownsExisting() && ownsIncoming()) || isAdmin());
+      // Ownerless legacy records require a trusted migration or admin cleanup.
+      allow delete: if isUserDataCollection() && (ownsExisting() || isAdmin());
     }
   }
 }

@@ -27,7 +27,7 @@ export interface ExtractedDocument {
   /** The filename, preserved for metadata. */
   filename: string;
   /** The detected format. */
-  format: "pdf" | "docx" | "txt" | "md" | "csv" | "json" | "code" | "unknown";
+  format: "pdf" | "docx" | "pptx" | "xlsx" | "odt" | "txt" | "md" | "csv" | "json" | "code" | "unknown";
   /** Number of pages (PDF only). */
   pageCount?: number;
   /** Whether the text was truncated due to size limits. */
@@ -58,6 +58,9 @@ export function detectDocumentFormat(filename: string, mimeType: string): Extrac
   const ext = filename.split(".").pop()?.toLowerCase() || "";
   if (ext === "pdf" || mimeType === "application/pdf") return "pdf";
   if (ext === "docx" || mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") return "docx";
+  if (ext === "pptx" || mimeType === "application/vnd.openxmlformats-officedocument.presentationml.presentation") return "pptx";
+  if (ext === "xlsx" || mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") return "xlsx";
+  if (ext === "odt" || mimeType === "application/vnd.oasis.opendocument.text") return "odt";
   if (ext === "txt" || mimeType === "text/plain") return "txt";
   if (ext === "md" || mimeType === "text/markdown") return "md";
   if (ext === "csv" || mimeType === "text/csv") return "csv";
@@ -65,6 +68,13 @@ export function detectDocumentFormat(filename: string, mimeType: string): Extrac
   // Code file extensions
   if (["js", "ts", "jsx", "tsx", "py", "rb", "go", "rs", "java", "c", "cpp", "h", "css", "html", "xml", "yml", "yaml", "sh", "sql"].includes(ext)) return "code";
   return "unknown";
+}
+
+/** Return decoded byte size for a data URL, or UTF-8 size for desktop text. */
+export function estimateFileSize(data: string): number {
+  if (!data.startsWith("data:")) return new TextEncoder().encode(data).length;
+  const base64 = data.slice(data.indexOf(",") + 1).replace(/\s/g, "");
+  return Math.max(0, Math.floor(base64.length * 3 / 4) - (base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0));
 }
 
 /** Validate file size before processing. */
@@ -91,13 +101,10 @@ async function extractPdf(
   // 1. Vite ?url import (best — bundles the worker locally)
   // 2. CDN fallback (works everywhere but depends on network)
   try {
-    // @ts-expect-error — Vite ?url suffix is a build-time directive
     const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
   } catch {
     // Fallback: CDN (matches the installed version)
-    // @ts-expect-error — GlobalWorkerOptions exists on the pdfjs module
     pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
   }
 
@@ -148,6 +155,40 @@ async function extractPdf(
   return { text, pageCount: totalPages, truncated, empty, notice };
 }
 
+/** Render a bounded number of scanned PDF pages for vision-model analysis. */
+export async function renderScannedPdfPages(
+  dataUrl: string,
+  maxPages = 5,
+): Promise<Array<{ page: number; dataUrl: string }>> {
+  if (!dataUrl.startsWith("data:")) throw new Error("The PDF data is not available for page rendering.");
+  const pdfjs = await import("pdfjs-dist");
+  try {
+    const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+  } catch {
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  }
+  const binary = atob(dataUrl.slice(dataUrl.indexOf(",") + 1));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const pdf = await pdfjs.getDocument({ data: bytes }).promise;
+  const pages: Array<{ page: number; dataUrl: string }> = [];
+  for (let pageNumber = 1; pageNumber <= Math.min(pdf.numPages, maxPages); pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const scale = Math.min(1.5, 1400 / Math.max(baseViewport.width, baseViewport.height));
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Your browser could not render the scanned PDF pages.");
+    await page.render({ canvas, canvasContext: context, viewport }).promise;
+    pages.push({ page: pageNumber, dataUrl: canvas.toDataURL("image/jpeg", 0.82) });
+  }
+  return pages;
+}
+
 /**
  * Extract text from a DOCX using mammoth.
  * Runs entirely in the browser — no upload.
@@ -181,10 +222,88 @@ async function extractDocx(
   return { text, truncated, empty, notice };
 }
 
+async function extractOfficeXml(
+  dataUrl: string,
+  format: "pptx" | "xlsx" | "odt",
+  opts: Required<DocumentExtractionOptions>,
+): Promise<{ text: string; truncated: boolean; empty: boolean; notice?: string }> {
+  if (!dataUrl.startsWith("data:")) throw new Error("Select this office file with the browser file picker and try again.");
+  const base64 = dataUrl.slice(dataUrl.indexOf(",") + 1);
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const { unzipSync } = await import("fflate");
+  const archive = unzipSync(bytes);
+  const parse = (path: string): Document => {
+    const content = archive[path];
+    if (!content) throw new Error(`The ${format.toUpperCase()} document is missing ${path}.`);
+    const document = new DOMParser().parseFromString(new TextDecoder().decode(content), "application/xml");
+    if (document.querySelector("parsererror")) throw new Error("The Office document contains invalid XML.");
+    return document;
+  };
+  let text = "";
+  if (format === "pptx") {
+    const slides = Object.keys(archive)
+      .filter((path) => /^ppt\/slides\/slide\d+\.xml$/.test(path))
+      .sort((a, b) => Number(a.match(/slide(\d+)/)?.[1]) - Number(b.match(/slide(\d+)/)?.[1]));
+    text = slides.map((path, index) => {
+      const values = Array.from(parse(path).getElementsByTagNameNS("*", "t"), (node) => node.textContent || "").filter(Boolean);
+      return values.length ? `--- Slide ${index + 1} ---\n${values.join(" ")}` : "";
+    }).filter(Boolean).join("\n\n");
+  } else if (format === "xlsx") {
+    const shared = archive["xl/sharedStrings.xml"]
+      ? Array.from(parse("xl/sharedStrings.xml").getElementsByTagNameNS("*", "si"), (item) =>
+          Array.from(item.getElementsByTagNameNS("*", "t"), (node) => node.textContent || "").join(""),
+        )
+      : [];
+    const sheets = Object.keys(archive)
+      .filter((path) => /^xl\/worksheets\/sheet\d+\.xml$/.test(path))
+      .sort((a, b) => Number(a.match(/sheet(\d+)/)?.[1]) - Number(b.match(/sheet(\d+)/)?.[1]));
+    text = sheets.map((path, sheetIndex) => {
+      const rows = Array.from(parse(path).getElementsByTagNameNS("*", "row"), (row) =>
+        Array.from(row.getElementsByTagNameNS("*", "c"), (cell) => {
+          const type = cell.getAttribute("t");
+          const value = type === "inlineStr"
+            ? Array.from(cell.getElementsByTagNameNS("*", "t"), (node) => node.textContent || "").join("")
+            : cell.getElementsByTagNameNS("*", "v")[0]?.textContent || "";
+          return type === "s" ? shared[Number(value)] || "" : value;
+        }).join("\t"),
+      ).filter((row) => row.trim());
+      return rows.length ? `--- Sheet ${sheetIndex + 1} ---\n${rows.join("\n")}` : "";
+    }).filter(Boolean).join("\n\n");
+  } else {
+    const content = parse("content.xml");
+    text = Array.from(content.getElementsByTagNameNS("*", "p"), (node) => node.textContent || "").filter(Boolean).join("\n\n");
+  }
+  const truncated = text.length > opts.maxTextLength;
+  if (truncated) text = text.slice(0, opts.maxTextLength);
+  const empty = !text.trim();
+  return {
+    text,
+    truncated,
+    empty,
+    ...(truncated ? { notice: `Document was truncated at ${opts.maxTextLength.toLocaleString()} characters.` } : {}),
+    ...(!truncated && empty ? { notice: "No extractable text was found in this document." } : {}),
+  };
+}
+
 /**
  * Extract text from a plain-text file (TXT, MD, CSV, JSON, code).
  */
 function extractPlainText(dataUrl: string, opts: Required<DocumentExtractionOptions>): { text: string; truncated: boolean; empty: boolean; notice?: string } {
+  if (!dataUrl.startsWith("data:")) {
+    let text = dataUrl;
+    const truncated = text.length > opts.maxTextLength;
+    if (truncated) text = text.slice(0, opts.maxTextLength);
+    const empty = !text.trim();
+    return {
+      text,
+      truncated,
+      empty,
+      ...(truncated ? { notice: `Document was truncated at ${opts.maxTextLength.toLocaleString()} characters.` } : {}),
+      ...(!truncated && empty ? { notice: "This file is empty." } : {}),
+    };
+  }
   // data URL format: data:<mime>;base64,<data>
   const base64 = dataUrl.split(",")[1] || "";
   let text: string;
@@ -237,7 +356,7 @@ export async function extractDocument(
       format,
       truncated: false,
       empty: true,
-      notice: `Unsupported file format: ${filename}. Supported: PDF, DOCX, TXT, MD, CSV, JSON, and code files.`,
+      notice: `Unsupported file format: ${filename}. Supported: PDF, DOCX, PPTX, XLSX, ODT, TXT, MD, CSV, JSON, and code files.`,
     };
   }
 
@@ -248,6 +367,10 @@ export async function extractDocument(
     }
     if (format === "docx") {
       const result = await extractDocx(dataUrl, fullOpts);
+      return { text: result.text, filename, format, ...result };
+    }
+    if (format === "pptx" || format === "xlsx" || format === "odt") {
+      const result = await extractOfficeXml(dataUrl, format, fullOpts);
       return { text: result.text, filename, format, ...result };
     }
     // Plain text formats

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { saveLocalUser, clearExplicitSignOut } from "@/lib/persistentAuth";
+import { clearExplicitSignOut } from "@/lib/persistentAuth";
 import { backend } from "@/integrations/local/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Input } from "@/components/ui/input";
@@ -95,6 +95,7 @@ const AuthPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rateLimitMsg, setRateLimitMsg] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [authFlowNotice, setAuthFlowNotice] = useState("");
 
   const enterpriseFlow = isEnterpriseDeployment() || searchParams.get("enterprise") === "1";
   const enterpriseTenant = ENTERPRISE_TENANTS[0];
@@ -107,6 +108,16 @@ const AuthPage = () => {
   }, []);
 
   useEffect(() => {
+    const flow = searchParams.get("flow");
+    if (flow === "reset-complete") {
+      setAuthFlowNotice("If you completed the password reset, you can sign in with your new password.");
+    } else if (flow === "verify-complete") {
+      setAuthFlowNotice("Your verification link was processed. Email verification is optional for using ShadowTalk.");
+      void backend.auth.reloadUser();
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (user) {
       // Use hard redirect for reliability — if the user lands on /auth while
       // already signed in (e.g. page refresh), a full reload ensures all
@@ -117,11 +128,10 @@ const AuthPage = () => {
 
   useEffect(() => {
     const oauthError = searchParams.get("error");
-    const oauthErrorMessage = searchParams.get("message");
     if (oauthError) {
       toast({
         title: "OAuth failed",
-        description: oauthErrorMessage || oauthError,
+        description: "Sign-in was canceled or could not be completed. Please try again.",
         variant: "destructive",
       });
     }
@@ -184,19 +194,12 @@ const AuthPage = () => {
     setResettingPassword(true);
     try {
       const { error } = await backend.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: `${window.location.origin}/auth`,
+        redirectTo: `${window.location.origin}/auth?flow=reset-complete`,
       });
       if (error) throw error;
-      toast({
-        title: "Reset link sent",
-        description: `Check ${cleanEmail} for a password reset link. It may take a minute or two to arrive.`,
-      });
-    } catch (err: any) {
-      toast({
-        title: "Reset failed",
-        description: err?.message || "Could not send reset email. Please try again.",
-        variant: "destructive",
-      });
+      setAuthFlowNotice("If an account can be recovered with that address, password reset instructions are on the way.");
+    } catch {
+      setAuthFlowNotice("We could not send recovery instructions right now. Check your connection and try again.");
     } finally {
       setResettingPassword(false);
     }
@@ -212,15 +215,8 @@ const AuthPage = () => {
     const msg = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
 
     try {
-      const { fetchElevenLabsSpeech, playElevenLabsAudio } = await import("@/lib/elevenlabsTts");
-      const result = await fetchElevenLabsSpeech({
-        text: msg,
-        voiceId: "onwK4e9ZLuTAKqWW03F9",
-      });
-
-      if (result.ok && result.audio) {
-        await playElevenLabsAudio(result.audio, 0.8);
-      }
+      const { speakWithElevenLabs } = await import("@/lib/elevenlabsTts");
+      await speakWithElevenLabs(msg, { voiceId: "onwK4e9ZLuTAKqWW03F9" });
     } catch (err) {
       console.warn("Voice welcome skipped:", err);
     }
@@ -277,7 +273,6 @@ const AuthPage = () => {
           password: cleanPassword,
         });
         if (error) throw error;
-        saveLocalUser(cleanEmail, data.user?.id);
         clearExplicitSignOut();
         toast({ title: "Welcome back!", description: "Logged in securely to ShadowTalk AI." });
         setLoading(false);
@@ -290,13 +285,15 @@ const AuthPage = () => {
         const { data, error } = await backend.auth.signUp({
           email: cleanEmail,
           password: cleanPassword,
+          options: { emailRedirectTo: `${window.location.origin}/auth?flow=verify-complete` },
         });
         if (error) throw error;
-        saveLocalUser(cleanEmail, data.user?.id);
         clearExplicitSignOut();
         toast({
           title: "Account Created!",
-          description: "Welcome to ShadowTalk! We've sent a verification link to your email — please verify to secure your account.",
+          description: data.verificationEmailSent
+            ? "Check your email for an optional verification link. You can keep using ShadowTalk while verification is pending."
+            : "Your account is ready. We could not send a verification email; you can request one from the notice in your workspace.",
         });
         setLoading(false);
         // Hard redirect — same reason as login (see comment above)
@@ -326,7 +323,6 @@ const AuthPage = () => {
       });
       if (error) throw error;
       if (data?.user) {
-        saveLocalUser(data.user.email || "", data.user.id);
         clearExplicitSignOut();
         toast({ title: "Success", description: "Logged in via Single Sign-On!" });
         await playWelcomeVoice(data.user.email || "User");
@@ -485,7 +481,7 @@ const AuthPage = () => {
 
           <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-cyan-400 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/20">
             <Shield className="h-3 w-3" />
-            <span>TLS 1.3 Verified</span>
+            <span>Secure sign-in</span>
           </div>
         </div>
 
@@ -555,9 +551,10 @@ const AuthPage = () => {
               {enterpriseFlow
                 ? enterpriseTenant.signInHint
                 : isLogin
-                ? "Sign in to access your sovereign agentic workspace."
-                : "Get started with zero-knowledge private intelligence."}
+                ? "Sign in to access your ShadowTalk workspace."
+                : "Create an account to get started."}
             </p>
+            {authFlowNotice && <p className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-950/30 px-3 py-2 text-xs text-cyan-100" role="status" aria-live="polite">{authFlowNotice}</p>}
           </div>
 
           {/* One-Tap OAuth Buttons (Google and Apple Only) */}

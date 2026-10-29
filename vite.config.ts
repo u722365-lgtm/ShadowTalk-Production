@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'es2020',
       minify: isProduction ? 'esbuild' : false,
-      sourcemap: isProduction ? 'hidden' : true,
+      sourcemap: isProduction ? false : true,
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {

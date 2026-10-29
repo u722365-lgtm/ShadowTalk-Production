@@ -32,6 +32,10 @@ export interface CloudChatOptions {
   timeoutMs?: number;
   /** Maximum output tokens (provider-dependent). */
   maxTokens?: number;
+  /** Use the user's provider-backed web search capability for this request. */
+  webSearch?: boolean;
+  /** Allow OpenRouter to fetch the URL asked about in this request. */
+  webFetch?: boolean;
 }
 
 export interface CloudChatResult {

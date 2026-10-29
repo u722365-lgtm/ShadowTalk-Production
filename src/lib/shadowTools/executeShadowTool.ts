@@ -2,15 +2,7 @@ import { backend } from "@/integrations/local/client";
 import type { ToolType } from "@/hooks/useToolOrchestrator";
 import { chatAuthHeaders } from "./chatAuthHeaders";
 import type { ExecuteShadowToolContext, ShadowToolResult } from "./types";
-import { turboComplete } from "@/lib/turbo/turboEngine";
-
-
-function formatSearchResults(results: Array<{ title?: string; link?: string; snippet?: string }>): string {
-  if (!results.length) return "No search results returned.";
-  return results
-    .map((r, i) => `${i + 1}. **${r.title || "Result"}**\n   ${r.link || ""}\n   ${r.snippet || ""}`)
-    .join("\n\n");
-}
+import { streamCloudChat } from "@/lib/cloudChat";
 
 const UI_ROUTES: Partial<Record<ToolType, { path: string; label: string }>> = {
 
@@ -40,37 +32,33 @@ export async function executeShadowTool(
   switch (tool) {
     case "web_search": {
       const query = (p.query as string) || message;
-      const { data, error } = await backend.functions.invoke("web-search", {
-        body: { query, numResults: 6 },
-      });
-      if (error) throw new Error(error.message);
-      const results = (data?.results || data?.items || []) as Array<{
-        title?: string;
-        link?: string;
-        snippet?: string;
-      }>;
+      const response = await streamCloudChat([
+        { role: "system", content: "Search the web for current, relevant information. Include source URLs and clearly distinguish sourced facts from inference." },
+        { role: "user", content: query },
+      ], { webSearch: true, maxTokens: 3000 });
+      if (response.error) throw new Error(response.error);
       return {
         kind: "inline",
         tool,
-        content: `### Web search: ${query}\n\n${formatSearchResults(results)}`,
+        content: `### Web search: ${query}\n\n${response.content || "The provider returned no search results."}`,
       };
     }
 
     case "deep_research": {
       const query = (p.query as string) || message;
-      const reportResp = await turboComplete(
-        "You are a Deep Research AI assistant. Your goal is to synthesize the following query comprehensively. Mode: web",
-        query
-      );
+      const reportResp = await streamCloudChat([
+        { role: "system", content: "Conduct a thorough web-based research review. Gather multiple perspectives, cite source URLs next to claims, identify uncertainty, and finish with a concise conclusion." },
+        { role: "user", content: query },
+      ], { webSearch: true, maxTokens: 6000 });
+      if (reportResp.error) throw new Error(reportResp.error);
       const report = reportResp.content;
       return { kind: "inline", tool, content: report || "Research returned no content." };
     }
 
     case "image_generator": {
       const imgPrompt = (p.prompt as string) || message;
-      const encoded = encodeURIComponent(`${imgPrompt}, high quality, detailed, 4k`);
-      const seed = Math.floor(Math.random() * 999999);
-      const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&seed=${seed}&nologo=true&model=flux`;
+      const { generateCloudImage } = await import("@/lib/cloudImage");
+      const imageUrl = await generateCloudImage(imgPrompt, { watermark: true });
       return {
         kind: "inline",
         tool,
@@ -132,37 +120,26 @@ export async function executeShadowTool(
     case "security_audit": {
       const urlMatch = message.match(/https?:\/\/[^\s]+/i);
       const url = p.url || urlMatch?.[0];
-      if (url) {
-        const { data, error } = await backend.functions.invoke("website-security-scan", {
-          body: { url },
-        });
-        if (error) throw new Error(error.message);
-        const summary =
-          typeof data === "string"
-            ? data
-            : data?.report || data?.summary || JSON.stringify(data, null, 2).slice(0, 8000);
-        return { kind: "inline", tool, content: `### Security audit: ${url}\n\n${summary}` };
-      }
-      return {
-        kind: "chat_flags",
-        tool,
-        flags: { securityAudit: message, messages: [{ role: "user", content: message }] },
-        preamble: "Running security audit on provided code/context…",
-      };
+      const response = await streamCloudChat([
+        { role: "system", content: "Perform a defensive security review of the supplied source or page content. Report evidence, severity, impact, and actionable mitigations. Do not claim that you executed tests, exploited the target, or verified runtime behavior." },
+        { role: "user", content: url ? `Review the security posture visible on this URL: ${url}` : message },
+      ], { webFetch: Boolean(url), maxTokens: 5000 });
+      if (response.error) throw new Error(response.error);
+      return { kind: "inline", tool, content: `### Security review${url ? `: ${url}` : ""}\n\n${response.content}` };
     }
 
     case "shadow_browser": {
       const url = p.url || message.match(/https?:\/\/[^\s]+/i)?.[0];
       if (url) {
-        const { data, error } = await backend.functions.invoke("firecrawl-scrape", {
-          body: { url, options: { formats: ["markdown"], onlyMainContent: true } },
-        });
-        if (error) throw new Error(error.message);
-        const markdown = data?.markdown || data?.content || JSON.stringify(data, null, 2).slice(0, 8000);
+        const response = await streamCloudChat([
+          { role: "system", content: "Read the requested web page using the available URL-fetch tool. Summarize its key points and cite the URL. If you cannot access it, say so plainly." },
+          { role: "user", content: url },
+        ], { webFetch: true, maxTokens: 4000 });
+        if (response.error) throw new Error(response.error);
         return {
           kind: "inline",
           tool,
-          content: `### Scraped: ${url}\n\n${markdown}`,
+          content: `### Page summary: ${url}\n\n${response.content || "The provider returned no page content."}`,
         };
       }
       return {
@@ -194,11 +171,12 @@ export async function executeShadowTool(
 
     case "presentation_builder": {
       const topic = p.topic || message;
-        return {
-          kind: "inline",
-          tool,
-          content: `### Presentation outline: ${topic}\n\n\`\`\`json\n${JSON.stringify({ slides: [{ title: topic, bullets: ["Intro", "Body", "Conclusion"] }], export: "Use Presentations page to generate PPTX." }, null, 2)}\`\`\``,
-        };
+      const response = await streamCloudChat([
+        { role: "system", content: "Create a useful presentation outline as Markdown. Include a title, audience and objective, followed by 6 to 10 numbered slides with a headline, key points, and suggested visual for each. Do not claim to have generated a PowerPoint file." },
+        { role: "user", content: topic },
+      ], { maxTokens: 5000 });
+      if (response.error) throw new Error(response.error);
+      return { kind: "inline", tool, content: response.content };
     }
 
 

@@ -221,7 +221,7 @@ export async function runUnifiedDocumentPipeline(
         temperature: plan.tone === 'creative' ? 0.7 : 0.5,
       },
     );
-    if (turboResult.source !== 'fallback' && turboResult.content) {
+    if (turboResult.content) {
       content = turboResult.content;
       console.log('[forge] draft via Turbo', turboResult.source, `${turboResult.totalMs?.toFixed(0)}ms`);
     }

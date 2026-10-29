@@ -141,7 +141,7 @@ export const BusinessSimulator = () => {
             Business Simulator
           </CardTitle>
           <CardDescription>
-            Enter your idea and instantly visualize a 12-month growth trajectory with financial projections
+            Illustrative scenario only. Projections use fixed sample assumptions and are not market research or a financial forecast.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

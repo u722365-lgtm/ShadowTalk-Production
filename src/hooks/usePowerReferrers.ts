@@ -57,12 +57,12 @@ export function usePowerReferrers() {
       }
 
       const userIds = codes.map((c) => c.user_id);
-      const { data: profiles } = await backend
-        .from("profiles")
+      const { data: public_profiles } = await backend
+        .from("public_profiles")
         .select("id, display_name")
         .in("id", userIds);
 
-      const profileMap = new Map<string, string>(profiles?.map((p: any) => [p.id as string, p.display_name as string]) ?? []);
+      const profileMap = new Map<string, string>(public_profiles?.map((p: any) => [p.id as string, p.display_name as string]) ?? []);
 
       const enriched: PowerReferrer[] = [];
       for (const code of codes) {

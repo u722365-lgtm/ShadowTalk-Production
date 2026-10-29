@@ -5,9 +5,12 @@
 import {
   GoogleAuthProvider,
   OAuthProvider,
+  applyActionCode,
+  confirmPasswordReset,
   createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
+  reload,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInAnonymously as fbSignInAnonymously,
@@ -17,7 +20,7 @@ import {
   updateEmail,
   updatePassword,
   updateProfile,
-  deleteUser,
+  verifyPasswordResetCode,
   type User as FbUser,
 } from 'firebase/auth';
 import { fbAuth } from './app';
@@ -44,10 +47,11 @@ export interface AdapterSession {
 function friendlyError(err: any): Error {
   const code: string = err?.code || '';
   const map: Record<string, string> = {
-    'auth/invalid-credential': 'Invalid email or password.',
-    'auth/wrong-password': 'Invalid email or password.',
-    'auth/user-not-found': 'No account found with that email.',
-    'auth/email-already-in-use': 'An account already exists with that email.',
+    'auth/invalid-credential': 'Unable to authenticate with these details. Check them or try another sign-in method.',
+    'auth/wrong-password': 'Unable to authenticate with these details. Check them or try another sign-in method.',
+    'auth/user-not-found': 'Unable to authenticate with these details. Check them or try another sign-in method.',
+    'auth/email-already-in-use': 'Unable to authenticate with these details. Check them or try another sign-in method.',
+    'auth/account-exists-with-different-credential': 'Unable to sign in with this provider. Try a sign-in method already connected to your account.',
     'auth/weak-password': 'Password must be at least 6 characters.',
     'auth/invalid-email': 'Please enter a valid email address.',
     'auth/too-many-requests': 'Too many attempts. Please try again in a few minutes.',
@@ -61,10 +65,24 @@ function friendlyError(err: any): Error {
     'auth/cancelled-popup-request': 'Sign-in was cancelled.',
     'auth/network-request-failed': 'Network error. Check your connection and try again.',
   };
-  const e = new Error(map[code] || err?.message || 'Authentication failed.');
+  const e = new Error(map[code] || 'Authentication failed. Please try again.');
   (e as any).code = code;
   (e as any).status = code ? 400 : 500;
   return e;
+}
+
+function safeAuthContinueUrl(requested: string | undefined, fallbackPath: string): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const origin = window.location.origin;
+  const fallback = new URL(fallbackPath, origin).toString();
+  if (!requested) return fallback;
+  try {
+    const parsed = new URL(requested, origin);
+    if (parsed.origin !== origin || !['/auth', '/chatbot'].includes(parsed.pathname)) return fallback;
+    return parsed.toString();
+  } catch {
+    return fallback;
+  }
 }
 
 export function toAdapterUser(u: FbUser | null): AdapterUser | null {
@@ -90,8 +108,11 @@ export function toAdapterUser(u: FbUser | null): AdapterUser | null {
 async function toAdapterSession(u: FbUser | null): Promise<AdapterSession | null> {
   if (!u) return null;
   let token = '';
+  let expiresAt = 0;
   try {
-    token = await u.getIdToken();
+    const tokenResult = await u.getIdTokenResult();
+    token = tokenResult.token;
+    expiresAt = Math.floor(Date.parse(tokenResult.expirationTime) / 1000);
   } catch {
     /* offline */
   }
@@ -99,8 +120,8 @@ async function toAdapterSession(u: FbUser | null): Promise<AdapterSession | null
     access_token: token,
     refresh_token: u.refreshToken || '',
     token_type: 'bearer',
-    expires_in: 3600,
-    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    expires_in: Math.max(0, expiresAt - Math.floor(Date.now() / 1000)),
+    expires_at: expiresAt,
     user: toAdapterUser(u)!,
   };
 }
@@ -178,19 +199,20 @@ export function createAuthAdapter() {
             /* non-fatal */
           }
         }
-        // Send email verification
+        // Email verification is advisory; creation succeeds even if mail delivery fails.
+        let verificationEmailSent = false;
         try {
           const actionCodeSettings = {
-            url: options?.emailRedirectTo || (typeof window !== 'undefined' ? `${window.location.origin}/chatbot` : undefined),
+            url: safeAuthContinueUrl(options?.emailRedirectTo, '/auth?flow=verify-complete'),
             handleCodeInApp: false,
           };
           await sendEmailVerification(cred.user, actionCodeSettings);
+          verificationEmailSent = true;
         } catch (verifyErr) {
           console.warn('[Firebase Auth] Email verification send failed:', verifyErr);
-          // Non-fatal — user can still sign in, they just won't have a verified email
         }
         return {
-          data: { user: toAdapterUser(cred.user), session: await toAdapterSession(cred.user) },
+          data: { user: toAdapterUser(cred.user), session: await toAdapterSession(cred.user), verificationEmailSent },
           error: null,
         };
       } catch (error: any) {
@@ -254,12 +276,56 @@ export function createAuthAdapter() {
       }
     },
 
-    async resetPasswordForEmail(email: string, _options?: { redirectTo?: string }) {
+    async resetPasswordForEmail(email: string, options?: { redirectTo?: string }) {
       try {
-        await sendPasswordResetEmail(fbAuth(), email);
+        await sendPasswordResetEmail(fbAuth(), email, {
+          url: safeAuthContinueUrl(options?.redirectTo, '/auth?flow=reset-complete'),
+          handleCodeInApp: false,
+        });
+        return { data: {}, error: null };
+      } catch (error: any) {
+        if (error?.code === 'auth/user-not-found') return { data: {}, error: null };
+        return { data: null, error: friendlyError(error) };
+      }
+    },
+
+    async verifyPasswordResetCode(code: string) {
+      try {
+        const email = await verifyPasswordResetCode(fbAuth(), code);
+        return { data: { email }, error: null };
+      } catch {
+        return { data: null, error: new Error('This password reset link is invalid or has expired. Request a new link to continue.') };
+      }
+    },
+
+    async confirmPasswordReset(code: string, password: string) {
+      try {
+        await confirmPasswordReset(fbAuth(), code, password);
         return { data: {}, error: null };
       } catch (error: any) {
         return { data: null, error: friendlyError(error) };
+      }
+    },
+
+    async applyEmailVerificationCode(code: string) {
+      try {
+        await applyActionCode(fbAuth(), code);
+        const user = fbAuth().currentUser;
+        if (user) await reload(user);
+        return { data: { user: toAdapterUser(user) }, error: null };
+      } catch {
+        return { data: null, error: new Error('This verification link is invalid or has expired. Sign in and request a new link.') };
+      }
+    },
+
+    async reloadUser() {
+      const user = fbAuth().currentUser;
+      if (!user) return { data: { user: null }, error: null };
+      try {
+        await reload(user);
+        return { data: { user: toAdapterUser(user) }, error: null };
+      } catch (error: any) {
+        return { data: { user: null }, error: friendlyError(error) };
       }
     },
 
@@ -366,12 +432,12 @@ export function createAuthAdapter() {
     },
 
     // Send (or resend) email verification to the current user.
-    async sendEmailVerification() {
+    async sendEmailVerification(options?: { redirectTo?: string }) {
       const user = fbAuth().currentUser;
       if (!user) return { data: null, error: new Error('Not signed in') };
       try {
         const actionCodeSettings = {
-          url: typeof window !== 'undefined' ? `${window.location.origin}/chatbot` : undefined,
+          url: safeAuthContinueUrl(options?.redirectTo, '/auth?flow=verify-complete'),
           handleCodeInApp: false,
         };
         await sendEmailVerification(user, actionCodeSettings);
@@ -384,25 +450,6 @@ export function createAuthAdapter() {
     // Check if the current user's email is verified.
     isEmailVerified(): boolean {
       return fbAuth().currentUser?.emailVerified ?? false;
-    },
-
-    // Delete the current user's account. This permanently removes the
-    // Firebase Auth user. Firestore data should be cleaned up via
-    // a Cloud Function trigger (onDeleteUser).
-    async deleteAccount() {
-      const user = fbAuth().currentUser;
-      if (!user) return { error: new Error('Not signed in') };
-      try {
-        await deleteUser(user);
-        return { error: null };
-      } catch (error: any) {
-        // If the user hasn't signed in recently, Firebase requires re-auth.
-        // Return a specific error so the UI can prompt for re-auth.
-        if (error?.code === 'auth/requires-recent-login') {
-          return { error: new Error('For security, please sign out and sign back in before deleting your account.') };
-        }
-        return { error: friendlyError(error) };
-      }
     },
 
     // Firebase MFA is enrolled through its own flow; expose safe no-ops.

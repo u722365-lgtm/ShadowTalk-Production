@@ -129,6 +129,108 @@ async function requireAuthenticatedUser(
   }
 }
 
+/**
+ * Erase every Firestore row whose explicit owner field matches the caller,
+ * plus user-keyed profile/role/entitlement records and private receipt files.
+ * This is intentionally idempotent: if an operation fails, the Auth identity
+ * remains so the user can reauthenticate and retry the cleanup.
+ */
+export const deleteAccount = onRequest({ timeoutSeconds: 540 }, async (req, res) => {
+  corsHandler(req, res, async () => {
+    if (req.method === "OPTIONS") return;
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed." });
+
+    try {
+      const user = await requireAuthenticatedUser(req.headers.authorization);
+      if (Date.now() / 1000 - user.auth_time > 5 * 60) {
+        throw new AiRequestError("For security, sign in again before deleting your account.", 401);
+      }
+
+      const db = admin.firestore();
+      const uid = user.uid;
+      const collections = [...new Set([
+        "conversations", "messages", "user_sessions", "user_settings", "user_memories",
+        "user_notifications", "user_installed_agents", "user_locations", "user_streaks",
+        "workspaces", "agent_tasks", "ai_memories", "daily_insights", "knowledge_entries",
+        "knowledge_nodes", "knowledge_edges", "knowledge_snapshots", "eco_actions",
+        "cyber_scan_results", "cyber_research_projects", "usage_analytics", "whatsapp_links",
+        "bug_bounty_submissions", "shadowscale_action_queue", "shadowscale_heartbeats",
+        "shadowscale_client_signals", "chat_sessions", "chat_messages", "user_journeys",
+        "realtime_channels", "room_presences", "subscribers", "manual_payments", "referrals",
+        "cyber_incidents", "cyber_incident_events", "user_referral_codes", "shared_answers",
+        "business_memories", "shared_missions", "analytics_events", "daily_usage", "admin_alerts",
+        "affiliate_clicks", "api_keys", "automation_scripts", "business_intents", "credit_transactions",
+        "custom_models", "gemini_api_keys", "gemini_key_analytics", "gemini_settings", "integrations",
+        "mission_actions", "missions", "oauth_tokens", "offline_sync_queue", "personal_llm_conversations",
+        "personal_llm_messages", "room_bans", "room_messages", "room_participants", "script_executions",
+        "search_history", "security_audits", "security_vulnerabilities", "shadow_credits", "strategy_usage",
+        "user_badges", "workspace_branding",
+        "admin_alerts", "affiliate_clicks", "business_intents", "custom_models", "gemini_api_keys",
+        "gemini_key_analytics", "gemini_settings", "mission_actions", "oauth_tokens", "personal_llm_conversations",
+        "personal_llm_messages", "room_bans", "room_messages", "room_participants", "script_executions",
+        "threat_actors", "threat_intel_cves", "user_installed_agents", "user_notifications", "user_referral_codes",
+        "user_sessions", "whatsapp_links", "workspaces", "user_locations", "user_streaks", "user_memories",
+        "conversations", "messages", "profiles", "public_profiles", "referrals", "manual_payments",
+        "bug_bounty_submissions", "cyber_incident_events", "cyber_incidents", "cyber_research_projects",
+        "cyber_scan_results", "eco_actions", "usage_analytics", "shadowscale_action_queue", "shadowscale_client_signals",
+        "shadowscale_heartbeats", "analytics_events", "daily_usage", "daily_insights", "knowledge_entries",
+        "knowledge_nodes", "knowledge_edges", "knowledge_snapshots", "agent_tasks", "ai_memories", "api_keys",
+        "automation_scripts", "credit_transactions", "integrations", "missions", "offline_sync_queue",
+        "search_history", "security_audits", "security_vulnerabilities", "shadow_credits", "strategy_usage",
+        "user_badges", "workspace_branding", "user_settings", "user_journeys", "shared_answers", "shared_missions",
+        "chat_sessions", "chat_messages", "realtime_channels", "room_presences", "subscribers", "affiliate_clicks",
+        "payment_receipts", "user_referral_codes", "user_roles",
+      ])];
+      const ownerFields = [
+        "user_id", "uid", "userId", "owner_id", "owner_uid", "created_by", "created_by_uid",
+        "author_id", "user_uid", "actor_id", "target_user_id", "subject_user_id",
+      ];
+      const refs = new Map<string, admin.firestore.DocumentReference>();
+
+      const ownerQueries = collections.flatMap((collectionName) =>
+        ownerFields.map((field) => ({ collectionName, field })),
+      );
+      for (let offset = 0; offset < ownerQueries.length; offset += 20) {
+        const batch = ownerQueries.slice(offset, offset + 20);
+        const snapshots = await Promise.all(batch.map(({ collectionName, field }) =>
+          db.collection(collectionName).where(field, "==", uid).get(),
+        ));
+        for (const snapshot of snapshots) {
+          for (const record of snapshot.docs) refs.set(record.ref.path, record.ref);
+        }
+      }
+      if (user.email) {
+        for (const collectionName of ["subscribers", "manual_payments", "referrals"]) {
+          for (const field of ["email", "user_email"]) {
+            const snapshot = await db.collection(collectionName).where(field, "==", user.email).get();
+            for (const record of snapshot.docs) refs.set(record.ref.path, record.ref);
+          }
+        }
+      }
+
+      for (const collectionName of [
+        "user_roles", "profiles", "public_profiles", "api_keys", "integrations", "oauth_tokens",
+      ]) {
+        refs.set(`${collectionName}/${uid}`, db.collection(collectionName).doc(uid));
+      }
+
+      // recursiveDelete also removes documents in nested subcollections.
+      for (const ref of refs.values()) await db.recursiveDelete(ref);
+
+      // The only currently used user-scoped Storage folder is payment receipts.
+      const bucket = admin.storage().bucket();
+      const [receiptFiles] = await bucket.getFiles({ prefix: `payment-receipts/${uid}/` });
+      for (const file of receiptFiles) await file.delete({ ignoreNotFound: true });
+
+      // Delete identity last: on any prior failure, the caller can retry cleanup.
+      await admin.auth().deleteUser(uid);
+      return res.status(200).json({ deleted: true });
+    } catch (error) {
+      return sendError(res, error);
+    }
+  });
+});
+
 async function requireSharedAiMode(
   db: admin.firestore.Firestore,
   uid: string,
@@ -347,14 +449,7 @@ export const audio = onRequest((req, res) => {
     if (req.method === "OPTIONS") return;
     try {
       await requireAuthenticatedUser(req.headers.authorization);
-      const { prompt, duration, type } = req.body || {};
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return res.json({
-        audioUrl: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg",
-        prompt,
-        type,
-        duration,
-      });
+      return res.status(501).json({ error: "Audio generation is not implemented on this endpoint." });
     } catch (error) {
       return sendError(res, error);
     }
@@ -366,22 +461,7 @@ export const drive = onRequest((req, res) => {
     if (req.method === "OPTIONS") return;
     try {
       await requireAuthenticatedUser(req.headers.authorization);
-      const { action, params } = req.body || {};
-      if (action === "drive.list") {
-        return res.json({
-          data: [
-            { id: "mock-1", name: "Q3 Strategy Presentation.pptx", mimeType: "presentation", modifiedTime: new Date().toISOString() },
-            { id: "mock-2", name: "Financial Projections 2024.xlsx", mimeType: "spreadsheet", modifiedTime: new Date(Date.now() - 86400000).toISOString() },
-            { id: "mock-3", name: "Product Requirements Doc.docx", mimeType: "document", modifiedTime: new Date(Date.now() - 7 * 86400000).toISOString() },
-          ],
-        });
-      }
-      if (action === "drive.get") {
-        return res.json({
-          data: { content: `# Mock File\n\n[Imported mock content from Google Drive for file ID: ${params?.fileId}]` },
-        });
-      }
-      return res.status(400).json({ error: "Unknown action" });
+      return res.status(501).json({ error: "Google Drive access is not implemented on this endpoint." });
     } catch (error) {
       return sendError(res, error);
     }

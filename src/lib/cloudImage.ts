@@ -21,16 +21,27 @@ export function isCloudImageConfigured(): boolean {
 }
 
 function decodeImageResult(body: any): string {
-  const imageUrl =
-    body?.choices?.[0]?.message?.images?.[0]?.image_url?.url ??
-    body?.data?.[0]?.url ??
-    body?.data?.[0]?.b64_json;
-  if (typeof imageUrl !== "string" || !imageUrl) {
+  const image = body?.choices?.[0]?.message?.images?.[0]?.image_url?.url
+    ? { value: body.choices[0].message.images[0].image_url.url }
+    : body?.data?.[0]?.url
+      ? { value: body.data[0].url }
+      : body?.data?.[0]?.b64_json
+        ? { value: body.data[0].b64_json, mimeType: body.data[0].media_type || body.data[0].mime_type }
+        : null;
+  if (!image?.value || typeof image.value !== "string") {
     throw new Error("The selected AI provider returned no image.");
   }
-  return imageUrl.startsWith("data:")
-    ? imageUrl
-    : `data:image/png;base64,${imageUrl}`;
+  if (image.value.startsWith("data:") || /^https?:\/\//i.test(image.value)) return image.value;
+  const mimeType = typeof image.mimeType === "string" && image.mimeType.startsWith("image/")
+    ? image.mimeType
+    : "image/png";
+  return `data:${mimeType};base64,${image.value}`;
+}
+
+async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const response = await fetch(dataUrl);
+  if (!response.ok) throw new Error("Could not read the attached image.");
+  return response.blob();
 }
 
 async function generateWithByok(
@@ -44,7 +55,23 @@ async function generateWithByok(
 
   if (config.provider === "openai") {
     if (options.referenceImage) {
-      throw new Error("Reference-image editing currently requires an OpenRouter key.");
+      const imageBlob = await dataUrlToBlob(options.referenceImage);
+      const form = new FormData();
+      form.append("model", options.model || "gpt-image-1");
+      form.append("prompt", prompt);
+      form.append("image", imageBlob, "reference-image.png");
+      form.append("n", "1");
+      const response = await fetch("https://api.openai.com/v1/images/edits", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${config.apiKey}` },
+        body: form,
+        signal: options.signal,
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error?.message || `OpenAI image editing failed (${response.status}).`);
+      }
+      return decodeImageResult(await response.json());
     }
     const response = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
@@ -68,13 +95,7 @@ async function generateWithByok(
   }
 
   if (config.provider === "openrouter") {
-    const content = options.referenceImage
-      ? [
-          { type: "text", text: prompt },
-          { type: "image_url", image_url: { url: options.referenceImage } },
-        ]
-      : prompt;
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/images", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,9 +105,8 @@ async function generateWithByok(
       },
       body: JSON.stringify({
         model: options.model || OPENROUTER_IMAGE_MODEL,
-        messages: [{ role: "user", content }],
-        modalities: ["image", "text"],
-        stream: false,
+        prompt,
+        ...(options.referenceImage ? { input_references: [options.referenceImage] } : {}),
       }),
       signal: options.signal,
     });
