@@ -36,7 +36,7 @@ export const BYOK_PROVIDERS: Record<ByokProvider, { label: string; url: string; 
   groq: { label: "Groq", url: "https://api.groq.com/openai/v1/chat/completions", defaultModel: "llama-3.3-70b-versatile", keyHint: "gsk_..." },
   openrouter: { label: "OpenRouter", url: "https://openrouter.ai/api/v1/chat/completions", defaultModel: "openai/gpt-4o-mini", keyHint: "sk-or-..." },
   gemini: { label: "Google Gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", defaultModel: "gemini-2.0-flash", keyHint: "AIza..." },
-  anthropic: { label: "Anthropic (Claude)", url: "https://api.anthropic.com/v1/openai/v1/chat/completions", defaultModel: "claude-haiku-5-5", keyHint: "sk-ant-..." },
+  anthropic: { label: "Anthropic (Claude)", url: "https://api.anthropic.com/v1/messages", defaultModel: "claude-haiku-4-5-20251001", keyHint: "sk-ant-..." },
   mistral: { label: "Mistral AI", url: "https://api.mistral.ai/v1/chat/completions", defaultModel: "mistral-small-latest", keyHint: "..." },
   deepseek: { label: "DeepSeek", url: "https://api.deepseek.com/v1/chat/completions", defaultModel: "deepseek-chat", keyHint: "sk-..." },
   together: { label: "Together AI", url: "https://api.together.xyz/v1/chat/completions", defaultModel: "meta-llama/Llama-3.3-70B-Instruct-Turbo", keyHint: "..." },
@@ -86,6 +86,102 @@ function toPlainMessages(messages: CloudChatMessage[]) {
   return messages.map((m) => ({ role: m.role, content: m.content }));
 }
 
+function toAnthropicMessages(messages: CloudChatMessage[]) {
+  return messages
+    .filter((message) => message.role !== "system")
+    .map((message) => ({
+      role: message.role === "assistant" ? "assistant" as const : "user" as const,
+      content: typeof message.content === "string"
+        ? message.content
+        : message.content.map((part) => {
+            if (part.type === "text") return { type: "text" as const, text: part.text };
+            const url = part.image_url.url;
+            const match = url.match(/^data:(image\/(?:jpeg|png|gif|webp));base64,([\s\S]+)$/i);
+            if (match) {
+              return {
+                type: "image" as const,
+                source: { type: "base64" as const, media_type: match[1].toLowerCase(), data: match[2] },
+              };
+            }
+            return { type: "image" as const, source: { type: "url" as const, url } };
+          }),
+    }));
+}
+
+async function streamAnthropicChat(
+  cfg: ByokConfig,
+  messages: CloudChatMessage[],
+  opts: CloudChatOptions,
+): Promise<CloudChatResult> {
+  const system = messages
+    .filter((message) => message.role === "system")
+    .map((message) => typeof message.content === "string" ? message.content : "")
+    .filter(Boolean)
+    .join("\n\n");
+  let response: Response;
+  try {
+    response = await fetch(BYOK_PROVIDERS.anthropic.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": cfg.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: opts.model || cfg.model || BYOK_PROVIDERS.anthropic.defaultModel,
+        max_tokens: opts.maxTokens ?? 4096,
+        messages: toAnthropicMessages(messages),
+        ...(system ? { system } : {}),
+        ...(typeof opts.temperature === "number" ? { temperature: opts.temperature } : {}),
+        stream: true,
+      }),
+      signal: opts.signal,
+    });
+  } catch (error) {
+    if ((error as Error)?.name === "AbortError") throw error;
+    return { content: "", error: "Could not reach Anthropic from this browser. Check the connection and try again.", source: "byok" };
+  }
+
+  if (!response.ok || !response.body) {
+    let detail = "";
+    try {
+      const body = await response.json();
+      detail = body?.error?.message || "";
+    } catch { /* ignore non-JSON error bodies */ }
+    const error = response.status === 401
+      ? "Your Anthropic key was rejected. Check it in Settings → Your own API key."
+      : response.status === 429
+        ? "Anthropic rate limit or quota reached on your key."
+        : `Anthropic error (${response.status})${detail ? `: ${detail}` : ""}`;
+    return { content: "", error, source: "byok" };
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let content = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let newline: number;
+    while ((newline = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, newline).trim();
+      buffer = buffer.slice(newline + 1);
+      if (!line.startsWith("data:")) continue;
+      try {
+        const event = JSON.parse(line.slice(5).trim());
+        if (event?.type === "content_block_delta" && typeof event.delta?.text === "string") {
+          content += event.delta.text;
+          opts.onDelta?.(content);
+        }
+      } catch { /* ignore non-JSON SSE lines */ }
+    }
+  }
+  return { content, source: "byok", modelUsed: opts.model || cfg.model };
+}
+
 /** Stream a chat completion directly from the user's own provider. */
 export async function streamByokChat(
   cfg: ByokConfig,
@@ -93,6 +189,17 @@ export async function streamByokChat(
   opts: CloudChatOptions = {},
 ): Promise<CloudChatResult> {
   const provider = BYOK_PROVIDERS[cfg.provider];
+  if ((opts.webSearch || opts.webFetch) && cfg.provider !== "openrouter" && cfg.provider !== "perplexity") {
+    return {
+      content: "",
+      error: "Web tools need an OpenRouter key (or a Perplexity Sonar model for web research). Add one in AI settings to use this tool.",
+      source: "byok",
+    };
+  }
+  if (opts.webFetch && cfg.provider !== "openrouter") {
+    return { content: "", error: "URL reading currently requires an OpenRouter key.", source: "byok" };
+  }
+  if (cfg.provider === "anthropic") return streamAnthropicChat(cfg, messages, opts);
   let resp: Response;
   try {
     resp = await fetch(provider.url, {
@@ -105,6 +212,12 @@ export async function streamByokChat(
         ...(typeof opts.temperature === "number" ? { temperature: opts.temperature } : {}),
         ...(typeof opts.maxTokens === "number" ? { max_tokens: opts.maxTokens } : {}),
         ...(opts.structuredOutput ? { response_format: { type: "json_object" } } : {}),
+        ...(cfg.provider === "openrouter" && (opts.webSearch || opts.webFetch)
+          ? { tools: [
+              ...(opts.webSearch ? [{ type: "openrouter:web_search" }] : []),
+              ...(opts.webFetch ? [{ type: "openrouter:web_fetch" }] : []),
+            ] }
+          : {}),
       }),
       signal: opts.signal,
     });
@@ -150,5 +263,5 @@ export async function streamByokChat(
       } catch { /* partial */ }
     }
   }
-  return { content, source: "byok", modelUsed: cfg.model };
+  return { content, source: "byok", modelUsed: opts.model || cfg.model };
 }

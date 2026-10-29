@@ -99,7 +99,7 @@ export const FileUpload = ({ onFileSelect, selectedFile, onClear, disabled, vari
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,.pdf,.txt,.md,.json,.csv,.docx,.js,.ts,.tsx,.jsx,.py,.rb,.go,.rs,.java,.c,.cpp,.h,.css,.html,.xml,.yml,.yaml,.sh,.sql,video/mp4,video/webm,video/ogg,video/quicktime,.mkv"
+        accept="image/*,.pdf,.docx,.pptx,.xlsx,.odt,.txt,.md,.json,.csv,.js,.ts,.tsx,.jsx,.py,.rb,.go,.rs,.java,.c,.cpp,.h,.css,.html,.xml,.yml,.yaml,.sh,.sql,video/mp4,video/webm,video/ogg,video/quicktime,.mkv"
         onChange={handleFileChange}
         className="hidden"
         disabled={disabled || isProcessing}

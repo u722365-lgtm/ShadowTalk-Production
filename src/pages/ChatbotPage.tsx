@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { backend } from "@/integrations/local/client";
 import { useToast } from "@/hooks/use-toast";
-import { ChatMode } from "@/components/chat/ModeSelector";
+import { ChatMode, getModePrompt } from "@/components/chat/ModeSelector";
 type AIProvider = "turbo" | string;
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -18,8 +18,8 @@ import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBann
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
 import { ChatInput } from "@/components/chat/ChatInput";
 const AdBanner = (props: any) => null;
-const ShareWinBanner = (props: any) => null;
-const ShareResultDialog = (props: any) => null;
+import { ShareWinBanner } from "@/components/growth/ShareWinBanner";
+import { ShareResultDialog } from "@/components/growth/ShareResultDialog";
 import { ChatMessages } from "@/components/chat/ChatMessages";
 import type { UserContext } from "@/components/chat/UserContextPanel";
 import { inferDocumentTypeFromMessage } from "@/lib/kimiDocumentGeneration";
@@ -219,8 +219,7 @@ const ChatbotPage = () => {
   const inputDockStyle =
     keyboardOffset > 0 ? { paddingBottom: keyboardOffset } : undefined;
   const historyPanelLeft = isMobile ? 0 : sidebarWidth;
-  const [isListening, setIsListening] = useState(false);
-  const { isSpeaking, speakingMessageId, speakMessage } = useChatSpeech();
+  const { isListening, toggleDictation, isSpeaking, speakingMessageId, speakMessage } = useChatSpeech();
   const [selectedFile, setSelectedFile] = useState<{ type: 'image' | 'file'; data: string; name: string; mimeType: string } | null>(null);
   
   // Modals
@@ -1022,10 +1021,10 @@ Structure and Content Guidelines:
       const cloudMessages: CloudChatMessage[] = [
         {
           role: 'system',
-          content: buildChatSystemPrompt({
+          content: `${buildChatSystemPrompt({
             personality,
             businessMemory,
-          }),
+          })}\n\n${getModePrompt(chatMode)}`,
         },
         ...trimmedRouterMessages.map((m) => ({
           role: (m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user') as CloudChatMessage['role'],
@@ -1092,7 +1091,7 @@ Structure and Content Guidelines:
   // "generate an image of..." and routes them to the right executor
   // (image generation, web search, calculator, etc.) instead of sending
   // them to the text completion API.
-  const { detectTool } = useToolOrchestrator();
+  const { detectTool, executeCalculator } = useToolOrchestrator();
 
   const handleStopGeneration = () => {
     abortControllerRef.current?.abort();
@@ -1204,16 +1203,6 @@ Structure and Content Guidelines:
 
 
 
-    if (chatMode === "swarm") {
-      setSwarmPrompt(msgContent);
-      setShowSwarmMode(true);
-      if (!overrideText) {
-        setMessage("");
-      }
-      setSelectedFile(null);
-      return;
-    }
-
     recordFunnelEvent("first_send_attempt");
     markHasChatted();
 
@@ -1241,8 +1230,11 @@ Structure and Content Guidelines:
     // Check if the message triggers a tool (image generation, web search, etc.)
     // before sending it to the text completion API. Strip slash-command prefixes
     // like "/image " so the tool detector sees the actual prompt.
+    const explicitImageCommand = /^\/(image|img|draw|picture)\s+/i.test(msgContent);
     const strippedForTools = msgContent.replace(/^\/(image|img|draw|picture)\s+/i, "").trim();
-    const toolResult = detectTool(strippedForTools);
+    const toolResult = chatMode === "image" || explicitImageCommand
+      ? { tool: "image_generator" as const, autoExecute: true, params: { prompt: strippedForTools } }
+      : detectTool(strippedForTools);
 
     if (toolResult.tool && toolResult.autoExecute) {
       const conversationId = await resolveConversationId();
@@ -1262,15 +1254,17 @@ Structure and Content Guidelines:
       setIsLoading(true);
 
       try {
+        let finalToolContent = "";
         // Image generation — BYOK only. Uses the user's own OpenAI or OpenRouter
         // key. No fallback to free services. If the key is missing or fails,
         // the error is shown to the user so they can fix their setup.
         if (toolResult.tool === "image_generator") {
           const imgPrompt = toolResult.params?.prompt || strippedForTools;
           const imageUrl = await generateCloudImage(imgPrompt, { watermark: true });
+          finalToolContent = `Generated image for: *${imgPrompt}*`;
           setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
             ...m,
-            content: `Generated image for: *${imgPrompt}*`,
+            content: finalToolContent,
             imageUrl,
             toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
           } : m));
@@ -1279,13 +1273,16 @@ Structure and Content Guidelines:
           session.recordModelCall();
         } else {
           // Other auto-execute tools (calculator, web_search, deep_research, etc.)
-          const result = await executeShadowTool(
+          const result = toolResult.tool === "calculator"
+            ? { kind: "inline" as const, tool: toolResult.tool, content: executeCalculator(strippedForTools) }
+            : await executeShadowTool(
             toolResult.tool,
             toolResult.params,
             strippedForTools,
             { personality, mode: chatMode, attachment: selectedFile || undefined },
           );
           if (result.kind === "inline") {
+            finalToolContent = result.content;
             setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
               ...m,
               content: result.content,
@@ -1293,6 +1290,7 @@ Structure and Content Guidelines:
               toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
             } : m));
           } else if (result.kind === "ui" && result.path) {
+            finalToolContent = result.message || `Opening ${result.path}...`;
             setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
               ...m,
               content: result.message || `Opening ${result.path}...`,
@@ -1301,9 +1299,10 @@ Structure and Content Guidelines:
             navigate(result.path);
           } else {
             // chat_flags or none — render a generic confirmation
+            finalToolContent = `Tool ${toolResult.tool} completed.`;
             setMessages((prev) => prev.map((m) => m.id === toolMessageId ? {
               ...m,
-              content: `Tool ${toolResult.tool} executed.`,
+              content: finalToolContent,
               toolExecution: { tool: toolResult.tool, status: "completed", params: toolResult.params },
             } : m));
           }
@@ -1311,12 +1310,7 @@ Structure and Content Guidelines:
         }
 
         // Save the tool execution as an assistant message
-        if (user) {
-          const finalMsg = messagesRef.current.find((m) => m.id === toolMessageId);
-          if (finalMsg) {
-            void saveMessage(finalMsg.content, "assistant", conversationId || "").catch(() => {});
-          }
-        }
+        if (user) void saveMessage(finalToolContent, "assistant", conversationId).catch(() => {});
         recordSuccessfulChatSession();
         recordFunnelEvent("first_reply");
         markHasChatted();
@@ -1370,7 +1364,7 @@ Structure and Content Guidelines:
       // Lightweight format detection (inline — no import needed)
       const ext = name.split(".").pop()?.toLowerCase() || "";
       const isVideo = ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext) || mimeType.startsWith("video/");
-      const isDoc = ["pdf", "docx", "txt", "md", "csv", "json", "js", "ts", "jsx", "tsx", "py", "rb", "go", "rs", "java", "c", "cpp", "h", "css", "html", "xml", "yml", "yaml", "sh", "sql"].includes(ext);
+      const isDoc = ["pdf", "docx", "pptx", "xlsx", "odt", "txt", "md", "csv", "json", "js", "ts", "jsx", "tsx", "py", "rb", "go", "rs", "java", "c", "cpp", "h", "css", "html", "xml", "yml", "yaml", "sh", "sql"].includes(ext);
 
       // Check if it's a video file
       if (isVideo) {
@@ -1420,9 +1414,9 @@ Structure and Content Guidelines:
       } else if (isDoc) {
         // Document analysis — extract text locally, then use retrieval for large docs
         // Lazy-load the document intelligence module
-        const { extractDocument, formatDocumentForChat, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat, detectDocumentFormat, validateFileSize } = await lazyDocIntel();
+        const { extractDocument, formatDocumentForChat, chunkDocument, selectRelevantChunks, formatRetrievedChunksForChat, validateFileSize, estimateFileSize, renderScannedPdfPages } = await lazyDocIntel();
         try {
-          const sizeCheck = validateFileSize({ size: data.length }, 25 * 1024 * 1024);
+          const sizeCheck = validateFileSize({ size: estimateFileSize(data) }, 25 * 1024 * 1024);
           if (!sizeCheck.ok) {
             toast({ title: "File too large", description: sizeCheck.error, variant: "destructive" });
             setIsLoading(false);
@@ -1430,13 +1424,21 @@ Structure and Content Guidelines:
           }
           toast({ title: "Processing document…", description: `Extracting text from ${name}.` });
           const doc = await extractDocument(data, name, mimeType);
+          const scannedPages = doc.empty && doc.format === "pdf" ? await renderScannedPdfPages(data, 5) : [];
           if (doc.empty) {
             toast({
-              title: "No text extracted",
-              description: doc.notice || "The document appears to be empty or scanned.",
+              title: scannedPages.length ? "Scanned PDF ready for visual analysis" : "No text extracted",
+              description: scannedPages.length ? `Sending ${scannedPages.length} rendered pages to your vision model.` : doc.notice || "The document appears to be empty or scanned.",
               variant: "default",
             });
           }
+
+          if (scannedPages.length) {
+            chatMessages[chatMessages.length - 1].content = [
+              { type: "text", text: `${msgContent || "Analyze this scanned PDF."}\n\nPages rendered locally for visual analysis: ${scannedPages.map((page) => page.page).join(", ")}.` },
+              ...scannedPages.map((page) => ({ type: "image_url" as const, image_url: { url: page.dataUrl } })),
+            ];
+          } else {
 
           // Chunk the document, then select relevant chunks for the question
           const chunks = chunkDocument(doc.text, 30_000, doc.format);
@@ -1457,6 +1459,7 @@ Structure and Content Guidelines:
           }
           if (!retrieval.fullDocument) {
             toast({ title: "Partial analysis", description: retrieval.disclosure });
+          }
           }
         } catch (err) {
           toast({
@@ -1479,6 +1482,25 @@ Structure and Content Guidelines:
       }
     } else if (userMessage.attachment?.type === "image") {
       const imageData = userMessage.attachment.data;
+      const { detectChatImageIntent } = await import("@/lib/chatImageIntent");
+      if (detectChatImageIntent(msgContent) === "edit") {
+        try {
+          const editedImage = await generateCloudImage(msgContent, { referenceImage: imageData, watermark: true });
+          const reply = `Edited your image: ${msgContent}`;
+          const editedMessage: Message = { id: crypto.randomUUID(), type: "ai", content: reply, imageUrl: editedImage, timestamp: new Date() };
+          setMessages((prev) => [...prev, editedMessage]);
+          if (user) {
+            void saveMessage(msgContent, "user", conversationId).catch(() => {});
+            void saveMessage(reply, "assistant", conversationId).catch(() => {});
+          }
+          setIsLoading(false);
+          return;
+        } catch (error) {
+          toast({ title: "Image edit failed", description: error instanceof Error ? error.message : "Could not edit this image with the selected provider.", variant: "destructive" });
+          setIsLoading(false);
+          return;
+        }
+      }
       chatMessages[chatMessages.length - 1].content = [
         { type: "text", text: msgContent || "Analyze this image." },
         { type: "image_url", image_url: { url: imageData } },
@@ -1823,16 +1845,15 @@ Structure and Content Guidelines:
     void handleSendMessage();
   }, [handleSendMessage]);
 
-  const handleInputKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter") void handleSendMessage();
-  }, [handleSendMessage]);
+  const handleInputKeyPress = useCallback((_e: React.KeyboardEvent) => {}, []);
 
   const handleToggleLiveVoice = useCallback(() => {
     setShowShadowTalkLive(true);
   }, []);
 
   const handleOpenImageGen = useCallback(() => {
-    setShowImageGenerator(true);
+    setChatMode("image");
+    setMessage((current) => current ? `${current} ` : "/image ");
   }, []);
 
   const handlePromptClear = useCallback(() => {
@@ -1844,6 +1865,8 @@ Structure and Content Guidelines:
     onMessageChange: setMessage,
     onSend: handleInputSend,
     onKeyPress: handleInputKeyPress,
+    onToggleVoice: () => toggleDictation(setMessage),
+    onOpenImageGenerator: handleOpenImageGen,
     isLoading,
     isListening,
     onStopGeneration: handleStopGeneration,
@@ -1861,6 +1884,8 @@ Structure and Content Guidelines:
     message,
     handleInputSend,
     handleInputKeyPress,
+    toggleDictation,
+    handleOpenImageGen,
     isLoading,
     isListening,
     handleStopGeneration,
