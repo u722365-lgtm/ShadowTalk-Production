@@ -73,7 +73,7 @@ export const WEDGE_PAGES: WedgePage[] = [
     h1: "AI Business Planner — from idea to executable plan",
     badge: "Wedge: Business planning",
     snippet:
-      "ShadowTalk AI business planner turns goals into missions: market sizing, revenue models, channel strategy, and launch checklists with citations and exports. Free tier, no credit card — Pro BYOKnth.",
+      "ShadowTalk AI business planner turns goals into missions: market sizing, revenue models, channel strategy, and launch checklists with citations and exports. BYOK — no platform fee, bring your own API key.",
     sections: [
       {
         heading: "Plan → execute in one workspace",
@@ -107,16 +107,16 @@ export const WEDGE_PAGES: WedgePage[] = [
     slug: "anonymous-ai",
     title: "Anonymous AI Chat — No Account, No Training Pitch | ShadowTalk",
     metaDescription:
-      "Anonymous AI chat with no signup required: start instantly, optional E2EE, stated privacy practices. ShadowTalk — free tier, no credit card, no forced account.",
+      "BYOK AI workspace: bring your own API key, optional E2EE, stated privacy practices. ShadowTalk — no platform fee, no markup.",
     h1: "Anonymous AI — chat without an account wall",
     badge: "Wedge: Privacy-first access",
     snippet:
-      "ShadowTalk lets you chat without creating an account first — anonymous session, optional end-to-end encryption, and clear data practices. Differentiator: usable free tier, not a login gate before your first message.",
+      "ShadowTalk requires an account and BYOK API key — your key is stored in your browser only. Optional end-to-end encryption and clear data practices. Differentiator: BYOK means no platform fee, no markup.",
     sections: [
       {
         heading: "How it works",
         paragraphs: [
-          "Open shadowtalk-ai.com/chatbot and start typing. No signup wall on the free tier. Link an account later if you want sync across devices.",
+          "Open shadowtalk-ai.com/chatbot, create an account, and configure your BYOK API key to start chatting.",
           "Enable encrypted chat for sensitive topics. Read /privacy and /security for how we handle data — we publish limits and practices before you pay.",
         ],
       },

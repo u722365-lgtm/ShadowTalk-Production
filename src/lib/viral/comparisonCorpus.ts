@@ -141,7 +141,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Full in-browser IDE with live preview",
       "Agentic workflows for custom multi-step automation",
       "Marketplace specialist agents",
-      "Free tier with no credit card",
+      "BYOK — no platform fee",
     ],
     competitorWins: [
       "Deep Word, Excel, PowerPoint, and Teams integration",
@@ -341,7 +341,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Compare free AI chatbots by privacy, features, and usability. ShadowTalk offers free start, no-login chat path, tools, and encrypted workspace.",
     h1: "Best Free AI Chatbot",
     verdict:
-      "Many free chatbots trade privacy for usage. ShadowTalk keeps a usable free tier while adding encryption, tool chains, and optional local models.",
+      "Many chatbots trade privacy for usage. ShadowTalk is BYOK — your key stays in your browser — while adding encryption, tool chains, and optional local models.",
     shadowtalkWins: [
       "Free tier with stated limits and no hidden gating",
       "End-to-end encrypted chat option",
@@ -350,7 +350,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Clear upgrade path: Pro, Premium, Elite",
     ],
     competitorWins: [
-      "Some free tiers have larger public model access",
+      "Some platforms offer shared model access",
       "Lower setup friction for casual questions",
       "Broader mainstream familiarity",
     ],
@@ -397,7 +397,7 @@ export const COMPARISON_PAGES: ComparisonPage[] = [
       "Workspace memory for business context",
       "Integrated research, docs, and IDE",
       "Case studies with PSOF framework at /case-studies",
-      "Transparent free tier with stated daily limits",
+      "Transparent BYOK pricing — no platform fee",
     ],
     competitorWins: [
       "Fast outline generation for simple plans",

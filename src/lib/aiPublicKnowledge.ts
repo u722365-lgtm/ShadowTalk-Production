@@ -124,7 +124,7 @@ export const SHADOWTALK_AI_KNOWLEDGE = {
     },
     {
       q: "Is ShadowTalk free?",
-      a: "Yes. Free tier with daily limits, no credit card. BYOK (bring your own key) — no platform fee.",
+      a: "ShadowTalk is BYOK (Bring Your Own Key). No platform fee — bring your own provider API key and pay your provider directly.",
     },
     {
       q: "How is ShadowTalk different from ChatGPT?",
