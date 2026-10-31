@@ -44,7 +44,7 @@ describe("Dedicated Founder Page Verification", () => {
   it("CHAT_SIDEBAR_NAV links to /founder", () => {
     const founderItem = CHAT_SIDEBAR_NAV.find((item) => item.to === "/founder");
     expect(founderItem, "Sidebar navigation should contain Founder link").toBeDefined();
-    expect(founderItem?.label).toBe("Founder Story");
+    expect(founderItem?.label).toBe("Founder");
   });
 
   it("Footer and CommandPalette link to /founder", () => {
