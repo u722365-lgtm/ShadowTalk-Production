@@ -3,12 +3,10 @@ import {
   Home,
   MessageSquare,
   Brain,
-  Network,
   Sparkles,
-  Lock,
-  Code2,
   BookOpen,
   User,
+  Settings,
 } from "lucide-react";
 
 export interface ChatSidebarNavItem {
@@ -26,13 +24,12 @@ export const CHAT_SIDEBAR_NAV: ChatSidebarNavItem[] = [
   { label: "Chatbot", icon: MessageSquare, to: "/chatbot", end: true, section: "workspace" },
   { label: "Home", icon: Home, to: "/home", end: true, section: "workspace" },
 
-  // Explore section — only pages with active routes
+  // Explore section — only real pages
   { label: "Shadow Twin", icon: Brain, to: "/shadow-twin", section: "explore" },
-  { label: "Knowledge Graph", icon: Network, to: "/knowledge-graph", section: "explore" },
-  { label: "Private AI Hub", icon: Lock, to: "/private-ai", section: "explore" },
-  { label: "Pricing & Plans", icon: Sparkles, to: "/pricing", section: "explore" },
-  { label: "Docs & Guides", icon: BookOpen, to: "/docs", section: "explore" },
-  { label: "Founder Story", icon: User, to: "/founder", section: "explore" },
+  { label: "Settings", icon: Settings, to: "/settings", section: "explore" },
+  { label: "Pricing", icon: Sparkles, to: "/pricing", section: "explore" },
+  { label: "Docs", icon: BookOpen, to: "/docs", section: "explore" },
+  { label: "Founder", icon: User, to: "/founder", section: "explore" },
 ];
 
 export const CHAT_SIDEBAR_WIDTH_EXPANDED = 268;

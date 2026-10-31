@@ -151,42 +151,42 @@ const AnimatedRoutes = () => {
           <Route path="/shadow-twin" element={<PageTransition><ShadowTwinSettingsPage /></PageTransition>} />
           <Route path="/t/:username" element={<Suspense fallback={<PageLoader />}><PublicShadowTwinChat /></Suspense>} />
           
-          <Route path="/auth/designs" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignGalleryPage /></PageTransition></Suspense>} />
-          <Route path="/auth/preview/:designId" element={<Suspense fallback={<PageLoader />}><PageTransition><AuthDesignPreviewPage /></PageTransition></Suspense>} />
+          <Route path="/auth/designs" element={<Navigate to="/auth" replace />} />
+          <Route path="/auth/preview/:designId" element={<Navigate to="/auth" replace />} />
           <Route path="/docs" element={<PageTransition><DocsPage /></PageTransition>} />
           <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
           <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
-          <Route path="/security" element={<PageTransition><TrustPage /></PageTransition>} />
+          <Route path="/security" element={<Navigate to="/chatbot" replace />} />
           <Route path="/status" element={<PageTransition><StatusPage /></PageTransition>} />
           <Route path="/founder" element={<PageTransition><FounderPage /></PageTransition>} />
           <Route path="/zain-ahmed" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
           <Route path="/zain-ahmed-biography" element={<Navigate to="/zain-ahmed" replace />} />
-          <Route path="/zain-ahmed-fahad-patel" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
-          <Route path="/fatima" element={<PageTransition><FatimaPage /></PageTransition>} />
-          <Route path="/co-founder" element={<PageTransition><FatimaPage /></PageTransition>} />
-          <Route path="/sadaf-tayyaba" element={<PageTransition><FatimaPage /></PageTransition>} />
+          <Route path="/zain-ahmed-fahad-patel" element={<Navigate to="/zain-ahmed" replace />} />
+          <Route path="/fatima" element={<Navigate to="/about" replace />} />
+          <Route path="/co-founder" element={<Navigate to="/about" replace />} />
+          <Route path="/sadaf-tayyaba" element={<Navigate to="/about" replace />} />
           <Route path="/changelog" element={<PageTransition><ChangelogPage /></PageTransition>} />
-          <Route path="/shadow-memory" element={<PageTransition><ShadowMemoryPage /></PageTransition>} />
-          <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
-          <Route path="/founder-access" element={<PageTransition><FounderAccessPage /></PageTransition>} />
-          <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
+          <Route path="/shadow-memory" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/private-ai" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/founder-access" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/knowledge-graph" element={<Navigate to="/chatbot" replace />} />
           <Route path="/agentic-ai-workspace" element={<Navigate to="/chatbot" replace />} />
-          <Route path="/downloads" element={<PageTransition><DownloadPage /></PageTransition>} />
-          <Route path="/google-seo" element={<Navigate to="/google-seo-hub.html" replace />} />
-          <Route path="/press" element={<Navigate to="/press-kit.html" replace />} />
-          <Route path="/ide" element={<Suspense fallback={<PageLoader />}><PageTransition><AgenticIdePage /></PageTransition></Suspense>} />
-          <Route path="/missioncontrol" element={<Navigate to="/agentic-ai-workspace" replace />} />
+          <Route path="/downloads" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/google-seo" element={<Navigate to="/home" replace />} />
+          <Route path="/press" element={<Navigate to="/home" replace />} />
+          <Route path="/ide" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/missioncontrol" element={<Navigate to="/chatbot" replace />} />
           <Route path="/workspace" element={<Navigate to="/chatbot" replace />} />
           <Route path="/marketplace" element={<Navigate to="/chatbot" replace />} />
           
           {/* Company, Support, Legal & Status Pages */}
           <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
-          <Route path="/help" element={<PageTransition><HelpCenterPage /></PageTransition>} />
+          <Route path="/help" element={<Navigate to="/docs" replace />} />
           <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />
           <Route path="/blog" element={<PageTransition><BlogPage /></PageTransition>} />
           <Route path="/benchmarks" element={<Suspense fallback={<PageLoader />}><PageTransition><BenchmarksPage /></PageTransition></Suspense>} />
-          <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
+          <Route path="/case-studies" element={<Navigate to="/home" replace />} />
           <Route path="/gdpr" element={<PageTransition><GDPRPage /></PageTransition>} />
           <Route path="/cookies" element={<PageTransition><CookiePolicyPage /></PageTransition>} />
           <Route path="/terms" element={<PageTransition><TermsOfServicePage /></PageTransition>} />
@@ -194,30 +194,30 @@ const AnimatedRoutes = () => {
 
           {/* Feature Pages */}
           <Route path="/analytics" element={<Navigate to="/chatbot" replace />} />
-          <Route path="/computer" element={<PageTransition><ComputerPage /></PageTransition>} />
+          <Route path="/computer" element={<Navigate to="/chatbot" replace />} />
           <Route path="/mission-control" element={<Navigate to="/chatbot" replace />} />
           <Route path="/personal-llm" element={<Navigate to="/chatbot" replace />} />
-          <Route path="/templates" element={<PageTransition><TemplatesPage /></PageTransition>} />
+          <Route path="/templates" element={<Navigate to="/chatbot" replace />} />
           <Route path="/admin" element={<PageTransition><AdminPage /></PageTransition>} />
-          <Route path="/research" element={<PageTransition><ResearchPage /></PageTransition>} />
-          <Route path="/developers" element={<PageTransition><DevelopersPage /></PageTransition>} />
+          <Route path="/research" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/developers" element={<Navigate to="/chatbot" replace />} />
           <Route path="/enterprise" element={<Navigate to="/chatbot" replace />} />
-          <Route path="/referral" element={<PageTransition><ReferralPage /></PageTransition>} />
-          <Route path="/sessions" element={<PageTransition><SessionsPage /></PageTransition>} />
+          <Route path="/referral" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/sessions" element={<Navigate to="/chatbot" replace />} />
 
                     {/* Coming-soon fallbacks for features in active development */}
-          <Route path="/ai-strategy-consultant" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/anonymous-ai" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/answers" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/deep-research" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/discover" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/partnerships" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/privacy-score" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/security-audit" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/studio" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/transparency" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/trust" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
-          <Route path="/video-studio" element={<Suspense fallback={<PageLoader />}><PageTransition><ComingSoonPage /></PageTransition></Suspense>} />
+          <Route path="/ai-strategy-consultant" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/anonymous-ai" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/answers" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/deep-research" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/discover" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/partnerships" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/privacy-score" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/security-audit" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/studio" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/transparency" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/trust" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/video-studio" element={<Navigate to="/chatbot" replace />} />
 
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
