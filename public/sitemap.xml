@@ -55,18 +55,6 @@
     <priority>0.96</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/ai-strategy-consultant</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.96</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/anonymous-ai</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.96</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/multilingual-ai</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
@@ -82,12 +70,6 @@
     <loc>https://www.shadowtalk-ai.com/chatbot</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/discover</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
@@ -403,12 +385,6 @@
     <priority>0.92</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/answers</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/case-studies</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
@@ -547,21 +523,9 @@
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/computer</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.88</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/execute</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.88</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/partnerships</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.88</priority>
   </url>
   <url>
@@ -595,19 +559,7 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/research</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/security</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/workspace</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -625,31 +577,13 @@
     <priority>0.82</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/marketplace</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/pricing</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/templates</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/blog</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/developers</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.70</priority>
@@ -697,19 +631,7 @@
     <priority>0.50</priority>
   </url>
   <url>
-    <loc>https://www.shadowtalk-ai.com/founder-access</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
     <loc>https://www.shadowtalk-ai.com/help</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.50</priority>
-  </url>
-  <url>
-    <loc>https://www.shadowtalk-ai.com/referral</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.50</priority>

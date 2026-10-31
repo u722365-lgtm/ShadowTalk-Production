@@ -157,7 +157,7 @@ const AnimatedRoutes = () => {
           <Route path="/s/:slug" element={<Suspense fallback={<PageLoader />}><SharedAnswerPage /></Suspense>} />
           <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
           <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
-          <Route path="/security" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/security" element={<Suspense fallback={<PageLoader />}><PageTransition><TrustPage /></PageTransition></Suspense>} />
           <Route path="/status" element={<PageTransition><StatusPage /></PageTransition>} />
           <Route path="/founder" element={<PageTransition><FounderPage /></PageTransition>} />
           <Route path="/zain-ahmed" element={<PageTransition><ZainAhmedBioPage /></PageTransition>} />
@@ -172,10 +172,10 @@ const AnimatedRoutes = () => {
           <Route path="/founder-access" element={<Navigate to="/chatbot" replace />} />
           <Route path="/knowledge-graph" element={<Navigate to="/chatbot" replace />} />
           <Route path="/agentic-ai-workspace" element={<Navigate to="/chatbot" replace />} />
-          <Route path="/downloads" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/downloads" element={<Suspense fallback={<PageLoader />}><PageTransition><DownloadPage /></PageTransition></Suspense>} />
           <Route path="/google-seo" element={<Navigate to="/home" replace />} />
           <Route path="/press" element={<Navigate to="/home" replace />} />
-          <Route path="/ide" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/ide" element={<Suspense fallback={<PageLoader />}><PageTransition><AgenticIdePage /></PageTransition></Suspense>} />
           <Route path="/missioncontrol" element={<Navigate to="/chatbot" replace />} />
           <Route path="/workspace" element={<Navigate to="/chatbot" replace />} />
           <Route path="/marketplace" element={<Navigate to="/chatbot" replace />} />
