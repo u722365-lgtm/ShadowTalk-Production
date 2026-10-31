@@ -375,6 +375,9 @@ const ChatbotPage = () => {
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
     
+    if (error) {
+      console.error("[chat] loadConversations FAILED:", error?.message || error);
+    }
     if (data && !error) {
       const rows = await Promise.all(
         data.map(async (c) => ({
@@ -404,6 +407,9 @@ const ChatbotPage = () => {
       .eq('user_id', user?.id ?? '')
       .order('created_at', { ascending: true });
     
+    if (error) {
+      console.error("[chat] loadConversation FAILED:", error?.message || error);
+    }
     if (data && !error) {
       const loadedMessages: Message[] = await Promise.all(
         data.map(async (m) => ({
@@ -764,13 +770,27 @@ const ChatbotPage = () => {
         return data.id;
       }
       if (error) {
-        console.warn("[chat] remote conversation insert failed, using fallback:", error);
+        console.error("[chat] remote conversation insert FAILED:", error?.message || error);
+        // Show the user what went wrong so they can report it
+        toast({
+          title: "Could not create conversation",
+          description: "Your chat will work but may not be saved. Check your connection and try refreshing.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
-      console.warn("[chat] exception creating remote conversation, using fallback:", err);
+      console.error("[chat] exception creating remote conversation:", err);
+      toast({
+        title: "Connection error",
+        description: "Could not reach the database. Your chat will work locally but may not persist.",
+        variant: "destructive",
+      });
     }
 
-    // Resilient fallback: never block the user from chatting if backend database write is unavailable
+    // Fallback: use a local ID so the user can still chat.
+    // Messages saved with this ID will reference a non-existent conversation,
+    // so they won't appear in the sidebar after refresh. But at least the
+    // user can chat in the current session.
     const fallbackId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setCurrentConversationId(fallbackId);
     setConversations((prev) => [
@@ -816,8 +836,10 @@ const ChatbotPage = () => {
         setConversations(prev => prev.map(c => c.id === conversationId ? { ...c, title: displayTitle } : c));
       }
       return data;
-    } catch (err) {
-      console.warn("[chat] saveMessage background persistence error:", err);
+    } catch (err: any) {
+      console.error("[chat] saveMessage FAILED:", err?.message || err);
+      // Don't show a toast here — it would spam the user on every message.
+      // The conversation-creation toast above is sufficient.
       return null;
     }
   };
