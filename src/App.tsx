@@ -171,7 +171,7 @@ const AnimatedRoutes = () => {
           <Route path="/private-ai" element={<PageTransition><PrivateAiHubPage /></PageTransition>} />
           <Route path="/founder-access" element={<PageTransition><FounderAccessPage /></PageTransition>} />
           <Route path="/knowledge-graph" element={<PageTransition><KnowledgeGraphPage /></PageTransition>} />
-          <Route path="/agentic-ai-workspace" element={<PageTransition><AgenticAIWorkspacePage /></PageTransition>} />
+          <Route path="/agentic-ai-workspace" element={<Navigate to="/chatbot" replace />} />
           <Route path="/downloads" element={<PageTransition><DownloadPage /></PageTransition>} />
           <Route path="/google-seo" element={<Navigate to="/google-seo-hub.html" replace />} />
           <Route path="/press" element={<Navigate to="/press-kit.html" replace />} />
@@ -193,15 +193,15 @@ const AnimatedRoutes = () => {
           <Route path="/privacy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
 
           {/* Feature Pages */}
-          <Route path="/analytics" element={<PageTransition><AnalyticsPage /></PageTransition>} />
+          <Route path="/analytics" element={<Navigate to="/chatbot" replace />} />
           <Route path="/computer" element={<PageTransition><ComputerPage /></PageTransition>} />
-          <Route path="/mission-control" element={<PageTransition><MissionControlPage /></PageTransition>} />
-          <Route path="/personal-llm" element={<PageTransition><PersonalLlmPage /></PageTransition>} />
+          <Route path="/mission-control" element={<Navigate to="/chatbot" replace />} />
+          <Route path="/personal-llm" element={<Navigate to="/chatbot" replace />} />
           <Route path="/templates" element={<PageTransition><TemplatesPage /></PageTransition>} />
           <Route path="/admin" element={<PageTransition><AdminPage /></PageTransition>} />
           <Route path="/research" element={<PageTransition><ResearchPage /></PageTransition>} />
           <Route path="/developers" element={<PageTransition><DevelopersPage /></PageTransition>} />
-          <Route path="/enterprise" element={<PageTransition><EnterprisePage /></PageTransition>} />
+          <Route path="/enterprise" element={<Navigate to="/chatbot" replace />} />
           <Route path="/referral" element={<PageTransition><ReferralPage /></PageTransition>} />
           <Route path="/sessions" element={<PageTransition><SessionsPage /></PageTransition>} />
 

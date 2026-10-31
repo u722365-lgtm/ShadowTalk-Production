@@ -17,7 +17,6 @@ import { ChatToolbar } from "@/components/chat/ChatToolbar";
 import { EnterpriseWelcomeBanner } from "@/components/chat/EnterpriseWelcomeBanner";
 import { ChatShadowSidebar } from "@/components/chat/ChatShadowSidebar";
 import { ChatInput } from "@/components/chat/ChatInput";
-const AdBanner = (props: any) => null;
 import { ShareWinBanner } from "@/components/growth/ShareWinBanner";
 import { ShareResultDialog } from "@/components/growth/ShareResultDialog";
 import { ChatMessages } from "@/components/chat/ChatMessages";
@@ -73,17 +72,11 @@ import { CHAT_COMMAND_MODAL_ACTIONS, CHAT_COMMAND_NAV_ROUTES } from "@/lib/chatC
 import { consumePendingChatInsert } from "@/lib/pendingChatInsert";
 import { useChatSpeech } from "@/hooks/useChatSpeech";
 
-const MultiModelOrchestrator = (props: any) => null;
-const VisualReasoning = (props: any) => null;
-const ImageDecoder = (props: any) => null;
-const DailyPlanner = (props: any) => null;
 const IntelligenceHub = lazy(() =>
   import("@/components/chat/IntelligenceHub").then((m) => ({ default: m.IntelligenceHub })),
 );
 
 
-const ChatUpgradeNudge = (props: any) => null;
-const UpgradePrompt = (props: any) => null;
 import { useSubscriptionNudge } from "@/hooks/useSubscriptionNudge";
 import { CHAT_LIMIT_TOAST } from "@/lib/conversionCopy";
 import { openProjectInIde, saveIdePayload } from "@/lib/idePayloadStorage";
@@ -260,6 +253,7 @@ const ChatbotPage = () => {
   const [showSignInPrompt, setShowSignInPrompt] = useState(false);
   const [signInPromptReason, setSignInPromptReason] = useState<"chats" | "images" | "deepResearch" | "general">("chats");
   const [showBrowseActivity, setShowBrowseActivity] = useState(false);
+  const [shadowTwinActive, setShadowTwinActive] = useState(false);
 
   const pushPermissionAskedRef = useRef(false);
   const referralCode = useUserReferralCode();
@@ -928,8 +922,8 @@ Structure and Content Guidelines:
       }));
 
       const shadowMatchInitial = lastUser.match(/@([a-zA-Z0-9_-]+)-shadow/i);
-      if (shadowMatchInitial) {
-        const shadowName = shadowMatchInitial[1];
+      if (shadowMatchInitial || shadowTwinActive) {
+        const shadowName = shadowMatchInitial ? shadowMatchInitial[1] : "User";
         routerMessages.unshift({
           role: "system",
           content: `You are acting as the Shadow Twin for ${shadowName}. You must speak and act entirely on their behalf based on their specific context, tone, and knowledge. Do not break character. Do not say you are an AI.`
@@ -975,7 +969,7 @@ Structure and Content Guidelines:
       let pendingContent: string | null = null;
       let rafId: number | null = null;
       const shadowMatch = lastUser.match(/@([a-zA-Z0-9_-]+)-shadow/i);
-      const isShadowTwin = !!shadowMatch;
+      const isShadowTwin = !!shadowMatch || shadowTwinActive;
       const shadowTwinName = shadowMatch ? `${shadowMatch[1]}-shadow` : undefined;
 
       const flushAssistant = () => {
@@ -1872,6 +1866,8 @@ Structure and Content Guidelines:
     onStopGeneration: handleStopGeneration,
     selectedFile,
     onFileSelect: setSelectedFile,
+    shadowTwinActive,
+    onToggleShadowTwin: () => setShadowTwinActive(v => !v),
     chatMode,
     onModeChange: setChatMode,
     personality,

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { getChatEnterToSend } from "@/lib/profilePreferences";
-import { Send, Mic, MicOff, Square, Plus, Sparkles, Volume2 } from "lucide-react";
+import { Send, Mic, MicOff, Square, Plus, Sparkles, Volume2, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/chat/FileUpload";
@@ -49,6 +49,10 @@ interface ChatInputProps {
   onPromptAccept?: (value: string) => void;
   onPromptClear?: () => void;
   onSuggestionChange?: (suggestion: string) => void;
+  /** Whether Shadow Twin mode is active */
+  shadowTwinActive?: boolean;
+  /** Toggle Shadow Twin mode */
+  onToggleShadowTwin?: () => void;
 }
 
 const ChatInputInner = ({
@@ -76,6 +80,8 @@ const ChatInputInner = ({
   onPromptAccept,
   onPromptClear,
   onSuggestionChange,
+  shadowTwinActive = false,
+  onToggleShadowTwin,
 }: ChatInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [slashMenuOpen, setSlashMenuOpen] = useState(false);
@@ -312,6 +318,31 @@ const ChatInputInner = ({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+
+                {onToggleShadowTwin && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={onToggleShadowTwin}
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "shrink-0 rounded-full transition-all",
+                          shadowTwinActive
+                            ? "bg-purple-500/30 border border-purple-400/50 text-purple-300"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        )}
+                        aria-label={shadowTwinActive ? "Deactivate Shadow Twin" : "Activate Shadow Twin"}
+                        aria-pressed={shadowTwinActive}
+                      >
+                        <Brain className="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      {shadowTwinActive ? "Shadow Twin: ON" : "Shadow Twin"}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
 
                 <Button
                   onClick={() => { play('send'); onSend(); }}
